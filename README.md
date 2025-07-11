@@ -3,7 +3,6 @@
 A production-ready, feature-rich Next.js template designed to bootstrap full-stack projects quickly. This template is built with a modern tech stack and includes essential features like authentication, SEO best practices, and a robust development environment right out of the box.
 
 ![Project Banner](https://placehold.co/1200x630/000000/FFFFFF/png?text=Next.js%20%26%20Supabase%20Starter)
-_Replace the image above with a screenshot of your project's homepage._
 
 ## ✨ Features
 
