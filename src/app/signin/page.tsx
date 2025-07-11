@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -13,6 +14,8 @@ export default function SigninPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
+    const router = useRouter();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -24,6 +27,9 @@ export default function SigninPage() {
             setError(error.message);
         } else {
             setSuccess(true);
+            setTimeout(() => {
+                router.push("/");
+            }, 1200);
         }
     };
 

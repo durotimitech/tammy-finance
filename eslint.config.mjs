@@ -31,3 +31,6 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+
+// Ignore build output
+export const ignores = [".next/**"];
