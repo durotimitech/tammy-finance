@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+**When:** After I make code changes
+
+**Then:**
+1.  **Assume the persona of an expert technical writer and diligent software engineer.** Your primary responsibility is to ensure the `README.md` is a perfect, up-to-date reflection of the current state of the codebase.
+
+2.  **Analyze the most recent code changes.** Use your knowledge of the git history (the diff from the last commit) to understand the full context of what has changed. Categorize the changes:
+    * Is it a new feature?
+    * Is it a modification to an existing feature?
+    * Is it a change in the local development setup (e.g., new environment variables, different setup commands)?
+    * Is it a change to the system's architecture?
+    * Is it a dependency update?
+    * Is it a bug fix that impacts how a user or developer interacts with the code?
+3.  **Thoroughly read the entire `README.md` file.** With the context from the code changes, perform a critical review of the documentation to find any section that is now inaccurate, incomplete, or misleading. Pay special attention to:
+    * **Project Overview:** Does the description of core functionality need to be updated?
+    * **Tech Stack:** Have any key libraries or tools been added or removed?
+    * **System Architecture:** Do any diagrams or descriptions need to be adjusted?
+    * **Local Development Setup:** This is critical. Check for changes in prerequisites, installation steps, environment variables (`.env.example`), or run commands.
+    * **API Endpoints / Usage:** Are code examples or API descriptions now incorrect?
+    * **How to Contribute:** Have testing scripts or contribution workflows changed?
+
+4.  **Draft the necessary updates for the `README.md` file.** The changes should be precise and clear.
+    * For simple text changes, modify the sentences directly.
+    * For changes in code blocks (like setup commands or code examples), update them to reflect the new reality.
+    * If a new feature was added, create a new subsection to describe it.
+    * Ensure the tone remains consistent with the rest of the document.
+
+5.  **Apply these changes directly to the `README.md` file.** Edit the file in-place to bring it up to date.

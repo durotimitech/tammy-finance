@@ -10,7 +10,24 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends(
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:@typescript-eslint/recommended",
+    // "plugin:tailwindcss/recommended", // Removed due to Tailwind v4 incompatibility
+    "plugin:jsx-a11y/recommended",
+    // "plugin:prettier/recommended", // Removed, use eslint-config-prettier only
+    "prettier"
+  ),
+  {
+    rules: {
+      // Example: allow .tsx for JSX
+      "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+      // Example: enforce consistent import order
+      "import/order": ["error", { "alphabetize": { "order": "asc" } }],
+      // Add more rules as needed
+    },
+  },
 ];
 
 export default eslintConfig;

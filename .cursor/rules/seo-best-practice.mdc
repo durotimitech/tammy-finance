@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Rule: Apply SEO Best Practices to All Pages and Components
+
+## Match
+.*
+
+## SEO Policy
+
+- For every new **page**, **layout**, or **component**:
+  - Add a `<Head>` tag (or configure `next-seo`) with:
+    - A unique and descriptive `<title>`
+    - A relevant `<meta name="description">` (around 140–160 characters)
+    - Open Graph tags (`og:title`, `og:description`, `og:image`, `og:url`)
+    - Twitter Card tags (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`)
+    - A canonical URL
+  - Include relevant **keywords** (e.g., “wedding photographer Limerick”) in:
+    - Page titles
+    - Headings (H1–H3)
+    - Image alt tags
+    - URL slugs
+
+- For **image elements**:
+  - Use `next/image` with descriptive `alt` text
+  - File names must include keywords (e.g., `event-photography-cork.jpg`)
+  - Ensure lazy loading and responsive sizes
+
+- For **performance and accessibility**:
+  - Optimize layout and content for Core Web Vitals
+  - Use semantic HTML (`main`, `section`, `header`, `footer`)
+  - Ensure heading hierarchy is valid (only one `<h1>` per page)
+  - Include `aria-labels` and proper contrast for A11y
+
+- Automatically generate or update:
+  - `sitemap.xml` and `robots.txt` using `next-sitemap`
+  - `LocalBusiness` JSON-LD structured data on homepage
+  - `BlogPosting` schema for blog posts
+
+- Internal links should be included where possible (e.g., blog → services, portfolio → contact)
+
+- Every new blog post or portfolio entry must:
+  - Use keyword-rich slugs
+  - Include unique SEO metadata
+  - Be optimized for readability and on-page SEO
+

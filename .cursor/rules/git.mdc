@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+**When:** I give you a command that starts with `commit "` or `push "` and ends with a closing quote, like `commit "feat: add new login component"`.
+
+**Then:**
+1.  **Extract the commit message.** The message is the text between the double quotes.
+
+2.  **Execute the following shell commands in sequence:**
+    * `git add .`
+    * `git commit -m "{message}"` (where `{message}` is the extracted commit message from step 1).
+    * `git push`
+
+3. Fix all build or lint errors
