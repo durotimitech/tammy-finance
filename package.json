@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.5",
     "framer-motion": "^12.23.3",
     "next": "15.3.5",
     "react": "^19.0.0",
@@ -17,7 +18,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix --max-warnings=0"    
+      "eslint --fix --max-warnings=0"
     ]
   },
   "devDependencies": {
@@ -37,6 +38,7 @@
     "jest": "^30.0.4",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
+    "supabase": "^2.30.4",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.0",
     "typescript": "^5"
