@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation" - not needed with window.location
 import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -20,7 +20,6 @@ export function LoginForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const router = useRouter()
 
   // Check if Supabase is properly initialized
   useEffect(() => {
@@ -51,7 +50,7 @@ export function LoginForm({
         console.log('Login successful:', data.user.email)
         setSuccess(true)
         setTimeout(() => {
-          router.push("/dashboard")
+          window.location.href = "/dashboard"
         }, 1500)
       } else {
         setError('Login failed. Please try again.')
