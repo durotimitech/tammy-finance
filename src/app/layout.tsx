@@ -5,23 +5,23 @@ import AnimatedLayout from "./AnimatedLayout";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Mejabi Durotimi Photography & Films",
-    default: "Mejabi Durotimi | Wedding Photography & Videography Dublin",
+    template: "%s | NetWorth Tracker",
+    default: "NetWorth Tracker | Track Your Financial Journey",
   },
   description:
-    "Creative and documentary wedding photography, videography, and event planning for modern couples in Dublin and across Ireland.",
+    "Transform your financial future one asset at a time. Track net worth, monitor investments, and celebrate every milestone with our intuitive wealth tracking app.",
   openGraph: {
-    title: "Mejabi Durotimi | Wedding Photography & Videography Dublin",
-    description: "Creative wedding photography and films.",
-    url: "https://mejabidurotimi.com",
-    siteName: "Mejabi Durotimi",
-    locale: "en_IE",
+    title: "NetWorth Tracker | Track Your Financial Journey",
+    description: "Transform your financial future one asset at a time.",
+    url: "https://networthtracker.com",
+    siteName: "NetWorth Tracker",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mejabi Durotimi | Wedding Photography & Videography Dublin",
-    description: "Creative wedding photography and films.",
+    title: "NetWorth Tracker | Track Your Financial Journey",
+    description: "Transform your financial future one asset at a time.",
   },
 };
 
@@ -48,29 +48,21 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "ProfessionalService",
-              name: "Mejabi Durotimi",
-              image: "https://mejabidurotimi.com/logo.png",
-              "@id": "https://mejabidurotimi.com",
-              url: "https://mejabidurotimi.com",
-              telephone: "+353-XX-XXX-XXXX",
-              priceRange: "€€€",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "123 Creative Street",
-                addressLocality: "Dublin",
-                postalCode: "D0X XXX",
-                addressCountry: "IE",
+              "@type": "SoftwareApplication",
+              name: "NetWorth Tracker",
+              applicationCategory: "FinanceApplication",
+              operatingSystem: "Android, iOS",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
               },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: 53.3498,
-                longitude: -6.2603,
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.8",
+                ratingCount: "2500",
               },
-              sameAs: [
-                "https://www.instagram.com/your-instagram/",
-                "https://www.facebook.com/your-facebook/",
-              ],
+              description: "Track your financial journey with our intuitive net worth tracking app",
             }),
           }}
         />
