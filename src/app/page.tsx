@@ -2,12 +2,11 @@
 
 import type { Session } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import { ChevronDown, TrendingUp, PieChart, Target, Sparkles, BarChart, Shield } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { supabase } from "@/lib/supabaseClient";
-import { ChevronDown, TrendingUp, PieChart, Target, Sparkles, BarChart, Shield } from "lucide-react";
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
@@ -113,10 +112,10 @@ export default function Home() {
                   <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                   </svg>
-                  <span className="text-sm text-gray-500">Google Play's</span>
+                  <span className="text-sm text-gray-500">Google Play&apos;s</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-gray-900">Editor's Choice</span>
+                  <span className="text-2xl font-bold text-gray-900">Editor&apos;s Choice</span>
                   <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                   </svg>
@@ -413,7 +412,7 @@ export default function Home() {
               </button>
               {openFaq === '1' && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-600">Our AI analyzes your financial goals, risk tolerance, and current portfolio to provide personalized recommendations. You'll complete a brief questionnaire when you start, and the app continuously learns from your financial behavior to refine its suggestions.</p>
+                  <p className="text-gray-600">Our AI analyzes your financial goals, risk tolerance, and current portfolio to provide personalized recommendations. You&apos;ll complete a brief questionnaire when you start, and the app continuously learns from your financial behavior to refine its suggestions.</p>
                 </div>
               )}
             </motion.div>
@@ -431,7 +430,7 @@ export default function Home() {
               </button>
               {openFaq === '2' && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-600">Yes! You'll see live updates on things like stock prices, crypto values, and even estimated real estate values. It's like having instant insight into how your wealth is responding, helping you decide if it's time to rebalance or take action.</p>
+                  <p className="text-gray-600">Yes! You&apos;ll see live updates on things like stock prices, crypto values, and even estimated real estate values. It&apos;s like having instant insight into how your wealth is responding, helping you decide if it&apos;s time to rebalance or take action.</p>
                 </div>
               )}
             </motion.div>
@@ -467,7 +466,7 @@ export default function Home() {
               </button>
               {openFaq === '4' && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-600">Setting goals is simple! Navigate to the Goals section, where you can create custom targets like "Save $50,000 for a house" or "Reach $1M net worth by 40." The app tracks your progress and sends motivating updates to keep you on track.</p>
+                  <p className="text-gray-600">Setting goals is simple! Navigate to the Goals section, where you can create custom targets like &quot;Save $50,000 for a house&quot; or &quot;Reach $1M net worth by 40.&quot; The app tracks your progress and sends motivating updates to keep you on track.</p>
                 </div>
               )}
             </motion.div>
@@ -485,7 +484,7 @@ export default function Home() {
               </button>
               {openFaq === '5' && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-600">Absolutely! You'll receive smart notifications when it's time to review your portfolio, when market conditions suggest rebalancing, or when you're approaching your goals. You can customize the frequency and types of reminders you receive.</p>
+                  <p className="text-gray-600">Absolutely! You&apos;ll receive smart notifications when it&apos;s time to review your portfolio, when market conditions suggest rebalancing, or when you&apos;re approaching your goals. You can customize the frequency and types of reminders you receive.</p>
                 </div>
               )}
             </motion.div>

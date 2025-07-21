@@ -1,12 +1,11 @@
 "use client";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { NotificationBanner } from "@/components/ui/NotificationBanner";
 import { supabase } from "@/lib/supabaseClient";
-import { Eye, EyeOff, TrendingUp } from "lucide-react";
-import Image from "next/image";
 
 export default function SignupPage() {
     const [email, setEmail] = useState("");
