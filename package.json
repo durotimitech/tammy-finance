@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "jest --config jest.e2e.config.js",
+    "test:e2e:watch": "jest --config jest.e2e.config.js --watch",
+    "test:e2e:headless": "HEADLESS=true jest --config jest.e2e.config.js",
+    "test:e2e:debug": "HEADLESS=false DEVTOOLS=true jest --config jest.e2e.config.js"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -36,6 +40,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
+    "@types/puppeteer": "^5.4.7",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
@@ -46,8 +51,10 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "husky": "^9.1.7",
     "jest": "^30.0.4",
+    "jest-puppeteer": "^11.0.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
+    "puppeteer": "^24.14.0",
     "supabase": "^2.30.4",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.0",
