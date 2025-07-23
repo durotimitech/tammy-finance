@@ -7,9 +7,9 @@
 // Custom command to handle Supabase authentication
 Cypress.Commands.add('loginWithSupabase', (email: string, password: string) => {
   cy.visit('/auth/login')
-  cy.findByPlaceholderText('Username').type(email)
-  cy.findByPlaceholderText('Password').type(password)
-  cy.findByRole('button', { name: /login/i }).click()
+  cy.findByPlaceholderText('Enter your email').type(email)
+  cy.findByPlaceholderText('Enter your password').type(password)
+  cy.findByRole('button', { name: /sign in$/i }).click()
 })
 
 // Command to clear Supabase session

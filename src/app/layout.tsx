@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Lato, Pirata_One } from "next/font/google";
 import "./globals.css";
 import AnimatedLayout from "./AnimatedLayout";
 
@@ -25,10 +25,16 @@ export const metadata: Metadata = {
   },
 };
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
+const lato = Lato({
+  variable: "--font-lato",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "700", "900"],
+});
+
+const pirataOne = Pirata_One({
+  variable: "--font-pirata",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export default function RootLayout({
@@ -38,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} antialiased`}>
+      <body className={`${lato.variable} ${pirataOne.variable} antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

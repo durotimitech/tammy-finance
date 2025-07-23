@@ -16,8 +16,9 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
-  --font-sans: var(--font-montserrat);
-  --font-mono: var(--font-montserrat);
+  --font-sans: var(--font-lato);
+  --font-mono: var(--font-lato);
+  --font-pirata: var(--font-pirata);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,7 +51,7 @@
 body {
   background: #ffffff;
   color: var(--foreground);
-  font-family: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-lato), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 @keyframes blob {
@@ -78,4 +79,8 @@ body {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+.font-pirata {
+  font-family: var(--font-pirata), cursive;
 }
