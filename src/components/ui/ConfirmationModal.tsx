@@ -54,7 +54,7 @@ export default function ConfirmationModal({
             <Button
               type="button"
               onClick={onClose}
-              variant="default"
+              variant="secondary"
               className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-none"
             >
               {cancelText}

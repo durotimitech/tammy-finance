@@ -98,19 +98,10 @@ export default function AddLiabilityModal({ onClose, onAdd }: AddLiabilityModalP
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                onClick={onClose}
-                variant="default"
-                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-none"
-              >
+              <Button type="button" onClick={onClose} variant="secondary" className="flex-1">
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="default"
-                className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
-              >
+              <Button type="submit" variant="default" className="flex-1">
                 Add Liability
               </Button>
             </div>
