@@ -55,7 +55,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/signin">
+                <Link href="/auth/login">
                   <Button variant="ghost" className="text-[#6B6B6B]">Login</Button>
                 </Link>
                 <Link href="/signup">
@@ -92,7 +92,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <Link href="/signin">
+                    <Link href="/auth/login">
                       <Button variant="ghost" className="w-full text-[#6B6B6B]">Login</Button>
                     </Link>
                     <Link href="/signup">
