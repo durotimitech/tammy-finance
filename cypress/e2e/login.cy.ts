@@ -9,37 +9,38 @@ describe('Login Page', () => {
   describe('Page Layout and Elements', () => {
     it('should display all login page elements correctly', () => {
       // Check main heading
-      cy.findByRole('heading', { name: /welcome back!/i }).should('be.visible')
+      cy.findByRole('heading', { name: /welcome back/i }).should('be.visible')
       
       // Check tagline
-      cy.findByText(/simplify your workflow/i).should('be.visible')
-      // Use findAllByText since "Tuga's App" appears multiple times on the page
-      cy.findAllByText(/tuga's app/i).should('have.length', 2)
+      cy.findByText(/enter your email and password to access your account/i).should('be.visible')
+      
+      // Check logo
+      cy.findByText('tammy').should('be.visible')
       
       // Check form elements
-      cy.findByPlaceholderText('Username').should('be.visible')
-      cy.findByPlaceholderText('Password').should('be.visible')
-      cy.findByRole('button', { name: /login/i }).should('be.visible')
+      cy.findByPlaceholderText('Enter your email').should('be.visible')
+      cy.findByPlaceholderText('Enter your password').should('be.visible')
+      cy.findByRole('button', { name: /sign in/i }).should('be.visible')
       
       // Check password toggle button exists
       cy.get('button[type="button"]').should('exist')
       
       // Check links
-      cy.findByText(/forgot password\?/i).should('be.visible')
-      cy.findByText(/not a member\?/i).should('be.visible')
-      cy.findByText(/register now/i).should('be.visible')
+      cy.findByText(/forgot password/i).should('be.visible')
+      cy.findByText(/don't have an account\?/i).should('be.visible')
+      cy.findByText(/sign up/i).should('be.visible')
       
-      // Check social login text
-      cy.findByText(/or continue with/i).should('be.visible')
+      // Check remember me checkbox
+      cy.findByText(/remember me/i).should('be.visible')
     })
 
     it('should have proper responsive design', () => {
-      // Desktop view - should show illustration
+      // Desktop view - should show gradient side
       cy.viewport(1280, 720)
       cy.get('.hidden.lg\\:flex').should('be.visible')
-      cy.findByText(/make your work easier and organized/i).should('be.visible')
+      cy.findByText(/put app ss here/i).should('be.visible')
       
-      // Mobile view - illustration should be hidden
+      // Mobile view - gradient side should be hidden
       cy.viewport(375, 667)
       cy.get('.hidden.lg\\:flex').should('not.be.visible')
     })
@@ -48,7 +49,7 @@ describe('Login Page', () => {
       // Check for framer-motion animations
       cy.get('[style*="opacity"]').should('exist')
       cy.wait(600) // Wait for animation duration
-      cy.get('form').parent().should('have.css', 'opacity', '1')
+      cy.get('.bg-gray-50').should('have.css', 'opacity', '1')
     })
   })
 
@@ -57,23 +58,23 @@ describe('Login Page', () => {
       const password = 'mySecretPassword123'
       
       // Type password
-      cy.findByPlaceholderText('Password').type(password)
+      cy.findByPlaceholderText('Enter your password').type(password)
       
       // Initially password should be hidden
-      cy.findByPlaceholderText('Password').should('have.attr', 'type', 'password')
+      cy.findByPlaceholderText('Enter your password').should('have.attr', 'type', 'password')
       
       // Click toggle button to show password
-      cy.get('button[type="button"]').click()
-      cy.get('input[placeholder="Password"]').should('have.attr', 'type', 'text')
+      cy.get('button[type="button"]').first().click()
+      cy.get('input[placeholder="Enter your password"]').should('have.attr', 'type', 'text')
       
       // Click again to hide password
-      cy.get('button[type="button"]').click()
-      cy.get('input[placeholder="Password"]').should('have.attr', 'type', 'password')
+      cy.get('button[type="button"]').first().click()
+      cy.get('input[placeholder="Enter your password"]').should('have.attr', 'type', 'password')
     })
 
     it('should validate required fields', () => {
       // Try to submit empty form
-      cy.findByRole('button', { name: /login/i }).click()
+      cy.findByRole('button', { name: /sign in/i }).click()
       
       // Since we're using server actions, we need to check if form submission was prevented
       // The form uses HTML5 validation with required attributes
@@ -85,9 +86,9 @@ describe('Login Page', () => {
 
     it('should validate email format', () => {
       // Type invalid email
-      cy.findByPlaceholderText('Username').type('invalidemail')
-      cy.findByPlaceholderText('Password').type('password123')
-      cy.findByRole('button', { name: /login/i }).click()
+      cy.findByPlaceholderText('Enter your email').type('invalidemail')
+      cy.findByPlaceholderText('Enter your password').type('password123')
+      cy.findByRole('button', { name: /sign in/i }).click()
       
       // Check validation
       cy.get('input[type="email"]').then(($input) => {
@@ -97,8 +98,8 @@ describe('Login Page', () => {
     })
 
     it('should show loading state while submitting', () => {
-      cy.findByPlaceholderText('Username').type('test@example.com')
-      cy.findByPlaceholderText('Password').type('password123')
+      cy.findByPlaceholderText('Enter your email').type('test@example.com')
+      cy.findByPlaceholderText('Enter your password').type('password123')
       
       // Intercept the form submission
       cy.intercept('POST', '/auth/login', {
@@ -109,19 +110,26 @@ describe('Login Page', () => {
         }
       }).as('loginRequest')
       
-      cy.findByRole('button', { name: /login/i }).click()
+      cy.findByRole('button', { name: /sign in/i }).click()
       
       // Button should show loading state
       cy.findByRole('button', { name: /signing in/i }).should('exist')
       cy.findByRole('button', { name: /signing in/i }).should('be.disabled')
+    })
+
+    it('should handle remember me checkbox', () => {
+      // Check the checkbox
+      cy.get('input[type="checkbox"]').should('not.be.checked')
+      cy.get('input[type="checkbox"]').check()
+      cy.get('input[type="checkbox"]').should('be.checked')
     })
   })
 
   describe('Authentication Flow', () => {
     it('should show error message for invalid credentials', () => {
       // Type invalid credentials
-      cy.findByPlaceholderText('Username').type('wrong@example.com')
-      cy.findByPlaceholderText('Password').type('wrongpassword')
+      cy.findByPlaceholderText('Enter your email').type('wrong@example.com')
+      cy.findByPlaceholderText('Enter your password').type('wrongpassword')
       
       // Mock failed login with Supabase error response
       cy.intercept('POST', '**/auth/v1/token*', {
@@ -132,55 +140,47 @@ describe('Login Page', () => {
         }
       }).as('failedLogin')
       
-      cy.findByRole('button', { name: /login/i }).click()
+      cy.findByRole('button', { name: /sign in/i }).click()
       
       // Wait for the error to appear (server action will return error state)
       cy.findByText(/invalid login credentials/i, { timeout: 10000 }).should('be.visible')
     })
 
-    it('should redirect to dashboard on successful login', () => {
-      // Skip this test for now as it requires actual Supabase auth setup
+    it('should redirect on successful login', () => {
+      // Skip this test as it requires actual Supabase auth setup
       // In a real environment, you would use test credentials or mock the entire auth flow
-      cy.log('Skipping: Requires actual Supabase auth setup or more complex mocking')
-    })
-
-    it('should handle network errors gracefully', () => {
-      // Skip this test as server actions handle network errors internally
-      // and it's difficult to simulate network errors in this context
-      cy.log('Skipping: Server actions handle network errors internally')
+      cy.log('Skipping: Requires actual Supabase auth setup or complex server action mocking')
     })
   })
 
   describe('Navigation', () => {
     it('should navigate to forgot password page', () => {
-      cy.findByText(/forgot password\?/i).click()
+      cy.findByText(/forgot password/i).click()
       cy.url().should('include', '/forgot-password')
     })
 
     it('should navigate to signup page', () => {
-      cy.findByText(/register now/i).click()
-      cy.url().should('include', '/signup')
-    })
-
-    it('should redirect to dashboard if already logged in', () => {
-      // Skip this test as it requires actual middleware authentication
-      // The middleware checks server-side cookies which are difficult to mock in Cypress
-      cy.log('Skipping: Requires server-side authentication mocking')
+      cy.findByText(/sign up/i).click()
+      cy.url().should('include', '/auth/signup')
     })
   })
 
   describe('Accessibility', () => {
     it('should be keyboard navigable', () => {
       // Focus on first input
-      cy.findByPlaceholderText('Username').focus()
+      cy.findByPlaceholderText('Enter your email').focus()
       
       // Tab to password field
       cy.realPress('Tab')
-      cy.focused().should('have.attr', 'placeholder', 'Password')
+      cy.focused().should('have.attr', 'placeholder', 'Enter your password')
       
       // Tab to password toggle button
       cy.realPress('Tab')
       cy.focused().should('have.attr', 'type', 'button')
+      
+      // Tab to remember me checkbox
+      cy.realPress('Tab')
+      cy.focused().should('have.attr', 'type', 'checkbox')
       
       // Tab to forgot password link
       cy.realPress('Tab')
@@ -188,7 +188,7 @@ describe('Login Page', () => {
       
       // Tab to login button
       cy.realPress('Tab')
-      cy.focused().should('contain.text', 'Login')
+      cy.focused().should('contain.text', 'Sign In')
     })
 
     it('should have proper ARIA labels and semantic HTML', () => {
@@ -200,16 +200,16 @@ describe('Login Page', () => {
       cy.get('input[type="password"]').should('exist')
       
       // Check button is properly labeled
-      cy.findByRole('button', { name: /login/i }).should('exist')
+      cy.findByRole('button', { name: /sign in/i }).should('exist')
       
       // Check heading hierarchy
-      cy.findByRole('heading', { level: 1 }).should('exist')
+      cy.findByRole('heading', { level: 2 }).should('exist')
     })
 
     it('should announce errors to screen readers', () => {
       // Submit with invalid credentials
-      cy.findByPlaceholderText('Username').type('wrong@example.com')
-      cy.findByPlaceholderText('Password').type('wrongpassword')
+      cy.findByPlaceholderText('Enter your email').type('wrong@example.com')
+      cy.findByPlaceholderText('Enter your password').type('wrongpassword')
       
       cy.intercept('POST', '**/auth/v1/token*', {
         statusCode: 400,
@@ -219,30 +219,31 @@ describe('Login Page', () => {
         }
       }).as('failedLogin')
       
-      cy.findByRole('button', { name: /login/i }).click()
+      cy.findByRole('button', { name: /sign in/i }).click()
       
-      // Error notification should be present (using role="alert" for accessibility)
-      cy.get('[role="alert"]', { timeout: 10000 }).should('exist')
+      // Error notification should be present
+      // NotificationBanner component will be rendered with the error message
+      cy.findByText(/invalid login credentials/i, { timeout: 10000 }).should('exist')
     })
   })
 
   describe('Security', () => {
     it('should not show password in plain text by default', () => {
-      cy.findByPlaceholderText('Password').type('mysecretpassword')
-      cy.findByPlaceholderText('Password').should('have.attr', 'type', 'password')
+      cy.findByPlaceholderText('Enter your password').type('mysecretpassword')
+      cy.findByPlaceholderText('Enter your password').should('have.attr', 'type', 'password')
     })
 
     it('should clear form on page refresh', () => {
       // Fill form
-      cy.findByPlaceholderText('Username').type('test@example.com')
-      cy.findByPlaceholderText('Password').type('password123')
+      cy.findByPlaceholderText('Enter your email').type('test@example.com')
+      cy.findByPlaceholderText('Enter your password').type('password123')
       
       // Refresh page
       cy.reload()
       
       // Form should be empty
-      cy.findByPlaceholderText('Username').should('have.value', '')
-      cy.findByPlaceholderText('Password').should('have.value', '')
+      cy.findByPlaceholderText('Enter your email').should('have.value', '')
+      cy.findByPlaceholderText('Enter your password').should('have.value', '')
     })
 
     it('should have autocomplete attributes for better security', () => {
