@@ -26,7 +26,8 @@ export default function Header() {
     else setGreeting('Good Evening');
   }, []);
 
-  const firstName = user?.email?.split('@')[0] || 'User';
+  // Get firstname from user metadata, fallback to email if not available
+  const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   return (

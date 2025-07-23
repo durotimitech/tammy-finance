@@ -1,39 +1,34 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { Eye, EyeOff } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
-import { useFormState, useFormStatus } from 'react-dom'
-import { signup } from '../../../lib/auth/signup'
-import { Button } from '@/components/ui/Button'
-import { NotificationBanner } from '@/components/ui/NotificationBanner'
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
+import { signup } from '../../../lib/auth/signup';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { NotificationBanner } from '@/components/ui/NotificationBanner';
 
 function SubmitButton() {
-  const { pending } = useFormStatus()
-  
+  const { pending } = useFormStatus();
+
   return (
-    <Button
-      type="submit"
-      disabled={pending}
-      variant="default"
-      size="lg"
-      className="w-full"
-    >
+    <Button type="submit" disabled={pending} variant="default" size="lg" className="w-full">
       {pending ? 'Creating account...' : 'Sign Up'}
     </Button>
-  )
+  );
 }
 
 export default function SignupPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [state, formAction] = useFormState(signup, null)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [state, formAction] = useFormState(signup, null);
 
   return (
     <div className="flex min-h-screen">
       {/* Left side - Gradient Background */}
-      <motion.div 
+      <motion.div
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -42,28 +37,34 @@ export default function SignupPage() {
         {/* Gradient waves background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-blue-600 opacity-80" />
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
               radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
               radial-gradient(ellipse at bottom right, rgba(255, 119, 198, 0.3) 0%, transparent 50%)
-            `
-          }} />
+            `,
+            }}
+          />
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <div>
             <p className="text-sm uppercase tracking-wider mb-8 opacity-80">Join Today</p>
           </div>
-          
+
           <div>
             <h1 className="text-6xl font-light leading-tight mb-8">
-              Start Your<br />
-              Financial<br />
+              Start Your
+              <br />
+              Financial
+              <br />
               Journey
             </h1>
             <p className="text-lg opacity-90 max-w-md">
-              Take control of your finances and watch your wealth grow<br />
+              Take control of your finances and watch your wealth grow
+              <br />
               with our intuitive tracking tools.
             </p>
           </div>
@@ -71,7 +72,7 @@ export default function SignupPage() {
       </motion.div>
 
       {/* Right side - Signup Form */}
-      <motion.div 
+      <motion.div
         className="w-full lg:w-1/2 flex items-center justify-center px-8 py-12 bg-gray-50"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -85,26 +86,28 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold text-center mb-2">
-            Create Account
-          </h2>
-          <p className="text-gray-600 text-center mb-8">
-            Enter your details to get started
-          </p>
+          <h2 className="text-3xl font-bold text-center mb-2">Create Account</h2>
+          <p className="text-gray-600 text-center mb-8">Enter your details to get started</p>
 
           <form action={formAction} className="space-y-6">
+            <div>
+              <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 mb-2">
+                First Name
+              </label>
+              <Input
+                id="firstname"
+                name="firstname"
+                type="text"
+                placeholder="Enter your first name"
+                required
+              />
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
-              />
+              <Input id="email" name="email" type="email" placeholder="Enter your email" required />
             </div>
 
             <div>
@@ -112,13 +115,13 @@ export default function SignupPage() {
                 Password
               </label>
               <div className="relative">
-                <input
+                <Input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Create a password"
                   required
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+                  className="pr-12"
                 />
                 <Button
                   type="button"
@@ -127,27 +130,26 @@ export default function SignupPage() {
                   size="sm"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </Button>
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
-                <input
+                <Input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
                   required
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+                  className="pr-12"
                 />
                 <Button
                   type="button"
@@ -166,17 +168,13 @@ export default function SignupPage() {
             </div>
 
             {state?.error && (
-              <NotificationBanner 
-                message={state.error} 
-                type="error" 
-                onClose={() => {}} 
-              />
+              <NotificationBanner message={state.error} type="error" onClose={() => {}} />
             )}
             {state?.success && (
-              <NotificationBanner 
-                message="Account created! Please check your email to confirm." 
-                type="success" 
-                onClose={() => {}} 
+              <NotificationBanner
+                message="Account created! Please check your email to confirm."
+                type="success"
+                onClose={() => {}}
               />
             )}
 
@@ -184,10 +182,13 @@ export default function SignupPage() {
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-8">
-            Already have an account? <Link href="/auth/login" className="font-medium hover:underline">Sign In</Link>
+            Already have an account?{' '}
+            <Link href="/auth/login" className="font-medium hover:underline">
+              Sign In
+            </Link>
           </p>
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

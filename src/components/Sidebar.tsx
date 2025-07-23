@@ -1,15 +1,10 @@
 'use client';
 
-import { LayoutDashboard, HelpCircle, Settings } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navigation = [{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }];
-
-const bottomNav = [
-  { name: 'Help Center', href: '/dashboard/help', icon: HelpCircle },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
-];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -47,31 +42,6 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-
-      {/* Bottom Navigation */}
-      <div className="px-4 pb-6">
-        <ul className="space-y-1">
-          {bottomNav.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <li key={item.name}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.name}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
     </div>
   );
 }
