@@ -1,73 +1,76 @@
 'use client';
 
-import {
-  LayoutDashboard,
-  CreditCard,
-  Wallet,
-  TrendingUp,
-  FileText,
-  MessageSquare,
-  Settings,
-  LogOut,
-} from 'lucide-react';
+import { LayoutDashboard, HelpCircle, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Cards', href: '/cards', icon: CreditCard },
-  { name: 'Wallet', href: '/wallet', icon: Wallet },
-  { name: 'Transactions', href: '/transactions', icon: TrendingUp },
-  { name: 'Statistics', href: '/statistics', icon: FileText },
-  { name: 'Message', href: '/message', icon: MessageSquare },
+const navigation = [{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }];
+
+const bottomNav = [
+  { name: 'Help Center', href: '/dashboard/help', icon: HelpCircle },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r">
+    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen">
       {/* Logo */}
-      <div className="flex h-16 items-center px-6">
-        <span className="text-2xl font-bold text-blue-600">NetworthTracker</span>
+      <div className="p-6">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-semibold font-pirata">tammy</span>
+        </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.name}
-            </Link>
-          );
-        })}
+      {/* Main Navigation */}
+      <nav className="flex-1 px-4">
+        <ul className="space-y-1">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-gray-100 text-gray-900 font-medium'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
-      {/* Bottom section */}
-      <div className="space-y-1 p-3 border-t">
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-        >
-          <Settings className="h-5 w-5" />
-          Settings
-        </Link>
-        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-          <LogOut className="h-5 w-5" />
-          Log out
-        </button>
+      {/* Bottom Navigation */}
+      <div className="px-4 pb-6">
+        <ul className="space-y-1">
+          {bottomNav.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-gray-100 text-gray-900 font-medium'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
