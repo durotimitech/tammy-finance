@@ -169,7 +169,7 @@ export default function LoginPage() {
             <SubmitButton />
           </form>
           <p className="text-center text-sm text-gray-600 mt-8">
-            Don&apos;t have an account? <Link href="/signup" className="font-medium hover:underline">Sign Up</Link>
+            Don&apos;t have an account? <Link href="/auth/signup" className="font-medium hover:underline">Sign Up</Link>
           </p>
         </div>
       </motion.div>
