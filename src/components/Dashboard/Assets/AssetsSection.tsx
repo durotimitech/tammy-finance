@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +12,7 @@ export default function AssetsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     assetId: string | null;
@@ -56,6 +57,49 @@ export default function AssetsSection() {
     } catch (error) {
       console.error('Error adding asset:', error);
     }
+  };
+
+  const handleUpdateAsset = async (data: AssetFormData) => {
+    if (!editingAsset) return;
+
+    try {
+      const response = await fetch('/api/assets', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...data, id: editingAsset.id }),
+      });
+
+      if (response.ok) {
+        const { asset } = await response.json();
+        setAssets(assets.map((a) => (a.id === asset.id ? asset : a)));
+        setIsModalOpen(false);
+        setEditingAsset(null);
+      } else {
+        console.error('Failed to update asset');
+      }
+    } catch (error) {
+      console.error('Error updating asset:', error);
+    }
+  };
+
+  const handleSubmit = async (data: AssetFormData) => {
+    if (editingAsset) {
+      await handleUpdateAsset(data);
+    } else {
+      await handleAddAsset(data);
+    }
+  };
+
+  const handleEdit = (asset: Asset) => {
+    setEditingAsset(asset);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingAsset(null);
   };
 
   const handleDeleteAsset = async () => {
@@ -154,6 +198,13 @@ export default function AssetsSection() {
                     <div className="flex items-center gap-3">
                       <p className="font-semibold text-gray-900">{formatCurrency(asset.value)}</p>
                       <button
+                        onClick={() => handleEdit(asset)}
+                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                        data-testid={`edit-asset-${asset.id}`}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() => setDeleteConfirmation({ isOpen: true, assetId: asset.id })}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
                         data-testid={`delete-asset-${asset.id}`}
@@ -171,8 +222,18 @@ export default function AssetsSection() {
 
       <AddAssetModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAddAsset}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmit}
+        initialData={
+          editingAsset
+            ? {
+                name: editingAsset.name,
+                category: editingAsset.category,
+                value: editingAsset.value,
+              }
+            : undefined
+        }
+        isEditing={!!editingAsset}
       />
 
       <ConfirmationModal

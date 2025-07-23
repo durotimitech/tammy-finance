@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddLiabilityModal from './AddLiabilityModal';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +21,7 @@ export default function LiabilitiesSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingLiability, setEditingLiability] = useState<Liability | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     liabilityId: string | null;
@@ -65,6 +66,53 @@ export default function LiabilitiesSection() {
     } catch (error) {
       console.error('Error adding liability:', error);
     }
+  };
+
+  const handleUpdateLiability = async (liabilityData: {
+    name: string;
+    category: string;
+    amount_owed: number;
+  }) => {
+    if (!editingLiability) return;
+
+    try {
+      const response = await fetch('/api/liabilities', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...liabilityData, id: editingLiability.id }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update liability');
+
+      const { liability } = await response.json();
+      setLiabilities(liabilities.map((l) => (l.id === liability.id ? liability : l)));
+      setIsModalOpen(false);
+      setEditingLiability(null);
+    } catch (error) {
+      console.error('Error updating liability:', error);
+    }
+  };
+
+  const handleSubmit = async (liabilityData: {
+    name: string;
+    category: string;
+    amount_owed: number;
+  }) => {
+    if (editingLiability) {
+      await handleUpdateLiability(liabilityData);
+    } else {
+      await handleAddLiability(liabilityData);
+    }
+  };
+
+  const handleEdit = (liability: Liability) => {
+    setEditingLiability(liability);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingLiability(null);
   };
 
   const handleDeleteLiability = async () => {
@@ -163,6 +211,13 @@ export default function LiabilitiesSection() {
                         {formatCurrency(liability.amount_owed)}
                       </p>
                       <button
+                        onClick={() => handleEdit(liability)}
+                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                        data-testid={`edit-liability-${liability.id}`}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
                         onClick={() =>
                           setDeleteConfirmation({ isOpen: true, liabilityId: liability.id })
                         }
@@ -183,8 +238,18 @@ export default function LiabilitiesSection() {
       {isModalOpen && (
         <AddLiabilityModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleAddLiability}
+          onClose={handleCloseModal}
+          onSubmit={handleSubmit}
+          initialData={
+            editingLiability
+              ? {
+                  name: editingLiability.name,
+                  category: editingLiability.category,
+                  amount_owed: editingLiability.amount_owed,
+                }
+              : undefined
+          }
+          isEditing={!!editingLiability}
         />
       )}
 

@@ -80,6 +80,54 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const supabase = await createClient();
+
+    // Check if user is authenticated
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Parse request body
+    const body = await request.json();
+    const { id, name, category, value } = body;
+
+    // Validate input
+    if (!id || !name || !category || value === undefined || value < 0) {
+      return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });
+    }
+
+    // Update asset
+    const { data: asset, error } = await supabase
+      .from('assets')
+      .update({
+        name,
+        category,
+        value,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating asset:', error);
+      return NextResponse.json({ error: 'Failed to update asset' }, { status: 500 });
+    }
+
+    return NextResponse.json({ asset });
+  } catch (error) {
+    console.error('Error in PUT /api/assets:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const supabase = await createClient();

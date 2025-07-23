@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AssetCategory, AssetFormData } from '@/types/financial';
@@ -10,28 +10,53 @@ interface AddAssetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: AssetFormData) => void;
+  initialData?: AssetFormData;
+  isEditing?: boolean;
 }
 
-export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetModalProps) {
-  const [formData, setFormData] = useState<AssetFormData>({
-    name: '',
-    category: AssetCategory.SAVINGS_ACCOUNT,
-    value: 0,
-  });
-  const [valueInput, setValueInput] = useState('');
+export default function AddAssetModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditing = false,
+}: AddAssetModalProps) {
+  const [formData, setFormData] = useState<AssetFormData>(
+    initialData || {
+      name: '',
+      category: AssetCategory.SAVINGS_ACCOUNT,
+      value: 0,
+    },
+  );
+  const [valueInput, setValueInput] = useState(initialData?.value?.toString() || '');
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+      setValueInput(initialData.value.toString());
+    } else {
+      setFormData({
+        name: '',
+        category: AssetCategory.SAVINGS_ACCOUNT,
+        value: 0,
+      });
+      setValueInput('');
+    }
+  }, [initialData]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
-    setFormData({
-      name: '',
-      category: AssetCategory.SAVINGS_ACCOUNT,
-      value: 0,
-    });
-    setValueInput('');
-    onClose();
+    if (!isEditing) {
+      setFormData({
+        name: '',
+        category: AssetCategory.SAVINGS_ACCOUNT,
+        value: 0,
+      });
+      setValueInput('');
+    }
   };
 
   const assetCategories = Object.values(AssetCategory);
@@ -40,7 +65,7 @@ export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetMod
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Add New Asset</h2>
+          <h2 className="text-xl font-semibold">{isEditing ? 'Edit Asset' : 'Add New Asset'}</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -145,7 +170,7 @@ export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetMod
               Cancel
             </Button>
             <Button type="submit" variant="default" className="flex-1">
-              Add Asset
+              {isEditing ? 'Update Asset' : 'Add Asset'}
             </Button>
           </div>
         </form>

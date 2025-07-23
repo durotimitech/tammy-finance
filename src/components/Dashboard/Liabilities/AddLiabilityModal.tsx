@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LiabilityCategory } from '@/types/financial';
@@ -10,14 +10,38 @@ interface AddLiabilityModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (liability: { name: string; category: string; amount_owed: number }) => void;
+  initialData?: { name: string; category: string; amount_owed: number };
+  isEditing?: boolean;
 }
 
-export default function AddLiabilityModal({ isOpen, onClose, onSubmit }: AddLiabilityModalProps) {
+export default function AddLiabilityModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isEditing = false,
+}: AddLiabilityModalProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    category: LiabilityCategory.CREDIT_CARD,
-    amount_owed: '',
+    name: initialData?.name || '',
+    category: initialData?.category || LiabilityCategory.CREDIT_CARD,
+    amount_owed: initialData?.amount_owed?.toString() || '',
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name,
+        category: initialData.category,
+        amount_owed: initialData.amount_owed.toString(),
+      });
+    } else {
+      setFormData({
+        name: '',
+        category: LiabilityCategory.CREDIT_CARD,
+        amount_owed: '',
+      });
+    }
+  }, [initialData]);
 
   if (!isOpen) return null;
 
@@ -28,19 +52,22 @@ export default function AddLiabilityModal({ isOpen, onClose, onSubmit }: AddLiab
       category: formData.category,
       amount_owed: parseFloat(formData.amount_owed),
     });
-    setFormData({
-      name: '',
-      category: LiabilityCategory.CREDIT_CARD,
-      amount_owed: '',
-    });
-    onClose();
+    if (!isEditing) {
+      setFormData({
+        name: '',
+        category: LiabilityCategory.CREDIT_CARD,
+        amount_owed: '',
+      });
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Add New Liability</h2>
+          <h2 className="text-xl font-semibold">
+            {isEditing ? 'Edit Liability' : 'Add New Liability'}
+          </h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -112,7 +139,7 @@ export default function AddLiabilityModal({ isOpen, onClose, onSubmit }: AddLiab
               Cancel
             </Button>
             <Button type="submit" variant="default" className="flex-1">
-              Add Liability
+              {isEditing ? 'Update Liability' : 'Add Liability'}
             </Button>
           </div>
         </form>
