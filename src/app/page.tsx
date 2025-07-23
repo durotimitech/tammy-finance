@@ -6,9 +6,10 @@ import { Calendar, Clock, Target, Sparkles, ChevronRight, Star, Check, ArrowRigh
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
+  const supabase = createClient()
   const [session, setSession] = useState<Session | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
