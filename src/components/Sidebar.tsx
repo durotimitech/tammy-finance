@@ -1,10 +1,13 @@
 'use client';
 
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navigation = [{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }];
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
