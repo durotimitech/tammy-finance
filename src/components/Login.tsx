@@ -7,10 +7,10 @@ import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { NotificationBanner } from "@/components/ui/NotificationBanner"
-import { supabase } from "@/lib/supabaseClient"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/server"
 
-export function LoginForm({
+export async function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -20,14 +20,7 @@ export function LoginForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-
-  // Check if Supabase is properly initialized
-  useEffect(() => {
-    if (!supabase) {
-      setError('Authentication service is not configured. Please check your environment variables.')
-      console.error('Supabase client is not initialized')
-    }
-  }, [])
+  const supabase = await createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
