@@ -1,16 +1,25 @@
 'use client';
 
-import { LayoutDashboard, Wallet } from 'lucide-react';
+import { LayoutDashboard, Wallet, LogOut, CreditCard } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
+  { name: 'Liabilities', href: '/dashboard/liabilities', icon: CreditCard },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/auth/login');
+  };
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen">
@@ -45,6 +54,17 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
+
+      {/* Logout Button */}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:cursor-pointer"
+        >
+          <LogOut className="w-5 h-5" />
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import AssetsValueCard from '@/components/Dashboard/AssetsValueCard';
+import LiabilitiesValueCard from '@/components/Dashboard/LiabilitiesValueCard';
+import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 
@@ -17,22 +20,24 @@ export default function DashboardPage() {
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto space-y-8">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
-                <h3 className="text-sm text-gray-600 font-medium">Net Worth</h3>
-                <p className="text-3xl text-gray-900 mb-2">$37,572.09</p>
-                <p className="text-sm text-gray-500">
-                  You&apos;ve increased your balance by{' '}
-                  <span className="text-green-600">+$3,712.43 this month</span>
-                </p>
-              </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-7xl mx-auto space-y-8"
+          >
+            {/* Net Worth Summary */}
+            <NetWorthSummary />
 
+            {/* Assets and Liabilities Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Assets Value Card */}
               <AssetsValueCard />
+
+              {/* Liabilities Value Card */}
+              <LiabilitiesValueCard />
             </div>
-          </div>
+          </motion.div>
         </main>
       </div>
     </div>

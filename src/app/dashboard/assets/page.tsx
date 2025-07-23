@@ -3,6 +3,7 @@
 import AssetsSection from '@/components/Dashboard/Assets/AssetsSection';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
+import DashboardHeaderText from '@/components/ui/DashboardHeaderText';
 
 export default function AssetsPage() {
   return (
@@ -18,7 +19,7 @@ export default function AssetsPage() {
         {/* Assets Content */}
         <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-6">Assets Management</h1>
+            <DashboardHeaderText title="Assets Management" />
             <AssetsSection />
           </div>
         </main>

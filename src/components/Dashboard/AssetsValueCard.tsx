@@ -1,13 +1,15 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AssetsValueCard() {
   const [totalValue, setTotalValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     fetchAssetsTotal();
@@ -39,12 +41,20 @@ export default function AssetsValueCard() {
     }).format(value);
   };
 
+  const handleClick = () => {
+    router.push('/dashboard/assets');
+  };
+
   return (
-    <Link href="/dashboard/assets" className="block">
-      <div
-        className="bg-white rounded-xl p-6 border hover:shadow-md transition-shadow cursor-pointer"
-        style={{ borderColor: '#e5e7eb' }}
-      >
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleClick}
+      className="bg-white rounded-xl p-6 border cursor-pointer"
+      style={{ borderColor: '#e5e7eb' }}
+      data-testid="total-assets-card"
+    >
+      <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm text-gray-600 font-medium">Total Assets</h3>
           <TrendingUp className="w-5 h-5 text-green-500" />
@@ -63,6 +73,6 @@ export default function AssetsValueCard() {
           </>
         )}
       </div>
-    </Link>
+    </motion.div>
   );
 }
