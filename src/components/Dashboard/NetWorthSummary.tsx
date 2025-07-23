@@ -4,11 +4,13 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function NetWorthSummary() {
   const [netWorth, setNetWorth] = useState(0);
   const [loading, setLoading] = useState(true);
+  const animatedNetWorth = useAnimatedNumber(netWorth, 1.5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,12 +68,12 @@ export default function NetWorthSummary() {
             </div>
           ) : (
             <>
-              <p
+              <motion.p
                 className={`text-3xl mb-2 font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}
                 data-testid="net-worth-value"
               >
-                {formatCurrency(netWorth)}
-              </p>
+                {formatCurrency(animatedNetWorth)}
+              </motion.p>
             </>
           )}
         </div>

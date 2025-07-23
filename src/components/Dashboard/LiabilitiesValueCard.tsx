@@ -5,12 +5,14 @@ import { TrendingDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function LiabilitiesValueCard() {
   const [totalValue, setTotalValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const animatedValue = useAnimatedNumber(totalValue, 1.2);
 
   useEffect(() => {
     const fetchLiabilities = async () => {
@@ -56,9 +58,12 @@ export default function LiabilitiesValueCard() {
             </div>
           ) : (
             <>
-              <p className="text-3xl text-gray-900 mb-2" data-testid="total-liabilities-value">
-                {formatCurrency(totalValue)}
-              </p>
+              <motion.p
+                className="text-3xl text-gray-900 mb-2"
+                data-testid="total-liabilities-value"
+              >
+                {formatCurrency(animatedValue)}
+              </motion.p>
               <p className="text-sm text-gray-500">Current value of all your liabilities</p>
             </>
           )}

@@ -5,12 +5,14 @@ import { TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function AssetsValueCard() {
   const [totalValue, setTotalValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const animatedValue = useAnimatedNumber(totalValue, 1.2);
 
   useEffect(() => {
     fetchAssetsTotal();
@@ -60,7 +62,9 @@ export default function AssetsValueCard() {
           </>
         ) : (
           <>
-            <p className="text-3xl text-gray-900 mb-2">{formatCurrency(totalValue)}</p>
+            <motion.p className="text-3xl text-gray-900 mb-2">
+              {formatCurrency(animatedValue)}
+            </motion.p>
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">Current value of all your assets</p>
             </div>
