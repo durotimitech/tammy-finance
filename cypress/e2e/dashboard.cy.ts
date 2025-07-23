@@ -87,7 +87,8 @@ describe('Dashboard Page', () => {
     cy.get('.animate-pulse').should('be.visible');
 
     // Wait for data to load
-    cy.wait(['@getAssets', '@getLiabilities']);
+    cy.wait('@getAssets');
+    cy.wait('@getLiabilities');
 
     // Skeleton should be gone
     cy.get('.animate-pulse').should('not.exist');

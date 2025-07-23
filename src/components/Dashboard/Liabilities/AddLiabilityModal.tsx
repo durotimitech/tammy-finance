@@ -9,14 +9,14 @@ import { LiabilityCategory } from '@/types/financial';
 
 interface AddLiabilityModalProps {
   onClose: () => void;
-  onAdd: (liability: { name: string; category: string; amount: number }) => void;
+  onAdd: (liability: { name: string; category: string; amount_owed: number }) => void;
 }
 
 export default function AddLiabilityModal({ onClose, onAdd }: AddLiabilityModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     category: LiabilityCategory.CREDIT_CARD,
-    amount: '',
+    amount_owed: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -24,7 +24,7 @@ export default function AddLiabilityModal({ onClose, onAdd }: AddLiabilityModalP
     onAdd({
       name: formData.name,
       category: formData.category,
-      amount: parseFloat(formData.amount),
+      amount_owed: parseFloat(formData.amount_owed),
     });
   };
 
@@ -83,15 +83,15 @@ export default function AddLiabilityModal({ onClose, onAdd }: AddLiabilityModalP
             </div>
 
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="amount_owed" className="block text-sm font-medium text-gray-700 mb-1">
                 Amount Owed
               </label>
               <Input
-                id="amount"
+                id="amount_owed"
                 type="number"
                 step="0.01"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                value={formData.amount_owed}
+                onChange={(e) => setFormData({ ...formData, amount_owed: e.target.value })}
                 placeholder="0.00"
                 required
               />

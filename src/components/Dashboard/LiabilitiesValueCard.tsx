@@ -18,7 +18,7 @@ export default function LiabilitiesValueCard() {
         if (!response.ok) throw new Error('Failed to fetch liabilities');
         const data = await response.json();
         const total = data.liabilities.reduce(
-          (sum: number, liability: { amount: number }) => sum + liability.amount,
+          (sum: number, liability: { amount_owed: number }) => sum + liability.amount_owed,
           0,
         );
         setTotalValue(total);

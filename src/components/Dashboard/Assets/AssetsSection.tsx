@@ -149,7 +149,7 @@ export default function AssetsSection() {
                       <p className="font-semibold text-gray-900">{formatCurrency(asset.value)}</p>
                       <button
                         onClick={() => handleDeleteAsset(asset.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

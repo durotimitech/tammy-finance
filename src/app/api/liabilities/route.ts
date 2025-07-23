@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, category, amount } = body;
+    const { name, category, amount_owed } = body;
 
-    if (!name || !category || amount === undefined) {
+    if (!name || !category || amount_owed === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       .insert({
         name,
         category,
-        amount: parseFloat(amount),
+        amount_owed: parseFloat(amount_owed),
         user_id: user.id,
       })
       .select()
@@ -89,9 +89,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, name, category, amount } = body;
+    const { id, name, category, amount_owed } = body;
 
-    if (!id || !name || !category || amount === undefined) {
+    if (!id || !name || !category || amount_owed === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest) {
       .update({
         name,
         category,
-        amount: parseFloat(amount),
+        amount_owed: parseFloat(amount_owed),
       })
       .eq('id', id)
       .eq('user_id', user.id)

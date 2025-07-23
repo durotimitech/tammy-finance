@@ -24,12 +24,13 @@ export default function NetWorthSummary() {
         const assetsData = await assetsRes.json();
         const liabilitiesData = await liabilitiesRes.json();
 
-        const totalAssets = assetsData.assets.reduce(
-          (sum: number, asset: { value: number }) => sum + asset.value,
+        const totalAssets = (assetsData.assets || []).reduce(
+          (sum: number, asset: { value: number }) => sum + (Number(asset.value) || 0),
           0,
         );
-        const totalLiabilities = liabilitiesData.liabilities.reduce(
-          (sum: number, liability: { amount: number }) => sum + liability.amount,
+        const totalLiabilities = (liabilitiesData.liabilities || []).reduce(
+          (sum: number, liability: { amount_owed: number }) =>
+            sum + (Number(liability.amount_owed) || 0),
           0,
         );
 
@@ -58,7 +59,7 @@ export default function NetWorthSummary() {
         <div className="flex-1">
           <h3 className="text-sm text-gray-600 font-medium mb-2">Net Worth</h3>
           {loading ? (
-            <div>
+            <div data-testid="net-worth-loading">
               <Skeleton className="h-8 w-40 mb-2" />
               <Skeleton className="h-4 w-48" />
             </div>
@@ -79,9 +80,9 @@ export default function NetWorthSummary() {
         </div>
         {!loading &&
           (isPositive ? (
-            <TrendingUp className="w-8 h-8 text-green-500" />
+            <TrendingUp className="w-8 h-8 text-green-500" data-testid="trending-up-icon" />
           ) : (
-            <TrendingDown className="w-8 h-8 text-red-500" />
+            <TrendingDown className="w-8 h-8 text-red-500" data-testid="trending-down-icon" />
           ))}
       </div>
     </motion.div>

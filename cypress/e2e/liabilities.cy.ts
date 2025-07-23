@@ -32,7 +32,7 @@ describe('Liabilities Page', () => {
         id: '1',
         name: 'Chase Credit Card',
         category: 'Credit Card',
-        amount: 2500,
+        amount_owed: 2500,
         user_id: 'test-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -41,7 +41,7 @@ describe('Liabilities Page', () => {
         id: '2',
         name: 'Home Mortgage',
         category: 'Mortgage',
-        amount: 250000,
+        amount_owed: 250000,
         user_id: 'test-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -73,7 +73,7 @@ describe('Liabilities Page', () => {
     cy.contains('h2', 'Add New Liability').should('be.visible');
     cy.get('input[id="name"]').should('be.visible');
     cy.get('select[id="category"]').should('be.visible');
-    cy.get('input[id="amount"]').should('be.visible');
+    cy.get('input[id="amount_owed"]').should('be.visible');
     cy.contains('button', 'Cancel').should('be.visible');
     cy.contains('button', 'Add Liability').should('be.visible');
   });
@@ -85,7 +85,7 @@ describe('Liabilities Page', () => {
         id: 'new-1',
         name: 'Student Loan',
         category: 'Student Loan',
-        amount: 30000,
+        amount_owed: 30000,
         user_id: 'test-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -101,7 +101,7 @@ describe('Liabilities Page', () => {
     // Fill form
     cy.get('input[id="name"]').type('Student Loan');
     cy.get('select[id="category"]').select('Student Loan');
-    cy.get('input[id="amount"]').type('30000');
+    cy.get('input[id="amount_owed"]').type('30000');
 
     // Submit
     cy.get('form').contains('button', 'Add Liability').click();
@@ -121,7 +121,7 @@ describe('Liabilities Page', () => {
         id: '1',
         name: 'Test Liability',
         category: 'Credit Card',
-        amount: 1000,
+        amount_owed: 1000,
         user_id: 'test-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -156,7 +156,7 @@ describe('Liabilities Page', () => {
         id: '1',
         name: 'Test Liability',
         category: 'Credit Card',
-        amount: 1000,
+        amount_owed: 1000,
         user_id: 'test-user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

@@ -11,7 +11,7 @@ interface Liability {
   id: string;
   name: string;
   category: string;
-  amount: number;
+  amount_owed: number;
   user_id: string;
   created_at: string;
   updated_at: string;
@@ -42,7 +42,7 @@ export default function LiabilitiesSection() {
   const handleAddLiability = async (liabilityData: {
     name: string;
     category: string;
-    amount: number;
+    amount_owed: number;
   }) => {
     try {
       const response = await fetch('/api/liabilities', {
@@ -76,7 +76,7 @@ export default function LiabilitiesSection() {
     }
   };
 
-  const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount, 0);
+  const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount_owed, 0);
 
   const groupedLiabilities = liabilities.reduce(
     (acc, liability) => {
@@ -133,7 +133,7 @@ export default function LiabilitiesSection() {
         <>
           <div className="mb-6">
             <p className="text-sm text-gray-600 mb-1">Total Liabilities Amount</p>
-            <p className="text-2xl font-bold">
+            <p className="text-2xl">
               $
               {totalLiabilities.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
@@ -165,20 +165,17 @@ export default function LiabilitiesSection() {
                       <div className="flex items-center gap-3">
                         <p className="font-semibold">
                           $
-                          {liability.amount.toLocaleString('en-US', {
+                          {liability.amount_owed.toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </p>
-                        <Button
+                        <button
                           onClick={() => handleDeleteLiability(liability.id)}
-                          variant="default"
-                          size="sm"
-                          className="bg-red-50 text-red-600 hover:bg-red-100 border-none"
-                          data-testid={`delete-liability-${liability.id}`}
+                          className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </Button>
+                        </button>
                       </div>
                     </motion.div>
                   ))}
