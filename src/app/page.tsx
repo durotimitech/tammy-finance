@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import type { Session } from "@supabase/supabase-js";
-import { motion } from "framer-motion";
-import { Calendar, Clock, Target, Sparkles, ChevronRight, Star, Check, ArrowRight, Menu, X } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { createClient } from "@/lib/supabase/client";
+import type { Session } from '@supabase/supabase-js';
+import { motion } from 'framer-motion';
+import { Calendar, Clock, Target, Sparkles, Star, Check, ArrowRight, Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
-  const supabase = createClient()
+  const supabase = createClient();
   const [session, setSession] = useState<Session | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -21,7 +21,7 @@ export default function Home() {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -36,13 +36,33 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-[#2D2D2D]">Ellie</span>
           </div>
-          
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-10">
-            <Link href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Features</Link>
-            <Link href="#how-it-works" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">How it works</Link>
-            <Link href="#pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Pricing</Link>
-            <Link href="#reviews" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Reviews</Link>
+            <Link
+              href="#features"
+              className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+            >
+              Features
+            </Link>
+            <Link
+              href="#how-it-works"
+              className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+            >
+              How it works
+            </Link>
+            <Link
+              href="#pricing"
+              className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="#reviews"
+              className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+            >
+              Reviews
+            </Link>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -50,27 +70,33 @@ export default function Home() {
             {session ? (
               <div className="flex items-center gap-4">
                 <Link href="/dashboard">
-                  <Button variant="ghost" className="text-[#6B6B6B]">Dashboard</Button>
+                  <Button className="text-[#6B6B6B] bg-transparent hover:bg-gray-100">
+                    Dashboard
+                  </Button>
                 </Link>
-                <Button onClick={handleLogout} className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-6">Logout</Button>
+                <Button
+                  onClick={handleLogout}
+                  className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-6"
+                >
+                  Logout
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-4">
                 <Link href="/auth/login">
-                  <Button variant="ghost" className="text-[#6B6B6B]">Login</Button>
+                  <Button className="bg-transparent hover:bg-gray-100 text-[#6B6B6B]">Login</Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-6">Get started</Button>
+                  <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-6">
+                    Get started
+                  </Button>
                 </Link>
               </div>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -79,25 +105,56 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-b">
             <div className="flex flex-col gap-4 pt-4">
-              <Link href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Features</Link>
-              <Link href="#how-it-works" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">How it works</Link>
-              <Link href="#pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Pricing</Link>
-              <Link href="#reviews" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium">Reviews</Link>
+              <Link
+                href="#features"
+                className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+              >
+                Features
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+              >
+                How it works
+              </Link>
+              <Link
+                href="#pricing"
+                className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="#reviews"
+                className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors text-sm font-medium"
+              >
+                Reviews
+              </Link>
               <div className="pt-4 flex flex-col gap-2">
                 {session ? (
                   <>
                     <Link href="/dashboard">
-                      <Button variant="ghost" className="w-full text-[#6B6B6B]">Dashboard</Button>
+                      <Button className="w-full bg-transparent hover:bg-gray-100 text-[#6B6B6B]">
+                        Dashboard
+                      </Button>
                     </Link>
-                    <Button onClick={handleLogout} className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full">Logout</Button>
+                    <Button
+                      onClick={handleLogout}
+                      className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full"
+                    >
+                      Logout
+                    </Button>
                   </>
                 ) : (
                   <>
                     <Link href="/auth/login">
-                      <Button variant="ghost" className="w-full text-[#6B6B6B]">Login</Button>
+                      <Button className="w-full bg-transparent hover:bg-gray-100 text-[#6B6B6B]">
+                        Login
+                      </Button>
                     </Link>
                     <Link href="/signup">
-                      <Button className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full">Get started</Button>
+                      <Button className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full">
+                        Get started
+                      </Button>
                     </Link>
                   </>
                 )}
@@ -122,22 +179,22 @@ export default function Home() {
                 <br />
                 planner
               </h1>
-              
+
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Ellie is your AI-powered daily planner that helps you get organized and stay productive.
+                Ellie is your AI-powered daily planner that helps you get organized and stay
+                productive.
               </p>
-              
+
               <div className="flex flex-wrap gap-4 mb-12">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
                 >
                   Get started for free
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-[#E5E5E3] text-[#2D2D2D] hover:bg-[#F5F5F3] rounded-full px-8 py-6 text-base font-medium"
+                <Button
+                  size="lg"
+                  className="bg-transparent border border-[#E5E5E3] text-[#2D2D2D] hover:bg-[#F5F5F3] rounded-full px-8 py-6 text-base font-medium"
                 >
                   Watch demo
                 </Button>
@@ -146,7 +203,10 @@ export default function Home() {
               <div className="flex items-center gap-6">
                 <div className="flex -space-x-2">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white" />
+                    <div
+                      key={i}
+                      className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white"
+                    />
                   ))}
                 </div>
                 <div>
@@ -173,10 +233,10 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  <motion.div 
+                  <motion.div
                     className="bg-[#F5F5F3] rounded-2xl p-4"
                     whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-purple-400 mt-0.5" />
@@ -188,10 +248,10 @@ export default function Home() {
                     </div>
                   </motion.div>
 
-                  <motion.div 
+                  <motion.div
                     className="bg-[#F5F5F3] rounded-2xl p-4"
                     whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-blue-400 mt-0.5" />
@@ -202,10 +262,10 @@ export default function Home() {
                     </div>
                   </motion.div>
 
-                  <motion.div 
+                  <motion.div
                     className="bg-[#F5F5F3] rounded-2xl p-4"
                     whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-green-400 mt-0.5" />
@@ -216,10 +276,10 @@ export default function Home() {
                     </div>
                   </motion.div>
 
-                  <motion.div 
+                  <motion.div
                     className="bg-[#F5F5F3] rounded-2xl p-4 opacity-60"
                     whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
                       <div className="w-5 h-5 rounded-full bg-orange-400 mt-0.5" />
@@ -268,42 +328,45 @@ export default function Home() {
             <motion.div
               className="bg-[#F5F5F3] rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
                 <Calendar className="w-7 h-7 text-purple-600" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Smart scheduling</h3>
               <p className="text-[#6B6B6B]">
-                AI-powered scheduling that learns your habits and optimizes your daily routine for maximum productivity.
+                AI-powered scheduling that learns your habits and optimizes your daily routine for
+                maximum productivity.
               </p>
             </motion.div>
 
             <motion.div
               className="bg-[#F5F5F3] rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
                 <Target className="w-7 h-7 text-blue-600" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Goal tracking</h3>
               <p className="text-[#6B6B6B]">
-                Set daily, weekly, and monthly goals. Track your progress and celebrate your achievements.
+                Set daily, weekly, and monthly goals. Track your progress and celebrate your
+                achievements.
               </p>
             </motion.div>
 
             <motion.div
               className="bg-[#F5F5F3] rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
                 <Clock className="w-7 h-7 text-green-600" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Time blocking</h3>
               <p className="text-[#6B6B6B]">
-                Visualize your day with time blocks. Focus on what matters most without distractions.
+                Visualize your day with time blocks. Focus on what matters most without
+                distractions.
               </p>
             </motion.div>
           </div>
@@ -320,9 +383,7 @@ export default function Home() {
           viewport={{ once: true }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">
-              How Ellie works
-            </h2>
+            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">How Ellie works</h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
               Get started in minutes and transform the way you plan your days
             </p>
@@ -401,23 +462,26 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Sarah Chen",
-                role: "Product Manager",
-                content: "Ellie has completely transformed how I plan my days. The AI suggestions are spot-on and help me stay focused on what matters most.",
-                rating: 5
+                name: 'Sarah Chen',
+                role: 'Product Manager',
+                content:
+                  'Ellie has completely transformed how I plan my days. The AI suggestions are spot-on and help me stay focused on what matters most.',
+                rating: 5,
               },
               {
-                name: "Michael Rodriguez",
-                role: "Entrepreneur",
-                content: "As someone juggling multiple projects, Ellie keeps me organized and on track. The time blocking feature is a game-changer.",
-                rating: 5
+                name: 'Michael Rodriguez',
+                role: 'Entrepreneur',
+                content:
+                  'As someone juggling multiple projects, Ellie keeps me organized and on track. The time blocking feature is a game-changer.',
+                rating: 5,
               },
               {
-                name: "Emma Thompson",
-                role: "Software Engineer",
-                content: "I love how intuitive Ellie is. It learns my patterns and helps me maintain a healthy work-life balance. Highly recommend!",
-                rating: 5
-              }
+                name: 'Emma Thompson',
+                role: 'Software Engineer',
+                content:
+                  'I love how intuitive Ellie is. It learns my patterns and helps me maintain a healthy work-life balance. Highly recommend!',
+                rating: 5,
+              },
             ].map((testimonial, index) => (
               <motion.div
                 key={index}
@@ -465,12 +529,14 @@ export default function Home() {
             <motion.div
               className="bg-white rounded-3xl p-8 border border-[#E5E5E3]"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-2">Free</h3>
               <p className="text-[#6B6B6B] mb-6">Perfect for getting started</p>
-              <div className="text-4xl font-bold text-[#2D2D2D] mb-6">$0<span className="text-lg font-normal text-[#6B6B6B]">/month</span></div>
-              
+              <div className="text-4xl font-bold text-[#2D2D2D] mb-6">
+                $0<span className="text-lg font-normal text-[#6B6B6B]">/month</span>
+              </div>
+
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-500 mt-0.5" />
@@ -494,15 +560,17 @@ export default function Home() {
             <motion.div
               className="bg-[#2D2D2D] text-white rounded-3xl p-8 relative"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-sm font-medium px-4 py-1 rounded-full">
                 Most popular
               </div>
               <h3 className="text-2xl font-semibold mb-2">Pro</h3>
               <p className="text-gray-300 mb-6">For power users</p>
-              <div className="text-4xl font-bold mb-6">$9<span className="text-lg font-normal text-gray-300">/month</span></div>
-              
+              <div className="text-4xl font-bold mb-6">
+                $9<span className="text-lg font-normal text-gray-300">/month</span>
+              </div>
+
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
@@ -549,10 +617,10 @@ export default function Home() {
           <p className="text-xl text-[#6B6B6B] mb-8">
             Join thousands of productive people using Ellie to achieve more every day.
           </p>
-          
+
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
             >
               Get started for free
@@ -580,52 +648,98 @@ export default function Home() {
               <div className="flex gap-4">
                 <Link href="/download" className="text-[#6B6B6B] hover:text-[#2D2D2D]">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                   </svg>
                 </Link>
                 <Link href="/download" className="text-[#6B6B6B] hover:text-[#2D2D2D]">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5h14c.83 0 1.5.67 1.5 1.5v17c0 .83-.67 1.5-1.5 1.5h-14c-.83 0-1.5-.67-1.5-1.5zM18.5 3.5h-13c-.28 0-.5.22-.5.5v16c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-16c0-.28-.22-.5-.5-.5zM12 17.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                    <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5h14c.83 0 1.5.67 1.5 1.5v17c0 .83-.67 1.5-1.5 1.5h-14c-.83 0-1.5-.67-1.5-1.5zM18.5 3.5h-13c-.28 0-.5.22-.5.5v16c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-16c0-.28-.22-.5-.5-.5zM12 17.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
                   </svg>
                 </Link>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-[#2D2D2D] mb-4">Product</h4>
               <ul className="space-y-2">
-                <li><Link href="/features" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Features</Link></li>
-                <li><Link href="/pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Pricing</Link></li>
-                <li><Link href="/updates" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Updates</Link></li>
-                <li><Link href="/roadmap" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Roadmap</Link></li>
+                <li>
+                  <Link href="/features" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/updates" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Updates
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/roadmap" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Roadmap
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-[#2D2D2D] mb-4">Resources</h4>
               <ul className="space-y-2">
-                <li><Link href="/blog" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Blog</Link></li>
-                <li><Link href="/help" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Help Center</Link></li>
-                <li><Link href="/api" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">API</Link></li>
-                <li><Link href="/community" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Community</Link></li>
+                <li>
+                  <Link href="/blog" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/help" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/api" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    API
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/community" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Community
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold text-[#2D2D2D] mb-4">Company</h4>
               <ul className="space-y-2">
-                <li><Link href="/about" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">About</Link></li>
-                <li><Link href="/careers" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Careers</Link></li>
-                <li><Link href="/privacy" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Privacy</Link></li>
-                <li><Link href="/terms" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">Terms</Link></li>
+                <li>
+                  <Link href="/about" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Privacy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Terms
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-[#E5E5E3] pt-8 text-center">
-            <p className="text-sm text-[#6B6B6B]">
-              © 2024 Ellie. All rights reserved.
-            </p>
+            <p className="text-sm text-[#6B6B6B]">© 2024 Ellie. All rights reserved.</p>
           </div>
         </div>
       </footer>

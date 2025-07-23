@@ -1,34 +1,48 @@
-# Next.js 14+ & Supabase Starter Template 🚀
+# Net Worth Tracker MVP 🚀
 
-A production-ready, feature-rich Next.js template designed to bootstrap full-stack projects quickly. This template is built with a modern tech stack and includes essential features like authentication, SEO best practices, and a robust development environment right out of the box.
+A modern web application for tracking personal net worth by managing assets and liabilities. Built with Next.js 15+, TypeScript, and Supabase, this application provides a secure and intuitive interface for users to monitor their financial health.
 
-![Project Banner](https://placehold.co/1200x630/000000/FFFFFF/png?text=Next.js%20%26%20Supabase%20Starter)
+![Net Worth Tracker](https://placehold.co/1200x630/000000/FFFFFF/png?text=Net%20Worth%20Tracker)
 
 ## ✨ Features
 
-This template comes with a comprehensive set of features to kickstart your development:
+### Financial Management
+
+- **Asset Tracking:** Add, edit, and delete various types of assets (checking accounts, savings, investments, real estate, vehicles)
+- **Liability Management:** Track debts including mortgages, loans, and credit cards
+- **Real-time Net Worth Calculation:** Automatically calculates total net worth (assets - liabilities)
+- **Category Organization:** Assets and liabilities are organized by predefined categories
+- **Visual Dashboard:** Clean, intuitive interface showing financial overview at a glance
 
 ### Core Technologies
-- **Framework:** [Next.js](https://nextjs.org/) 14+ (App Router)
+
+- **Framework:** [Next.js](https://nextjs.org/) 15+ (App Router with Turbopack)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components:** [shadcn/ui](https://ui.shadcn.com/) - Beautifully designed, accessible components.
+- **UI Components:** Custom components with consistent styling (Button component supports only "default" variant)
 - **Animations:** [Framer Motion](https://www.framer.com/motion/) for smooth, declarative animations.
 
 ### Backend & Database
+
 - **Backend-as-a-Service:** [Supabase](https://supabase.com/)
-- **Database:** Supabase Postgres
-- **Authentication:** Built-in email/password, magic link, and social provider (e.g., Google, GitHub) authentication using Supabase Auth.
-- **Authorization:** Route protection (middleware) and Row Level Security (RLS) policies for secure data access.
+- **Database:** Supabase Postgres with tables for assets and liabilities
+- **Authentication:** Email/password authentication via Supabase Auth
+- **Authorization:**
+  - Middleware-based route protection for dashboard and API routes
+  - Row Level Security (RLS) policies ensuring users only access their own data
+  - Protected routes: `/dashboard`, `/api/assets`, `/api/liabilities`, `/api/networth`
 
 ### Developer Experience & Best Practices
-- **SEO Optimized:**
-  - Dynamic sitemap generation (`/sitemap.xml`)
-  - Programmatic `robots.txt`
-  - JSON-LD schema for rich snippets
-  - Metadata API for dynamic page titles and descriptions.
-- **Pre-commit Hooks:** [Husky](https://typicode.github.io/husky/) and [lint-staged](https://github.com/okonet/lint-staged) for running linters and formatters before each commit to maintain code quality.
-- **Unit Testing:** [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) are set up for component testing.
+
+- **Testing:**
+  - Comprehensive Cypress E2E tests for authentication and dashboard functionality
+  - Jest unit tests for middleware and API routes
+- **Code Quality:**
+  - ESLint configuration for consistent code style
+  - Prettier for automatic code formatting
+- **Type Safety:**
+  - Comprehensive TypeScript types for financial data
+  - Enums for asset and liability categories
 
 ---
 
@@ -43,3 +57,4 @@ First, clone this repository to your local machine. You can also use the "Use th
 ```bash
 git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
 cd your-repo-name
+```

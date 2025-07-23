@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { TrendingUp, Wallet, CreditCard, DollarSign } from "lucide-react";
-import type { NetWorthSummary as NetWorthData } from "@/types/financial";
+import { TrendingUp, Wallet, CreditCard, DollarSign } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Card } from '@/components/ui/card';
+import type { NetWorthSummary as NetWorthData } from '@/types/financial';
 
 export default function NetWorthSummary() {
   const [summary, setSummary] = useState<NetWorthData | null>(null);
@@ -61,35 +61,36 @@ export default function NetWorthSummary() {
 
   const cards = [
     {
-      title: "Net Worth",
+      title: 'Net Worth',
       amount: summary?.netWorth || 0,
       icon: DollarSign,
-      color: "bg-blue-600",
-      lightColor: "bg-blue-100",
+      color: 'bg-blue-600',
+      lightColor: 'bg-blue-100',
       isHighlighted: true,
     },
     {
-      title: "Total Assets",
+      title: 'Total Assets',
       amount: summary?.totalAssets || 0,
       icon: Wallet,
-      color: "bg-green-600",
-      lightColor: "bg-green-100",
+      color: 'bg-green-600',
+      lightColor: 'bg-green-100',
     },
     {
-      title: "Total Liabilities",
+      title: 'Total Liabilities',
       amount: summary?.totalLiabilities || 0,
       icon: CreditCard,
-      color: "bg-red-600",
-      lightColor: "bg-red-100",
+      color: 'bg-red-600',
+      lightColor: 'bg-red-100',
     },
     {
-      title: "Asset/Liability Ratio",
-      amount: summary && summary.totalLiabilities > 0 
-        ? summary.totalAssets / summary.totalLiabilities 
-        : summary?.totalAssets || 0,
+      title: 'Asset/Liability Ratio',
+      amount:
+        summary && summary.totalLiabilities > 0
+          ? summary.totalAssets / summary.totalLiabilities
+          : summary?.totalAssets || 0,
       icon: TrendingUp,
-      color: "bg-purple-600",
-      lightColor: "bg-purple-100",
+      color: 'bg-purple-600',
+      lightColor: 'bg-purple-100',
       isRatio: true,
     },
   ];
@@ -99,27 +100,26 @@ export default function NetWorthSummary() {
       {cards.map((card, index) => {
         const Icon = card.icon;
         return (
-          <Card 
-            key={index} 
+          <Card
+            key={index}
             className={`p-6 ${card.isHighlighted ? 'border-2 border-blue-500 shadow-lg' : ''}`}
           >
             <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 ${card.lightColor} rounded-lg flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 ${card.lightColor} rounded-lg flex items-center justify-center`}
+              >
                 <Icon className={`w-6 h-6 text-white ${card.color} rounded p-1`} />
               </div>
             </div>
             <p className="text-sm text-gray-700 mb-2">{card.title}</p>
             <h3 className={`text-2xl font-bold ${card.isHighlighted ? 'text-3xl' : ''}`}>
-              {card.isRatio 
-                ? card.amount.toFixed(2) + 'x'
-                : formatCurrency(card.amount)
-              }
+              {card.isRatio ? card.amount.toFixed(2) + 'x' : formatCurrency(card.amount)}
             </h3>
             {card.isHighlighted && (
               <p className="text-xs text-gray-600 mt-2">
-                {summary && summary.netWorth >= 0 
-                  ? "You're in the green!" 
-                  : "Time to reduce liabilities"}
+                {summary && summary.netWorth >= 0
+                  ? "You're in the green!"
+                  : 'Time to reduce liabilities'}
               </p>
             )}
           </Card>

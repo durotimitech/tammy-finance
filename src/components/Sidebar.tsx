@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  CreditCard, 
-  Wallet, 
-  TrendingUp, 
-  FileText, 
+import {
+  LayoutDashboard,
+  CreditCard,
+  Wallet,
+  TrendingUp,
+  FileText,
   MessageSquare,
   Settings,
-  LogOut
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  LogOut,
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Cards", href: "/cards", icon: CreditCard },
-  { name: "Wallet", href: "/wallet", icon: Wallet },
-  { name: "Transactions", href: "/transactions", icon: TrendingUp },
-  { name: "Statistics", href: "/statistics", icon: FileText },
-  { name: "Message", href: "/message", icon: MessageSquare },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Cards', href: '/cards', icon: CreditCard },
+  { name: 'Wallet', href: '/wallet', icon: Wallet },
+  { name: 'Transactions', href: '/transactions', icon: TrendingUp },
+  { name: 'Statistics', href: '/statistics', icon: FileText },
+  { name: 'Message', href: '/message', icon: MessageSquare },
 ];
 
 export default function Sidebar() {
@@ -42,10 +42,10 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -64,9 +64,7 @@ export default function Sidebar() {
           <Settings className="h-5 w-5" />
           Settings
         </Link>
-        <button
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-        >
+        <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900">
           <LogOut className="h-5 w-5" />
           Log out
         </button>

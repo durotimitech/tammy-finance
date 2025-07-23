@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Edit2, Trash2, Wallet } from "lucide-react";
-import type { Asset, AssetCategory } from "@/types/financial";
+import { Plus, Edit2, Trash2, Wallet } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import type { Asset, AssetCategory } from '@/types/financial';
 
 interface AssetsListProps {
   onAdd: () => void;
@@ -29,8 +29,8 @@ export default function AssetsList({ onAdd, onEdit }: AssetsListProps) {
       }
       const data = await response.json();
       setAssets(data.assets);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -51,8 +51,8 @@ export default function AssetsList({ onAdd, onEdit }: AssetsListProps) {
       }
 
       // Remove from local state
-      setAssets(assets.filter(asset => asset.id !== id));
-    } catch (err) {
+      setAssets(assets.filter((asset) => asset.id !== id));
+    } catch {
       alert('Failed to delete asset');
     }
   };
@@ -72,19 +72,22 @@ export default function AssetsList({ onAdd, onEdit }: AssetsListProps) {
       'Savings Account': 'bg-green-100 text-green-800',
       'Brokerage Account': 'bg-purple-100 text-purple-800',
       'Primary Residence': 'bg-orange-100 text-orange-800',
-      'Vehicle': 'bg-gray-100 text-gray-800',
+      Vehicle: 'bg-gray-100 text-gray-800',
     };
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
   // Group assets by category
-  const groupedAssets = assets.reduce((acc, asset) => {
-    if (!acc[asset.category]) {
-      acc[asset.category] = [];
-    }
-    acc[asset.category].push(asset);
-    return acc;
-  }, {} as Record<AssetCategory, Asset[]>);
+  const groupedAssets = assets.reduce(
+    (acc, asset) => {
+      if (!acc[asset.category]) {
+        acc[asset.category] = [];
+      }
+      acc[asset.category].push(asset);
+      return acc;
+    },
+    {} as Record<AssetCategory, Asset[]>,
+  );
 
   if (loading) {
     return (
@@ -125,7 +128,10 @@ export default function AssetsList({ onAdd, onEdit }: AssetsListProps) {
         <div className="text-center py-12">
           <Wallet className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 mb-4">No assets added yet</p>
-          <Button onClick={onAdd} variant="outline">
+          <Button
+            onClick={onAdd}
+            className="bg-transparent border border-gray-300 hover:bg-gray-50"
+          >
             <Plus className="h-4 w-4 mr-1" />
             Add Your First Asset
           </Button>
@@ -155,18 +161,16 @@ export default function AssetsList({ onAdd, onEdit }: AssetsListProps) {
                       </span>
                       <div className="flex items-center gap-1">
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => onEdit(asset)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 bg-transparent hover:bg-gray-100"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(asset.id)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="h-8 w-8 p-0 bg-transparent text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

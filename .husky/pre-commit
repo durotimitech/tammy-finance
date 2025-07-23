@@ -1,4 +1,13 @@
 #!/bin/sh
+echo "🕵🏾‍♀️ Running pre-commit hooks"
+
+echo "🔍 Running lint-staged"
 npx lint-staged
+
+echo "🧪 Running tests"
 npm run test
+
+echo "🏗️ Building the project"
 npm run build
+
+echo "🎉 pre-commit hooks completed 🎉"

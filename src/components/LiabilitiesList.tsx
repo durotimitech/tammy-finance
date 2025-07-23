@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Edit2, Trash2, CreditCard } from "lucide-react";
-import type { Liability, LiabilityCategory } from "@/types/financial";
+import { Plus, Edit2, Trash2, CreditCard } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import type { Liability, LiabilityCategory } from '@/types/financial';
 
 interface LiabilitiesListProps {
   onAdd: () => void;
@@ -29,8 +29,8 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
       }
       const data = await response.json();
       setLiabilities(data.liabilities);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -51,8 +51,8 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
       }
 
       // Remove from local state
-      setLiabilities(liabilities.filter(liability => liability.id !== id));
-    } catch (err) {
+      setLiabilities(liabilities.filter((liability) => liability.id !== id));
+    } catch {
       alert('Failed to delete liability');
     }
   };
@@ -68,7 +68,7 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
 
   const getCategoryColor = (category: LiabilityCategory) => {
     const colors: Record<string, string> = {
-      'Mortgage': 'bg-red-100 text-red-800',
+      Mortgage: 'bg-red-100 text-red-800',
       'Auto Loan': 'bg-orange-100 text-orange-800',
       'Student Loan': 'bg-yellow-100 text-yellow-800',
       'Credit Card': 'bg-pink-100 text-pink-800',
@@ -78,13 +78,16 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
   };
 
   // Group liabilities by category
-  const groupedLiabilities = liabilities.reduce((acc, liability) => {
-    if (!acc[liability.category]) {
-      acc[liability.category] = [];
-    }
-    acc[liability.category].push(liability);
-    return acc;
-  }, {} as Record<LiabilityCategory, Liability[]>);
+  const groupedLiabilities = liabilities.reduce(
+    (acc, liability) => {
+      if (!acc[liability.category]) {
+        acc[liability.category] = [];
+      }
+      acc[liability.category].push(liability);
+      return acc;
+    },
+    {} as Record<LiabilityCategory, Liability[]>,
+  );
 
   if (loading) {
     return (
@@ -125,7 +128,10 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
         <div className="text-center py-12">
           <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500 mb-4">No liabilities added yet</p>
-          <Button onClick={onAdd} variant="outline">
+          <Button
+            onClick={onAdd}
+            className="bg-transparent border border-gray-300 hover:bg-gray-50"
+          >
             <Plus className="h-4 w-4 mr-1" />
             Add Your First Liability
           </Button>
@@ -155,18 +161,16 @@ export default function LiabilitiesList({ onAdd, onEdit }: LiabilitiesListProps)
                       </span>
                       <div className="flex items-center gap-1">
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => onEdit(liability)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 bg-transparent hover:bg-gray-100"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(liability.id)}
-                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="h-8 w-8 p-0 bg-transparent text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

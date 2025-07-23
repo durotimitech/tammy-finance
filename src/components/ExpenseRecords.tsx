@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 interface ExpenseItem {
   name: string;
@@ -8,16 +8,16 @@ interface ExpenseItem {
 }
 
 const expenses: ExpenseItem[] = [
-  { name: "Pay Monthly House Rents", amount: "-$467" },
-  { name: "Pay Monthly Electricity Bills", amount: "-$200" },
-  { name: "Pay Monthly Wifi Bills", amount: "-$50.0" },
-  { name: "Pay Monthly Car Bills", amount: "-$1020" },
+  { name: 'Pay Monthly House Rents', amount: '-$467' },
+  { name: 'Pay Monthly Electricity Bills', amount: '-$200' },
+  { name: 'Pay Monthly Wifi Bills', amount: '-$50.0' },
+  { name: 'Pay Monthly Car Bills', amount: '-$1020' },
 ];
 
 const recentTransactions: ExpenseItem[] = [
-  { name: "Buy a Burger", amount: "-$30" },
-  { name: "Buy Groceries Items", amount: "-$200" },
-  { name: "Pay Tuition fees", amount: "-$1500" },
+  { name: 'Buy a Burger', amount: '-$30' },
+  { name: 'Buy Groceries Items', amount: '-$200' },
+  { name: 'Pay Tuition fees', amount: '-$1500' },
 ];
 
 export default function ExpenseRecords() {
