@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { Asset, AssetFormData } from '@/types/financial';
 
 export default function AssetsSection() {

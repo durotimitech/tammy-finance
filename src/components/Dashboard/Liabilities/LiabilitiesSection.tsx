@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import AddLiabilityModal from './AddLiabilityModal';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface Liability {
   id: string;

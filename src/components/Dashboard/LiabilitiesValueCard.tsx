@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { TrendingDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency } from '@/lib/utils';
 
 export default function LiabilitiesValueCard() {

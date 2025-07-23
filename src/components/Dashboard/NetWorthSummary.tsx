@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency } from '@/lib/utils';
 
 export default function NetWorthSummary() {
