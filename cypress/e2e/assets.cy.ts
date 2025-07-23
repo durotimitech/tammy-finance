@@ -134,13 +134,15 @@ describe('Assets Page', () => {
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
 
-    // Stub the confirm dialog
-    cy.window().then((win) => {
-      cy.stub(win, 'confirm').returns(true);
-    });
-
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
+
+    // Confirmation modal should appear
+    cy.contains('Delete Asset').should('be.visible');
+    cy.contains('Are you sure you want to delete this asset?').should('be.visible');
+
+    // Click confirm in the modal
+    cy.contains('button', 'Delete').click();
 
     // Check API call
     cy.wait('@deleteAsset');
@@ -168,13 +170,17 @@ describe('Assets Page', () => {
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
 
-    // Stub the confirm dialog to return false
-    cy.window().then((win) => {
-      cy.stub(win, 'confirm').returns(false);
-    });
-
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
+
+    // Confirmation modal should appear
+    cy.contains('Delete Asset').should('be.visible');
+
+    // Click cancel in the modal
+    cy.contains('button', 'Cancel').click();
+
+    // Modal should close
+    cy.contains('Delete Asset').should('not.exist');
 
     // Asset should still be there
     cy.contains('Test Asset').should('be.visible');

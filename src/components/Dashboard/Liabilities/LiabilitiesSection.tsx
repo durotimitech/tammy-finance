@@ -5,6 +5,7 @@ import { CreditCard, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddLiabilityModal from './AddLiabilityModal';
 import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Liability {
@@ -21,6 +22,10 @@ export default function LiabilitiesSection() {
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    liabilityId: string | null;
+  }>({ isOpen: false, liabilityId: null });
 
   const fetchLiabilities = async () => {
     try {
@@ -60,17 +65,18 @@ export default function LiabilitiesSection() {
     }
   };
 
-  const handleDeleteLiability = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this liability?')) return;
+  const handleDeleteLiability = async () => {
+    if (!deleteConfirmation.liabilityId) return;
 
     try {
-      const response = await fetch(`/api/liabilities?id=${id}`, {
+      const response = await fetch(`/api/liabilities?id=${deleteConfirmation.liabilityId}`, {
         method: 'DELETE',
       });
 
       if (!response.ok) throw new Error('Failed to delete liability');
 
       await fetchLiabilities();
+      setDeleteConfirmation({ isOpen: false, liabilityId: null });
     } catch (error) {
       console.error('Error deleting liability:', error);
     }
@@ -171,8 +177,11 @@ export default function LiabilitiesSection() {
                           })}
                         </p>
                         <button
-                          onClick={() => handleDeleteLiability(liability.id)}
+                          onClick={() =>
+                            setDeleteConfirmation({ isOpen: true, liabilityId: liability.id })
+                          }
                           className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                          data-testid={`delete-liability-${liability.id}`}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -189,6 +198,17 @@ export default function LiabilitiesSection() {
       {showAddModal && (
         <AddLiabilityModal onClose={() => setShowAddModal(false)} onAdd={handleAddLiability} />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false, liabilityId: null })}
+        onConfirm={handleDeleteLiability}
+        title="Delete Liability"
+        message="Are you sure you want to delete this liability? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </motion.div>
   );
 }

@@ -134,13 +134,15 @@ describe('Liabilities Page', () => {
     cy.visit('/dashboard/liabilities');
     cy.wait('@getLiabilities');
 
-    // Stub the confirm dialog
-    cy.window().then((win) => {
-      cy.stub(win, 'confirm').returns(true);
-    });
-
     // Click delete button
     cy.get('[data-testid="delete-liability-1"]').click();
+
+    // Confirmation modal should appear
+    cy.contains('Delete Liability').should('be.visible');
+    cy.contains('Are you sure you want to delete this liability?').should('be.visible');
+
+    // Click confirm in the modal
+    cy.contains('button', 'Delete').click();
 
     // Check API call
     cy.wait('@deleteLiability');
@@ -168,13 +170,17 @@ describe('Liabilities Page', () => {
     cy.visit('/dashboard/liabilities');
     cy.wait('@getLiabilities');
 
-    // Stub the confirm dialog to return false
-    cy.window().then((win) => {
-      cy.stub(win, 'confirm').returns(false);
-    });
-
     // Click delete button
     cy.get('[data-testid="delete-liability-1"]').click();
+
+    // Confirmation modal should appear
+    cy.contains('Delete Liability').should('be.visible');
+
+    // Click cancel in the modal
+    cy.contains('button', 'Cancel').click();
+
+    // Modal should close
+    cy.contains('Delete Liability').should('not.exist');
 
     // Liability should still be there
     cy.contains('Test Liability').should('be.visible');

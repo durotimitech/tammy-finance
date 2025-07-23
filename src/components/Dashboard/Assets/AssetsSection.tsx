@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
 import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Asset, AssetFormData } from '@/types/financial';
 
@@ -11,6 +12,10 @@ export default function AssetsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    assetId: string | null;
+  }>({ isOpen: false, assetId: null });
 
   // Fetch assets on component mount
   useEffect(() => {
@@ -53,16 +58,17 @@ export default function AssetsSection() {
     }
   };
 
-  const handleDeleteAsset = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this asset?')) return;
+  const handleDeleteAsset = async () => {
+    if (!deleteConfirmation.assetId) return;
 
     try {
-      const response = await fetch(`/api/assets?id=${id}`, {
+      const response = await fetch(`/api/assets?id=${deleteConfirmation.assetId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setAssets(assets.filter((asset) => asset.id !== id));
+        setAssets(assets.filter((asset) => asset.id !== deleteConfirmation.assetId));
+        setDeleteConfirmation({ isOpen: false, assetId: null });
       } else {
         console.error('Failed to delete asset');
       }
@@ -148,8 +154,9 @@ export default function AssetsSection() {
                     <div className="flex items-center gap-3">
                       <p className="font-semibold text-gray-900">{formatCurrency(asset.value)}</p>
                       <button
-                        onClick={() => handleDeleteAsset(asset.id)}
+                        onClick={() => setDeleteConfirmation({ isOpen: true, assetId: asset.id })}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                        data-testid={`delete-asset-${asset.id}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -166,6 +173,17 @@ export default function AssetsSection() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddAsset}
+      />
+
+      <ConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() => setDeleteConfirmation({ isOpen: false, assetId: null })}
+        onConfirm={handleDeleteAsset}
+        title="Delete Asset"
+        message="Are you sure you want to delete this asset? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
       />
     </>
   );
