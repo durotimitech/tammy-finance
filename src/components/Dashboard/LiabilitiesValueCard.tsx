@@ -5,6 +5,7 @@ import { TrendingDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/utils';
 
 export default function LiabilitiesValueCard() {
   const [totalValue, setTotalValue] = useState(0);
@@ -56,11 +57,7 @@ export default function LiabilitiesValueCard() {
           ) : (
             <>
               <p className="text-3xl text-gray-900 mb-2" data-testid="total-liabilities-value">
-                $
-                {totalValue.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {formatCurrency(totalValue)}
               </p>
               <p className="text-sm text-gray-500">Current value of all your liabilities</p>
             </>

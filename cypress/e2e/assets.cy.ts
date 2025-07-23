@@ -54,16 +54,16 @@ describe('Assets Page', () => {
 
     // Check total value
     cy.contains('Total Assets Value').should('be.visible');
-    cy.contains('$55,000.00').should('be.visible');
+    cy.contains('€55.000,00').should('be.visible');
 
     // Check individual assets
     cy.contains('Chase Checking').should('be.visible');
     cy.contains('Checking Account').should('be.visible');
-    cy.contains('$5,000.00').should('be.visible');
+    cy.contains('€5.000,00').should('be.visible');
 
     cy.contains('Vanguard 401k').should('be.visible');
     cy.contains('401(k)').should('be.visible');
-    cy.contains('$50,000.00').should('be.visible');
+    cy.contains('€50.000,00').should('be.visible');
   });
 
   it('should open add asset modal when clicking add button', () => {
@@ -112,7 +112,7 @@ describe('Assets Page', () => {
     // Modal should close and asset should appear
     cy.contains('h2', 'Add New Asset').should('not.exist');
     cy.contains('New Savings Account').should('be.visible');
-    cy.contains('$10,000.00').should('be.visible');
+    cy.contains('€10.000,00').should('be.visible');
   });
 
   it('should delete an asset', () => {

@@ -5,6 +5,7 @@ import { TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/utils';
 
 export default function AssetsValueCard() {
   const [totalValue, setTotalValue] = useState(0);
@@ -32,13 +33,6 @@ export default function AssetsValueCard() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
   };
 
   const handleClick = () => {

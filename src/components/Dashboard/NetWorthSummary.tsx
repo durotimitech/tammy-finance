@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/utils';
 
 export default function NetWorthSummary() {
   const [netWorth, setNetWorth] = useState(0);
@@ -69,11 +70,7 @@ export default function NetWorthSummary() {
                 className={`text-3xl mb-2 font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}
                 data-testid="net-worth-value"
               >
-                $
-                {Math.abs(netWorth).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {formatCurrency(netWorth)}
               </p>
             </>
           )}

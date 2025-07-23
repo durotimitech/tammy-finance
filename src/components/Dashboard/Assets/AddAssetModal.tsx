@@ -18,6 +18,7 @@ export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetMod
     category: AssetCategory.SAVINGS_ACCOUNT,
     value: 0,
   });
+  const [valueInput, setValueInput] = useState('');
 
   if (!isOpen) return null;
 
@@ -29,13 +30,14 @@ export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetMod
       category: AssetCategory.SAVINGS_ACCOUNT,
       value: 0,
     });
+    setValueInput('');
     onClose();
   };
 
   const assetCategories = Object.values(AssetCategory);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Asset</h2>
@@ -115,14 +117,15 @@ export default function AddAssetModal({ isOpen, onClose, onSubmit }: AddAssetMod
               Current Value
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
               <Input
                 id="value"
                 type="number"
-                value={formData.value}
-                onChange={(e) =>
-                  setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })
-                }
+                value={valueInput}
+                onChange={(e) => {
+                  setValueInput(e.target.value);
+                  setFormData({ ...formData, value: parseFloat(e.target.value) || 0 });
+                }}
                 className="pl-8"
                 placeholder="0.00"
                 step="0.01"

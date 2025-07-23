@@ -54,16 +54,16 @@ describe('Liabilities Page', () => {
 
     // Check total value
     cy.contains('Total Liabilities Amount').should('be.visible');
-    cy.contains('$252,500.00').should('be.visible');
+    cy.contains('€252.500,00').should('be.visible');
 
     // Check individual liabilities
     cy.contains('Chase Credit Card').should('be.visible');
     cy.contains('Credit Card').should('be.visible');
-    cy.contains('$2,500.00').should('be.visible');
+    cy.contains('€2.500,00').should('be.visible');
 
     cy.contains('Home Mortgage').should('be.visible');
     cy.contains('Mortgage').should('be.visible');
-    cy.contains('$250,000.00').should('be.visible');
+    cy.contains('€250.000,00').should('be.visible');
   });
 
   it('should open add liability modal when clicking add button', () => {
@@ -112,7 +112,7 @@ describe('Liabilities Page', () => {
     // Modal should close and liability should appear
     cy.contains('h2', 'Add New Liability').should('not.exist');
     cy.contains('Student Loan').should('be.visible');
-    cy.contains('$30,000.00').should('be.visible');
+    cy.contains('€30.000,00').should('be.visible');
   });
 
   it('should delete a liability', () => {

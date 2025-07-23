@@ -54,7 +54,7 @@ describe('NetWorthSummary', () => {
     // Total assets: 50,000 + 75,000 + 300,000 = 425,000
     // Total liabilities: 200,000 + 25,000 = 225,000
     // Net worth: 425,000 - 225,000 = 200,000
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$200,000.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€200,000.00');
     
     // Check that it's displayed in green for positive net worth
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-green-600');
@@ -95,7 +95,7 @@ describe('NetWorthSummary', () => {
     // Total assets: 5,000 + 2,000 = 7,000
     // Total liabilities: 15,000 + 30,000 = 45,000
     // Net worth: 7,000 - 45,000 = -38,000
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$38,000.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('-€38,000.00');
     
     // Check that it's displayed in red for negative net worth
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-red-600');
@@ -134,7 +134,7 @@ describe('NetWorthSummary', () => {
     // Total assets: 25,000
     // Total liabilities: 25,000
     // Net worth: 25,000 - 25,000 = 0
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
     
     // Zero is considered positive (green)
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-green-600');
@@ -166,7 +166,7 @@ describe('NetWorthSummary', () => {
     // Total assets: 0
     // Total liabilities: 0
     // Net worth: 0 - 0 = 0
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
   });
 
   it('should handle API errors gracefully', async () => {
@@ -192,8 +192,8 @@ describe('NetWorthSummary', () => {
       expect(screen.getByTestId('net-worth-value')).toBeInTheDocument();
     });
 
-    // Should display $0.00 when there's an error
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.00');
+    // Should display €0.00 when there's an error
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
     
     // Check that error was logged
     expect(consoleSpy).toHaveBeenCalledWith('Error fetching net worth:', expect.any(Error));
@@ -234,7 +234,7 @@ describe('NetWorthSummary', () => {
     // Total assets: 5,000,000 + 2,500,000 + 10,000,000 = 17,500,000
     // Total liabilities: 3,000,000 + 2,000,000 = 5,000,000
     // Net worth: 17,500,000 - 5,000,000 = 12,500,000
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$12,500,000.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€12,500,000.00');
   });
 
   it('should handle decimal values correctly', async () => {
@@ -268,6 +268,6 @@ describe('NetWorthSummary', () => {
     // Total assets: 1,234.56 + 789.12 = 2,023.68
     // Total liabilities: 543.21
     // Net worth: 2,023.68 - 543.21 = 1,480.47
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$1,480.47');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€1,480.47');
   });
 });

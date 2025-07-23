@@ -38,7 +38,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // 0.1 + 0.2 - 0.05 = 0.25 (not 0.24999999999999998)
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.25');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.25');
   });
 
   it('should handle negative assets correctly', async () => {
@@ -69,7 +69,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // -500 + 1000 - 200 = 300
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$300.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€300.00');
   });
 
   it('should handle extremely small values', async () => {
@@ -97,7 +97,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // 0.01 + 0.001 = 0.011, rounded to 0.01
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.01');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.01');
   });
 
   it('should handle maximum safe integer values', async () => {
@@ -133,7 +133,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
       maximumFractionDigits: 2,
     });
     
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent(`$${formattedValue}`);
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent(`€${formattedValue}`);
   });
 
   it('should handle null or undefined values gracefully', async () => {
@@ -165,7 +165,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // Should treat null/undefined as 0: 1000 + 0 + 0 - 500 - 0 = 500
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$500.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€500.00');
   });
 
   it('should handle string numbers correctly', async () => {
@@ -195,7 +195,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // Should handle string conversion: 1000 + 2500.50 - 500.25 = 3000.25
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$3,000.25');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€3,000.25');
   });
 
   it('should handle missing properties in API response', async () => {
@@ -220,6 +220,6 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
     });
 
     // Should default to 0 when properties are missing
-    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('$0.00');
+    expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
   });
 });
