@@ -1,5 +1,0 @@
-- Connect checking accounts (BOI, AIB, Revolut)
-- Connect investment accounts (trading 212)
-- Connect retirement account (NetBenefits)
-
-add a full width chart at the bottom of the dashboard page that shows the historical trend of the assets and liabilites on the same chart 
