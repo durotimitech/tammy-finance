@@ -19,15 +19,62 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Mock framer-motion
-jest.mock('framer-motion', () => ({
-  motion: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    div: ({ children, ...props }: { children: React.ReactNode; [key: string]: any }) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { initial, animate, exit, transition, ...divProps } = props
-      return <div {...divProps}>{children}</div>
-    },
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+// Mock useAnimatedNumber hook
+jest.mock('@/hooks/useAnimatedNumber', () => ({
+  useAnimatedNumber: (value: number) => value,
 }))
+
+// Mock framer-motion
+jest.mock('framer-motion', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const React = require('react');
+  
+  interface MotionProps {
+    children?: React.ReactNode;
+    initial?: unknown;
+    animate?: unknown;
+    exit?: unknown;
+    transition?: unknown;
+    whileHover?: unknown;
+    whileTap?: unknown;
+    variants?: unknown;
+    [key: string]: unknown;
+  }
+  
+  const createMotionComponent = (Component: string) => {
+    // eslint-disable-next-line react/display-name, @typescript-eslint/no-explicit-any
+    return React.forwardRef((props: MotionProps, ref: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { initial, animate, exit, transition, whileHover, whileTap, variants, ...htmlProps } = props;
+      return React.createElement(Component, { ...htmlProps, ref }, props.children);
+    });
+  };
+  
+  return {
+    motion: {
+      div: createMotionComponent('div'),
+      section: createMotionComponent('section'),
+      span: createMotionComponent('span'),
+      button: createMotionComponent('button'),
+      li: createMotionComponent('li'),
+      h1: createMotionComponent('h1'),
+      h2: createMotionComponent('h2'),
+      h3: createMotionComponent('h3'),
+      p: createMotionComponent('p'),
+    },
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+    animate: jest.fn((_from: number, to: number, options: { onUpdate?: (value: number) => void }) => {
+      // For tests, immediately call onUpdate with the final value
+      // Use setTimeout to ensure React has time to process the update
+      if (options.onUpdate) {
+        // Call with initial value first
+        options.onUpdate(_from);
+        // Then immediately with final value
+        setTimeout(() => options.onUpdate && options.onUpdate(to), 0);
+      }
+      return {
+        stop: jest.fn(),
+      };
+    }),
+  };
+});

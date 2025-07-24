@@ -9,7 +9,7 @@
     "password": "wrongpassword"
   },
   "newUser": {
-    "email": "newuser@example.com", 
+    "email": "newuser@example.com",
     "password": "NewUserPassword123!",
     "name": "New User"
   }

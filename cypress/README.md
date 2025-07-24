@@ -5,16 +5,19 @@ This directory contains end-to-end tests for the Net Worth Tracker application u
 ## Running Tests
 
 ### Interactive Mode (with UI)
+
 ```bash
 npm run cypress
 ```
 
 ### Headless Mode (CLI)
+
 ```bash
 npm run cypress:headless
 ```
 
 ### Run with Dev Server
+
 ```bash
 npm run test:cypress
 ```
@@ -71,6 +74,7 @@ The login page tests cover:
 ## Environment Variables
 
 Set in `cypress.config.ts`:
+
 - `TEST_USER_EMAIL` - Test user email
 - `TEST_USER_PASSWORD` - Test user password
 
