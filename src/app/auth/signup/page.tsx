@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { signup } from '../../../lib/auth/signup';
 import { Button } from '@/components/ui/Button';
@@ -14,16 +15,27 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} variant="default" size="lg" className="w-full">
-      {pending ? 'Creating account...' : 'Sign Up'}
+    <Button type="submit" loading={pending} variant="default" size="lg" className="w-full">
+      Sign Up
     </Button>
   );
 }
 
 export default function SignupPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [state, formAction] = useFormState(signup, null);
+
+  useEffect(() => {
+    if (state?.accountExists) {
+      // Redirect to login page after a short delay to show the message
+      const timer = setTimeout(() => {
+        router.push('/auth/login');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [state?.accountExists, router]);
 
   return (
     <div className="flex min-h-screen">
@@ -82,7 +94,7 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold font-pirata">tammy</span>
+              <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
             </div>
           </div>
 
@@ -183,7 +195,7 @@ export default function SignupPage() {
 
           <p className="text-center text-sm text-gray-600 mt-8">
             Already have an account?{' '}
-            <Link href="/auth/login" className="font-medium hover:underline">
+            <Link href="/auth/login" className="font-medium text-secondary hover:underline">
               Sign In
             </Link>
           </p>

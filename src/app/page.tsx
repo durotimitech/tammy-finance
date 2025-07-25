@@ -86,7 +86,7 @@ export default function Home() {
                 <Link href="/auth/login">
                   <Button className="bg-transparent hover:bg-gray-100 text-[#6B6B6B]">Login</Button>
                 </Link>
-                <Link href="/signup">
+                <Link href="/auth/signup">
                   <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-6">
                     Get started
                   </Button>

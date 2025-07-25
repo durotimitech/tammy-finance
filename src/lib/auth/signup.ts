@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 
 export async function signup(
-  prevState: { error?: string; success?: boolean } | null,
+  prevState: { error?: string; success?: boolean; accountExists?: boolean } | null,
   formData: FormData,
 ) {
   const email = formData.get('email') as string;
@@ -17,7 +17,7 @@ export async function signup(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -30,6 +30,11 @@ export async function signup(
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Check if user already exists (Supabase returns user but doesn't send confirmation email)
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    return { error: 'Account already exists. Redirecting to login...', accountExists: true };
   }
 
   return { success: true };

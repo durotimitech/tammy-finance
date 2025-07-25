@@ -7,6 +7,7 @@
   --card: #ffffff;
   --card-foreground: #171717;
   --border: #e5e7eb;
+  --secondary: #ff5722;
 }
 
 @theme inline {
@@ -16,6 +17,7 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
+  --color-secondary: var(--secondary);
   --font-sans: var(--font-lato);
   --font-mono: var(--font-lato);
   --font-pirata: var(--font-pirata);
@@ -29,6 +31,7 @@
     --card: #1a1a1a;
     --card-foreground: #ededed;
     --border: #374151;
+    --secondary: #ff5722;
   }
 }
 
@@ -46,6 +49,10 @@
 
 .border {
   border-color: var(--border);
+}
+
+.text-secondary {
+  color: var(--secondary);
 }
 
 body {

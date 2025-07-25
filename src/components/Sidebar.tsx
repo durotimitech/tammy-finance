@@ -26,7 +26,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-semibold font-pirata">tammy</span>
+          <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
         </div>
       </div>
 

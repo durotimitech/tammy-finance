@@ -16,12 +16,12 @@ function SubmitButton() {
   return (
     <Button
       type="submit"
-      disabled={pending}
+      loading={pending}
       variant="default"
       size="lg"
       className="w-full bg-black hover:bg-gray-800 text-white"
     >
-      {pending ? 'Signing in...' : 'Sign In'}
+      Sign In
     </Button>
   );
 }
@@ -78,7 +78,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold font-pirata">tammy</span>
+              <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
             </div>
           </div>
 
@@ -153,7 +153,7 @@ export default function LoginPage() {
           </form>
           <p className="text-center text-sm text-gray-600 mt-8">
             Don&apos;t have an account?{' '}
-            <Link href="/auth/signup" className="font-medium hover:underline">
+            <Link href="/auth/signup" className="font-medium text-secondary hover:underline">
               Sign Up
             </Link>
           </p>
