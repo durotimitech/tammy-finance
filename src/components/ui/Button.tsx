@@ -1,5 +1,5 @@
-import { Loader2 } from 'lucide-react';
 import React, { forwardRef, ButtonHTMLAttributes } from 'react';
+import { LoadingIcon } from './LoadingIcon';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'secondary';
@@ -36,12 +36,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'px-6 py-3 text-lg',
     };
 
-    const spinnerSizes = {
-      default: 'w-4 h-4',
-      sm: 'w-3 h-3',
-      lg: 'w-5 h-5',
-    };
-
     return (
       <button
         ref={ref}
@@ -49,8 +43,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading && <Loader2 className={`animate-spin ${spinnerSizes[size]}`} />}
-        {children}
+        {loading ? <LoadingIcon className="w-8 h-8" /> : children}
       </button>
     );
   },

@@ -19,7 +19,7 @@ function SubmitButton() {
       loading={pending}
       variant="default"
       size="lg"
-      className="w-full bg-black hover:bg-gray-800 text-white"
+      className="w-full bg-black hover:bg-gray-800 text-white "
     >
       Sign In
     </Button>
