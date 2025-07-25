@@ -4,26 +4,32 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart,
 } from 'recharts';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency } from '@/lib/utils';
-import { HistoricalDataPoint, HistoricalTrend } from '@/types/financial';
+import { HistoricalTrend } from '@/types/financial';
 
 interface NetWorthChartProps {
   refreshKey?: number;
 }
 
+interface ChartDataPoint {
+  date: string;
+  fullDate: string;
+  assets: number;
+  liabilities: number;
+  netWorth: number;
+}
+
 export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
-  const [data, setData] = useState<HistoricalDataPoint[]>([]);
+  const [data, setData] = useState<ChartDataPoint[]>([]);
   const [trend, setTrend] = useState<HistoricalTrend | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'30d' | '90d' | '1y' | 'all'>('90d');
@@ -76,8 +82,12 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
               month: 'short',
               day: 'numeric',
             }),
-            totalAssets: parseFloat(item.total_assets),
-            totalLiabilities: parseFloat(item.total_liabilities),
+            fullDate: new Date(item.snapshot_date).toLocaleDateString('en-US', {
+              month: 'short',
+              year: 'numeric',
+            }),
+            assets: parseFloat(item.total_assets),
+            liabilities: parseFloat(item.total_liabilities),
             netWorth: parseFloat(item.net_worth),
           }),
         );
@@ -113,6 +123,54 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
       return <TrendingDown className="w-5 h-5 text-red-500" />;
     }
     return <Minus className="w-5 h-5 text-gray-500" />;
+  };
+
+  interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+      payload: ChartDataPoint;
+    }>;
+  }
+
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
+    if (active && payload && payload.length) {
+      const dataPoint = payload[0].payload;
+      return (
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3 min-w-[140px]">
+          <p className="text-xs font-medium text-gray-600 mb-2">{dataPoint.fullDate}</p>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-xs text-gray-600">Net Worth</span>
+              </div>
+              <span className="text-xs font-semibold text-gray-900">
+                {formatCurrency(dataPoint.netWorth)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-xs text-gray-600">Assets</span>
+              </div>
+              <span className="text-xs font-semibold text-gray-900">
+                {formatCurrency(dataPoint.assets)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="text-xs text-gray-600">Liabilities</span>
+              </div>
+              <span className="text-xs font-semibold text-gray-900">
+                {formatCurrency(dataPoint.liabilities)}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -177,55 +235,60 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#10B981" stopOpacity={0.02} />
                 </linearGradient>
                 <linearGradient id="colorAssets" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.02} />
                 </linearGradient>
                 <linearGradient id="colorLiabilities" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="date" stroke="#6B7280" fontSize={12} tickLine={false} />
-              <YAxis stroke="#6B7280" fontSize={12} tickLine={false} tickFormatter={formatYAxis} />
-              <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
-                contentStyle={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid #E5E7EB',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                }}
+              <CartesianGrid strokeDasharray="0" stroke="transparent" />
+              <XAxis
+                dataKey="date"
+                stroke="#9CA3AF"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
               />
-              <Legend />
+              <YAxis
+                stroke="#9CA3AF"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={formatYAxis}
+              />
+              <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="netWorth"
-                stroke="#3B82F6"
+                stroke="#10B981"
                 fillOpacity={1}
                 fill="url(#colorNetWorth)"
                 strokeWidth={2}
-                name="Net Worth"
+                strokeOpacity={0.6}
               />
-              <Line
+              <Area
                 type="monotone"
-                dataKey="totalAssets"
-                stroke="#10B981"
+                dataKey="assets"
+                stroke="#3B82F6"
+                fillOpacity={1}
+                fill="url(#colorAssets)"
                 strokeWidth={2}
-                dot={false}
-                name="Total Assets"
+                strokeOpacity={0.6}
               />
-              <Line
+              <Area
                 type="monotone"
-                dataKey="totalLiabilities"
+                dataKey="liabilities"
                 stroke="#EF4444"
+                fillOpacity={1}
+                fill="url(#colorLiabilities)"
                 strokeWidth={2}
-                dot={false}
-                name="Total Liabilities"
+                strokeOpacity={0.6}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -241,14 +304,14 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Assets</p>
-              <p className="text-lg font-semibold text-green-600">
-                {formatCurrency(data[data.length - 1]?.totalAssets || 0)}
+              <p className="text-lg font-semibold text-blue-600">
+                {formatCurrency(data[data.length - 1]?.assets || 0)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Liabilities</p>
               <p className="text-lg font-semibold text-red-600">
-                {formatCurrency(data[data.length - 1]?.totalLiabilities || 0)}
+                {formatCurrency(data[data.length - 1]?.liabilities || 0)}
               </p>
             </div>
           </div>
