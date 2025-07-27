@@ -1,8 +1,13 @@
 describe('Liabilities Page', () => {
   beforeEach(() => {
-    // Login and navigate to liabilities page
-    cy.login('test@example.com');
+    // Login with real authentication
+    cy.login();
+
+    // Navigate to liabilities page
     cy.visit('/dashboard/liabilities');
+
+    // Wait for page to load
+    cy.get('body').should('be.visible');
   });
 
   it('should display the liabilities page with all elements', () => {

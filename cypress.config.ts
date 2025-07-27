@@ -13,8 +13,8 @@ export default defineConfig({
     requestTimeout: 10000,
     env: {
       // Add test user credentials here
-      TEST_USER_EMAIL: 'test@example.com',
-      TEST_USER_PASSWORD: 'testPassword123!',
+      TEST_USER_EMAIL: 'timmy.mejabi+cypresstest@toasttab.com',
+      TEST_USER_PASSWORD: '11111111',
     },
   },
 });

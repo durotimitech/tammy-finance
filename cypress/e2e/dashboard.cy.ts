@@ -1,8 +1,8 @@
 describe('Dashboard Page', () => {
   beforeEach(() => {
-    // Login before each test
-    cy.login('test@example.com');
-    cy.visit('/dashboard');
+    // Login with real authentication
+    cy.login();
+    // cy.login already navigates to dashboard, so we don't need to visit again
   });
 
   it('should display the dashboard with all required elements', () => {

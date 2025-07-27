@@ -1,8 +1,13 @@
 describe('Assets Page', () => {
   beforeEach(() => {
-    // Login and navigate to assets page
-    cy.login('test@example.com');
+    // Login with real authentication
+    cy.login();
+
+    // Navigate to assets page
     cy.visit('/dashboard/assets');
+
+    // Wait for page to load
+    cy.get('body').should('be.visible');
   });
 
   it('should display the assets page with all elements', () => {

@@ -32,51 +32,8 @@ describe('Dashboard Route Protection', () => {
 
   describe('Authenticated Access', () => {
     beforeEach(() => {
-      // Set up authenticated session
-      cy.mockAuthenticatedSession({
-        id: 'test-user-123',
-        email: 'user@example.com',
-      });
-
-      // Mock API responses for dashboard data
-      cy.intercept('GET', '/api/assets', {
-        statusCode: 200,
-        body: {
-          assets: [
-            {
-              id: '1',
-              name: 'Savings Account',
-              category: 'CASH',
-              value: 10000,
-              created_at: new Date().toISOString(),
-            },
-          ],
-        },
-      }).as('getAssets');
-
-      cy.intercept('GET', '/api/liabilities', {
-        statusCode: 200,
-        body: {
-          liabilities: [
-            {
-              id: '1',
-              name: 'Credit Card',
-              category: 'CREDIT_CARD',
-              amount: 2000,
-              created_at: new Date().toISOString(),
-            },
-          ],
-        },
-      }).as('getLiabilities');
-
-      cy.intercept('GET', '/api/networth', {
-        statusCode: 200,
-        body: {
-          totalAssets: 10000,
-          totalLiabilities: 2000,
-          netWorth: 8000,
-        },
-      }).as('getNetWorth');
+      // Use real authentication
+      cy.login();
     });
 
     it('should allow access to dashboard when authenticated', () => {
@@ -86,12 +43,10 @@ describe('Dashboard Route Protection', () => {
       cy.url().should('include', '/dashboard');
       cy.url().should('not.include', '/auth/login');
 
-      // Wait for API calls
-      cy.wait(['@getAssets', '@getLiabilities', '@getNetWorth']);
-
       // Dashboard elements should be visible
-      cy.findByText(/net worth/i).should('be.visible');
-      cy.findByText(/€8\.000/i).should('be.visible');
+      cy.contains('Net Worth').should('be.visible');
+      cy.contains('Total Assets').should('be.visible');
+      cy.contains('Total Liabilities').should('be.visible');
     });
 
     it('should maintain auth across navigation', () => {
@@ -105,25 +60,24 @@ describe('Dashboard Route Protection', () => {
       // Navigate back to dashboard - should still be authenticated
       cy.visit('/dashboard');
       cy.url().should('include', '/dashboard');
-      cy.wait(['@getAssets', '@getLiabilities', '@getNetWorth']);
+      cy.contains('Net Worth').should('be.visible');
     });
 
     it('should show user-specific data', () => {
       cy.visit('/dashboard');
 
-      // Wait for data to load
-      cy.wait(['@getAssets', '@getLiabilities', '@getNetWorth']);
-
-      // Should show the mocked data
-      cy.findByText('Savings Account').should('be.visible');
-      cy.findByText('Credit Card').should('be.visible');
+      // Check that user data sections are displayed
+      cy.contains('Net Worth').should('be.visible');
+      cy.get('[data-testid="net-worth-value"]').should('exist');
+      cy.get('[data-testid="total-assets-value"]').should('exist');
+      cy.get('[data-testid="total-liabilities-value"]').should('exist');
     });
   });
 
   describe('Auth State Changes', () => {
     it('should redirect to login when session is cleared', () => {
-      // Start authenticated
-      cy.mockAuthenticatedSession();
+      // Start authenticated with real login
+      cy.login();
 
       // Visit dashboard
       cy.visit('/dashboard');
@@ -140,9 +94,8 @@ describe('Dashboard Route Protection', () => {
     });
 
     it('should handle logout correctly', () => {
-      // Set up authenticated session
-      cy.mockAuthenticatedSession();
-      cy.mockSupabaseAuth();
+      // Login with real authentication
+      cy.login();
 
       // Visit dashboard
       cy.visit('/dashboard');
@@ -184,22 +137,23 @@ describe('Dashboard Route Protection', () => {
     });
 
     it('should allow authenticated API requests', () => {
-      cy.mockAuthenticatedSession();
+      // Login first to establish session
+      cy.login();
 
-      // Mock successful API responses
-      cy.intercept('GET', '/api/assets', {
-        statusCode: 200,
-        body: { assets: [] },
-      });
-
-      cy.request({
-        url: '/api/assets',
-        headers: {
-          Authorization: 'Bearer mock-access-token',
-        },
-      }).then((response) => {
+      // Make authenticated API request
+      cy.request('/api/assets').then((response) => {
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('assets');
+      });
+
+      cy.request('/api/liabilities').then((response) => {
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('liabilities');
+      });
+
+      cy.request('/api/networth').then((response) => {
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('netWorth');
       });
     });
   });

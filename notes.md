@@ -2,8 +2,6 @@
 - Connect investment accounts (trading 212)
 - Connect retirement account (NetBenefits)
 
-add a full width chart at the bottom of the dashboard page that shows the historical trend of the assets and liabilites on the same chart
-
 # **Pain Point Analysis Summary**
 
 The Reddit data reveals significant frustrations with existing net worth tracking solutions, particularly around geographic limitations, security concerns, complexity/usability issues, and the gap between simple tracking and advanced financial analysis. Users consistently express dissatisfaction with available tools and resort to manual spreadsheet solutions despite their limitations.

@@ -52,7 +52,8 @@ Cypress.Commands.add(
     });
 
     // Set the new Supabase auth cookies format
-    const authTokenName = 'sb-localhost-auth-token';
+    // Cookie name is based on the Supabase project ref from the URL
+    const authTokenName = 'sb-dadycsocuxvqnvvksbkz-auth-token';
     const cookieValue = btoa(
       JSON.stringify({
         access_token: 'mock-access-token',
@@ -82,10 +83,39 @@ Cypress.Commands.add(
       sameSite: 'lax',
     });
 
-    // Mock successful auth check
+    // Mock successful auth check - this is what the middleware calls
     cy.intercept('GET', '**/auth/v1/user', {
       statusCode: 200,
-      body: user,
+      body: {
+        user: {
+          ...user,
+          id: user.id,
+          aud: 'authenticated',
+          role: 'authenticated',
+          email: user.email,
+          email_confirmed_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          app_metadata: {
+            provider: 'email',
+            providers: ['email'],
+          },
+          user_metadata: {},
+          identities: [
+            {
+              id: user.id,
+              user_id: user.id,
+              identity_data: {
+                email: user.email,
+                sub: user.id,
+              },
+              provider: 'email',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        },
+      },
     }).as('authCheck');
 
     // Mock session endpoint
@@ -145,9 +175,29 @@ Cypress.Commands.add('mockSupabaseAuth', () => {
   }).as('supabaseLogout');
 });
 
-// Simplified login command used in tests
-Cypress.Commands.add('login', (email: string) => {
-  cy.mockAuthenticatedSession({ id: 'test-user-id', email });
+// Simplified login command used in tests - now uses real authentication
+Cypress.Commands.add('login', (email?: string) => {
+  const testEmail = email || Cypress.env('TEST_USER_EMAIL');
+  const testPassword = Cypress.env('TEST_USER_PASSWORD');
+
+  // Visit login page
+  cy.visit('/auth/login');
+
+  // Wait for page to load
+  cy.get('input[type="email"]').should('be.visible');
+
+  // Fill in login form
+  cy.get('input[type="email"]').type(testEmail);
+  cy.get('input[type="password"]').type(testPassword);
+
+  // Submit form
+  cy.get('button[type="submit"]').click();
+
+  // Wait for redirect to dashboard
+  cy.url().should('include', '/dashboard', { timeout: 10000 });
+
+  // Ensure page has loaded
+  cy.contains('Net Worth', { timeout: 10000 }).should('be.visible');
 });
 
 // Helper to check if element is loading
