@@ -12,7 +12,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/Skeleton';
 import { formatCurrency } from '@/lib/utils';
 import { HistoricalTrend } from '@/types/financial';
 

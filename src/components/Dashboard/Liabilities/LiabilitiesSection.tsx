@@ -3,9 +3,9 @@
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddLiabilityModal from './AddLiabilityModal';
+import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import { Skeleton } from '@/components/ui/Skeleton';
 
 interface Liability {
   id: string;
