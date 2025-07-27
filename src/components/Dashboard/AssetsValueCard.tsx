@@ -21,6 +21,7 @@ export default function AssetsValueCard() {
   const fetchAssetsTotal = async () => {
     try {
       const response = await fetch('/api/assets');
+
       if (response.ok) {
         const data = await response.json();
         const assets = data.assets || [];
