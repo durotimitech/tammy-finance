@@ -207,7 +207,6 @@ describe('Assets Page', () => {
   it('should validate required fields', () => {
     cy.contains('button', 'Add Asset').click();
 
-    // Try to submit empty form
     cy.get('form').contains('button', 'Add Asset').click();
 
     // Form should not submit, modal should still be open
