@@ -196,8 +196,8 @@ Cypress.Commands.add('login', (email?: string) => {
   // Wait for redirect to dashboard
   cy.url().should('include', '/dashboard', { timeout: 10000 });
 
-  // Ensure page has loaded
-  cy.contains('Net Worth', { timeout: 10000 }).should('be.visible');
+  // Wait for dashboard to fully load - check for one of the main elements
+  cy.get('[data-testid="net-worth-value"]', { timeout: 10000 }).should('be.visible');
 });
 
 // Helper to check if element is loading
@@ -216,12 +216,19 @@ Cypress.Commands.add('waitForApi', (alias: string | string[]) => {
   aliases.forEach((a) => cy.wait(`@${a}`));
 });
 
-// Helper to format currency for assertions
+// Helper to format currency for assertions - matches app's EUR format
 Cypress.Commands.add('formatCurrency', (amount: number) => {
-  return amount.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return new Intl.NumberFormat('en-DE', {
+    style: 'currency',
+    currency: 'EUR',
+  }).format(amount);
+});
+
+// Helper to mock API responses for dashboard
+Cypress.Commands.add('mockDashboardAPIs', (assets = [], liabilities = []) => {
+  cy.intercept('GET', '/api/assets', { assets }).as('getAssets');
+  cy.intercept('GET', '/api/liabilities', { liabilities }).as('getLiabilities');
+  cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
 });
 
 // TypeScript declarations
@@ -234,11 +241,15 @@ declare global {
       waitForPageLoad(): Chainable<void>;
       mockAuthenticatedSession(user?: { id: string; email: string }): Chainable<void>;
       mockSupabaseAuth(): Chainable<void>;
-      login(email: string): Chainable<void>;
+      login(email?: string): Chainable<void>;
       shouldBeLoading(selector: string): Chainable<void>;
       shouldNotBeLoading(selector: string): Chainable<void>;
       waitForApi(alias: string | string[]): Chainable<void>;
       formatCurrency(amount: number): string;
+      mockDashboardAPIs(
+        assets?: Array<{ id: string; name: string; value: number; category: string }>,
+        liabilities?: Array<{ id: string; name: string; amount_owed: number; category: string }>,
+      ): Chainable<void>;
     }
   }
 }

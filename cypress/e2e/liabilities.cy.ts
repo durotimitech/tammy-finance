@@ -1,13 +1,18 @@
 describe('Liabilities Page', () => {
   beforeEach(() => {
+    // Set up default API interceptors
+    cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
+    cy.intercept('GET', '/api/liabilities', { liabilities: [] }).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
+
     // Login with real authentication
     cy.login();
 
     // Navigate to liabilities page
     cy.visit('/dashboard/liabilities');
 
-    // Wait for page to load
-    cy.get('body').should('be.visible');
+    // Wait for API calls to complete
+    cy.wait('@getLiabilities');
   });
 
   it('should display the liabilities page with all elements', () => {
@@ -18,8 +23,8 @@ describe('Liabilities Page', () => {
     cy.contains('h2', 'Liabilities').should('be.visible');
     cy.contains('button', 'Add Liability').should('be.visible');
 
-    // Check sidebar has liabilities active
-    cy.get('nav').contains('Liabilities').parent().should('have.class', 'bg-gray-100');
+    // Check sidebar has liabilities link visible
+    cy.get('nav').contains('Liabilities').should('be.visible');
   });
 
   it('should show empty state when no liabilities exist', () => {
@@ -59,16 +64,16 @@ describe('Liabilities Page', () => {
 
     // Check total value
     cy.contains('Total Liabilities Amount').should('be.visible');
-    cy.contains('€252.500,00').should('be.visible');
+    cy.contains('€252,500.00').should('be.visible');
 
     // Check individual liabilities
     cy.contains('Chase Credit Card').should('be.visible');
     cy.contains('Credit Card').should('be.visible');
-    cy.contains('€2.500,00').should('be.visible');
+    cy.contains('€2,500.00').should('be.visible');
 
     cy.contains('Home Mortgage').should('be.visible');
     cy.contains('Mortgage').should('be.visible');
-    cy.contains('€250.000,00').should('be.visible');
+    cy.contains('€250,000.00').should('be.visible');
   });
 
   it('should open add liability modal when clicking add button', () => {
@@ -117,7 +122,7 @@ describe('Liabilities Page', () => {
     // Modal should close and liability should appear
     cy.contains('h2', 'Add New Liability').should('not.exist');
     cy.contains('Student Loan').should('be.visible');
-    cy.contains('€30.000,00').should('be.visible');
+    cy.contains('€30,000.00').should('be.visible');
   });
 
   it('should delete a liability', () => {

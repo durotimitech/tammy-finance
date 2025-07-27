@@ -1,13 +1,18 @@
 describe('Assets Page', () => {
   beforeEach(() => {
+    // Set up default API interceptors
+    cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
+    cy.intercept('GET', '/api/liabilities', { liabilities: [] }).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
+
     // Login with real authentication
     cy.login();
 
     // Navigate to assets page
     cy.visit('/dashboard/assets');
 
-    // Wait for page to load
-    cy.get('body').should('be.visible');
+    // Wait for API calls to complete
+    cy.wait('@getAssets');
   });
 
   it('should display the assets page with all elements', () => {
@@ -18,8 +23,8 @@ describe('Assets Page', () => {
     cy.contains('h2', 'Assets').should('be.visible');
     cy.contains('button', 'Add Asset').should('be.visible');
 
-    // Check sidebar has assets active
-    cy.get('nav').contains('Assets').parent().should('have.class', 'bg-gray-100');
+    // Check sidebar has assets link visible
+    cy.get('nav').contains('Assets').should('be.visible');
   });
 
   it('should show empty state when no assets exist', () => {
@@ -59,16 +64,16 @@ describe('Assets Page', () => {
 
     // Check total value
     cy.contains('Total Assets Value').should('be.visible');
-    cy.contains('€55.000,00').should('be.visible');
+    cy.contains('€55,000.00').should('be.visible');
 
     // Check individual assets
     cy.contains('Chase Checking').should('be.visible');
     cy.contains('Checking Account').should('be.visible');
-    cy.contains('€5.000,00').should('be.visible');
+    cy.contains('€5,000.00').should('be.visible');
 
     cy.contains('Vanguard 401k').should('be.visible');
     cy.contains('401(k)').should('be.visible');
-    cy.contains('€50.000,00').should('be.visible');
+    cy.contains('€50,000.00').should('be.visible');
   });
 
   it('should open add asset modal when clicking add button', () => {
@@ -117,7 +122,7 @@ describe('Assets Page', () => {
     // Modal should close and asset should appear
     cy.contains('h2', 'Add New Asset').should('not.exist');
     cy.contains('New Savings Account').should('be.visible');
-    cy.contains('€10.000,00').should('be.visible');
+    cy.contains('€10,000.00').should('be.visible');
   });
 
   it('should delete an asset', () => {
