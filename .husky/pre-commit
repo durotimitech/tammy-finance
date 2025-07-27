@@ -7,6 +7,9 @@ npx lint-staged
 echo "🧪 Running tests"
 npm run test
 
+echo "🔍 Running lint"
+npx prettier --write .
+
 echo "🏗️ Building the project"
 npm run build
 
