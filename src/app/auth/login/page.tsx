@@ -12,7 +12,6 @@ import { NotificationBanner } from '@/components/ui/NotificationBanner';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-
   return (
     <Button
       type="submit"
