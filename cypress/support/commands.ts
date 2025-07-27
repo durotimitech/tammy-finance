@@ -36,20 +36,43 @@ Cypress.Commands.add(
       email: 'test@example.com',
     },
   ) => {
+    // Create a properly formatted session object
+    const session = {
+      access_token: 'mock-access-token',
+      token_type: 'bearer',
+      expires_in: 3600,
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      refresh_token: 'mock-refresh-token',
+      user,
+    };
+
     // Set auth token in localStorage
     cy.window().then((win) => {
-      const session = {
-        access_token: 'mock-access-token',
-        token_type: 'bearer',
-        expires_in: 3600,
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        refresh_token: 'mock-refresh-token',
-        user,
-      };
       win.localStorage.setItem('supabase.auth.token', JSON.stringify(session));
     });
 
-    // Set auth cookies
+    // Set the new Supabase auth cookies format
+    const authTokenName = 'sb-localhost-auth-token';
+    const cookieValue = btoa(
+      JSON.stringify({
+        access_token: 'mock-access-token',
+        refresh_token: 'mock-refresh-token',
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        expires_in: 3600,
+        token_type: 'bearer',
+        user,
+      }),
+    );
+
+    // Set the main auth token cookie
+    cy.setCookie(authTokenName, cookieValue, {
+      path: '/',
+      sameSite: 'lax',
+      secure: false,
+      httpOnly: false,
+    });
+
+    // Also set individual token cookies for backwards compatibility
     cy.setCookie('sb-access-token', 'mock-access-token', {
       path: '/',
       sameSite: 'lax',
@@ -64,6 +87,12 @@ Cypress.Commands.add(
       statusCode: 200,
       body: user,
     }).as('authCheck');
+
+    // Mock session endpoint
+    cy.intercept('GET', '**/auth/v1/session', {
+      statusCode: 200,
+      body: session,
+    }).as('sessionCheck');
   },
 );
 
