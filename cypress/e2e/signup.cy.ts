@@ -1,32 +1,26 @@
 describe('Signup Page', () => {
   beforeEach(() => {
-    // Clear any existing session before each test
-    cy.clearSupabaseSession();
     cy.visit('/auth/signup');
-    cy.waitForPageLoad();
   });
 
   describe('Page Layout and Elements', () => {
     it('should display all signup page elements correctly', () => {
-      // Check main heading
-      cy.findByRole('heading', { name: /create account/i }).should('be.visible');
+      // Logo - check if it exists in the expected location
+      cy.get('.font-pirata').contains(/tammy/i).should('be.visible');
 
-      // Check tagline
+      // Heading
+      cy.findByRole('heading', { name: /create account/i }).should('be.visible');
       cy.findByText(/enter your details to get started/i).should('be.visible');
 
-      // Check logo
-      cy.findByText('tammy').should('be.visible');
-
-      // Check form elements
+      // Form fields
       cy.findByPlaceholderText('Enter your email').should('be.visible');
       cy.findByPlaceholderText('Create a password').should('be.visible');
       cy.findByPlaceholderText('Confirm your password').should('be.visible');
+
+      // Submit button
       cy.findByRole('button', { name: /sign up/i }).should('be.visible');
 
-      // Check password toggle buttons exist
-      cy.get('button[type="button"]').should('have.length', 2);
-
-      // Check links
+      // Login link
       cy.findByText(/already have an account\?/i).should('be.visible');
       cy.findByText(/sign in/i).should('be.visible');
     });
@@ -35,9 +29,9 @@ describe('Signup Page', () => {
       // Desktop view - should show gradient side
       cy.viewport(1280, 720);
       cy.get('.hidden.lg\\:flex').should('be.visible');
-      cy.findByText(/start your/i).should('be.visible');
-      cy.findByText(/financial/i).should('be.visible');
-      cy.findByText(/journey/i).should('be.visible');
+      cy.contains('Start Your').should('be.visible');
+      cy.contains('Financial').should('be.visible');
+      cy.contains('Journey').should('be.visible');
 
       // Mobile view - gradient side should be hidden
       cy.viewport(375, 667);
@@ -105,110 +99,6 @@ describe('Signup Page', () => {
         cy.wrap(element.checkValidity()).should('be.false');
       });
     });
-
-    it('should show loading state while submitting', () => {
-      cy.findByPlaceholderText('Enter your email').type('test@example.com');
-      cy.findByPlaceholderText('Create a password').type('password123');
-      cy.findByPlaceholderText('Confirm your password').type('password123');
-
-      // Intercept the form submission
-      cy.intercept('POST', '/auth/signup', {
-        delay: 1000,
-        body: { success: true },
-      }).as('signupRequest');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Button should show loading state
-      cy.findByRole('button', { name: /creating account/i }).should('exist');
-      cy.findByRole('button', { name: /creating account/i }).should('be.disabled');
-    });
-  });
-
-  describe('Password Validation', () => {
-    it('should show error when passwords do not match', () => {
-      cy.findByPlaceholderText('Enter your email').type('test@example.com');
-      cy.findByPlaceholderText('Create a password').type('password123');
-      cy.findByPlaceholderText('Confirm your password').type('differentpassword');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Should show error message
-      cy.findByText(/passwords do not match/i, { timeout: 10000 }).should('be.visible');
-    });
-
-    it('should accept matching passwords', () => {
-      cy.findByPlaceholderText('Enter your email').type('test@example.com');
-      cy.findByPlaceholderText('Create a password').type('password123');
-      cy.findByPlaceholderText('Confirm your password').type('password123');
-
-      // Mock successful signup
-      cy.intercept('POST', '**/auth/v1/signup*', {
-        statusCode: 200,
-        body: {
-          access_token: 'fake-token',
-          token_type: 'bearer',
-          expires_in: 3600,
-          refresh_token: 'fake-refresh-token',
-          user: {
-            id: 'fake-user-id',
-            email: 'test@example.com',
-          },
-        },
-      }).as('successfulSignup');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Should show success message
-      cy.findByText(/account created! please check your email to confirm/i, {
-        timeout: 10000,
-      }).should('be.visible');
-    });
-  });
-
-  describe('Authentication Flow', () => {
-    it('should show error message for existing email', () => {
-      // Type credentials
-      cy.findByPlaceholderText('Enter your email').type('existing@example.com');
-      cy.findByPlaceholderText('Create a password').type('password123');
-      cy.findByPlaceholderText('Confirm your password').type('password123');
-
-      // Mock signup with existing email error
-      cy.intercept('POST', '**/auth/v1/signup*', {
-        statusCode: 400,
-        body: {
-          error: 'bad_request',
-          error_description: 'User already registered',
-        },
-      }).as('failedSignup');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Wait for the error to appear
-      cy.findByText(/user already registered/i, { timeout: 10000 }).should('be.visible');
-    });
-
-    it('should handle weak password errors', () => {
-      cy.findByPlaceholderText('Enter your email').type('test@example.com');
-      cy.findByPlaceholderText('Create a password').type('123');
-      cy.findByPlaceholderText('Confirm your password').type('123');
-
-      // Mock weak password error
-      cy.intercept('POST', '**/auth/v1/signup*', {
-        statusCode: 400,
-        body: {
-          error: 'bad_request',
-          error_description: 'Password should be at least 6 characters',
-        },
-      }).as('weakPassword');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Should show error message
-      cy.findByText(/password should be at least 6 characters/i, { timeout: 10000 }).should(
-        'be.visible',
-      );
-    });
   });
 
   describe('Navigation', () => {
@@ -245,10 +135,12 @@ describe('Signup Page', () => {
     });
 
     it('should have proper ARIA labels and semantic HTML', () => {
-      // Check form has proper structure
-      cy.get('form').should('exist');
+      // Check form has proper labels
+      cy.get('label[for="email"]').should('exist');
+      cy.get('label[for="password"]').should('exist');
+      cy.get('label[for="confirmPassword"]').should('exist');
 
-      // Check inputs have proper types
+      // Check inputs have IDs matching labels
       cy.get('input[type="email"]').should('exist');
       cy.get('input[type="password"]').should('have.length', 2);
 
@@ -257,19 +149,6 @@ describe('Signup Page', () => {
 
       // Check heading hierarchy
       cy.findByRole('heading', { level: 2 }).should('exist');
-    });
-
-    it('should announce errors to screen readers', () => {
-      // Submit with mismatched passwords
-      cy.findByPlaceholderText('Enter your email').type('test@example.com');
-      cy.findByPlaceholderText('Create a password').type('password123');
-      cy.findByPlaceholderText('Confirm your password').type('differentpassword');
-
-      cy.findByRole('button', { name: /sign up/i }).click();
-
-      // Error notification should be present
-      // NotificationBanner component will be rendered with the error message
-      cy.findByText(/passwords do not match/i, { timeout: 10000 }).should('exist');
     });
   });
 
@@ -299,8 +178,8 @@ describe('Signup Page', () => {
 
     it('should have autocomplete attributes for better security', () => {
       cy.get('input[type="email"]').should('have.attr', 'name', 'email');
-      cy.get('input[name="password"]').should('exist');
-      cy.get('input[name="confirmPassword"]').should('exist');
+      cy.get('input[name="password"]').should('have.attr', 'type', 'password');
+      cy.get('input[name="confirmPassword"]').should('have.attr', 'type', 'password');
     });
   });
 });

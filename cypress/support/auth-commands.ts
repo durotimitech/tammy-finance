@@ -1,95 +1,73 @@
-// Enhanced authentication commands for Cypress tests
-/// <reference types="cypress" />
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Cypress {
-    interface Chainable {
-      signIn(email?: string): Chainable<void>;
-      setupAuth(): Chainable<void>;
-    }
-  }
-}
-
-// More robust authentication setup
-Cypress.Commands.add('setupAuth', () => {
-  const user = {
-    id: 'test-user-id',
-    email: 'test@example.com',
-    role: 'authenticated',
-    aud: 'authenticated',
-    email_confirmed_at: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-
-  // Intercept all Supabase auth calls
-  cy.intercept('GET', '**/auth/v1/user', (req) => {
-    // Check if auth token cookie exists
-    const cookies = req.headers.cookie || '';
-    if (cookies.includes('auth-token')) {
-      req.reply({
-        statusCode: 200,
-        body: { user },
-      });
-    } else {
-      req.reply({
-        statusCode: 401,
-        body: { message: 'Not authenticated' },
-      });
-    }
-  }).as('getUser');
-
-  // Mock the session endpoint
-  cy.intercept('GET', '**/auth/v1/session', {
-    statusCode: 200,
-    body: {
-      access_token: 'test-access-token',
-      token_type: 'bearer',
-      expires_in: 3600,
-      refresh_token: 'test-refresh-token',
-      user,
-    },
-  }).as('getSession');
-});
-
-Cypress.Commands.add('signIn', (email = 'test@example.com') => {
-  // Setup auth interceptors
-  cy.setupAuth();
-
-  // Visit home to establish session
-  cy.visit('/');
-
-  // Set the auth cookie in the correct format
-  const authData = {
-    access_token: 'test-access-token',
-    refresh_token: 'test-refresh-token',
-    expires_at: Math.floor(Date.now() / 1000) + 3600,
-    expires_in: 3600,
+// Helper command to login with test credentials
+Cypress.Commands.add('loginWithTestUser', () => {
+  // Create a test session by directly setting the auth cookie
+  // This mimics what Supabase does after successful authentication
+  const mockSession = {
+    access_token: 'mock-jwt-token',
     token_type: 'bearer',
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    refresh_token: 'mock-refresh-token',
     user: {
       id: 'test-user-id',
-      email: email,
-      role: 'authenticated',
       aud: 'authenticated',
+      role: 'authenticated',
+      email: 'test@example.com',
+      email_confirmed_at: new Date().toISOString(),
+      phone: '',
+      confirmed_at: new Date().toISOString(),
+      last_sign_in_at: new Date().toISOString(),
+      app_metadata: {
+        provider: 'email',
+        providers: ['email'],
+      },
+      user_metadata: {
+        first_name: 'Test',
+      },
+      identities: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     },
   };
 
   // Set the Supabase auth cookie
-  cy.setCookie('sb-dadycsocuxvqnvvksbkz-auth-token', btoa(JSON.stringify(authData)), {
+  cy.setCookie('sb-dadycsocuxvqnvvksbkz-auth-token', btoa(JSON.stringify(mockSession)), {
     path: '/',
-    secure: false,
     sameSite: 'lax',
+    secure: false, // false for localhost
+    httpOnly: false, // Can't set httpOnly from JS
   });
 
-  // Also set in localStorage for client-side checks
-  cy.window().then((win) => {
-    win.localStorage.setItem(
-      'supabase.auth.token',
-      JSON.stringify({
-        currentSession: authData,
-        expiresAt: new Date(Date.now() + 3600000).toISOString(),
-      }),
-    );
-  });
+  // Mock the auth check endpoint
+  cy.intercept('GET', '**/auth/v1/user', {
+    statusCode: 200,
+    body: mockSession.user,
+  }).as('authCheck');
+
+  // Mock API endpoints to return success for authenticated requests
+  cy.intercept('GET', '/api/assets', {
+    statusCode: 200,
+    body: { assets: [] },
+  }).as('getAssets');
+
+  cy.intercept('GET', '/api/liabilities', {
+    statusCode: 200,
+    body: { liabilities: [] },
+  }).as('getLiabilities');
+
+  cy.intercept('GET', '/api/history*', {
+    statusCode: 200,
+    body: { history: [] },
+  }).as('getHistory');
 });
+
+// Add TypeScript support
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      loginWithTestUser(): Chainable<void>;
+    }
+  }
+}
+
+export {};

@@ -28,6 +28,13 @@ const eslintConfig = [
       // Add more rules as needed
     },
   },
+  {
+    // Override for Cypress support files
+    files: ['cypress/support/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-namespace': 'off', // Required for Cypress type declarations
+    },
+  },
 ];
 
 export default eslintConfig;

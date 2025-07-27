@@ -2,9 +2,11 @@
 
 import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/Skeleton';
 import { createClient } from '@/lib/supabase/client';
 
 export default function Header() {
+  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [greeting, setGreeting] = useState('Good Morning');
 
@@ -15,6 +17,7 @@ export default function Header() {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
+      setIsLoading(false);
     };
     getUser();
 
@@ -32,9 +35,13 @@ export default function Header() {
   return (
     <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
       <div>
-        <h1 className="text-2xl text-gray-900">
-          {greeting}, {displayName}
-        </h1>
+        {isLoading ? (
+          <Skeleton className="h-6 w-[250px]" />
+        ) : (
+          <h1 className="text-2xl text-gray-900">
+            {greeting}, {displayName}
+          </h1>
+        )}
       </div>
     </header>
   );

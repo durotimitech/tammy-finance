@@ -112,9 +112,10 @@ describe('Login Page', () => {
 
       cy.findByRole('button', { name: /sign in/i }).click();
 
-      // Button should show loading state
-      cy.findByRole('button', { name: /signing in/i }).should('exist');
-      cy.findByRole('button', { name: /signing in/i }).should('be.disabled');
+      // Button should show loading state with bear icon
+      cy.get('button[type="submit"]').should('be.disabled');
+      cy.get('button[type="submit"] svg').should('exist'); // Bear loading icon
+      cy.get('button[type="submit"] svg').should('have.class', 'animate-spin');
     });
 
     it('should handle remember me checkbox', () => {
