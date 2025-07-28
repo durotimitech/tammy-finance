@@ -305,13 +305,13 @@ I need to implement Trading 212 integration for my Next.js/Supabase net worth tr
 - Create a new Supabase table called `encrypted_credentials` with columns:
   - id (UUID, primary key)
   - user_id (UUID, references auth.users)
-  - encrypted_trading212_key (TEXT)
+  - trading_212 (TEXT)
   - salt (TEXT)
   - iv (TEXT)
   - auth_tag (TEXT)
   - created_at (TIMESTAMPTZ)
 - Enable Row Level Security with policy: users can only access their own credentials
-- Create API endpoint `/api/credentials/store` that encrypts and stores the API key using AES-256-GCM encryption with the user's session as the encryption key
+- Create API endpoint `/api/credentials` that encrypts and stores the API key using AES-256-GCM encryption with the user's session as the encryption key
 - After successful storage, show success modal and redirect to dashboard
 
 ## 5. Trading 212 Portfolio Integration
@@ -322,24 +322,16 @@ I need to implement Trading 212 integration for my Next.js/Supabase net worth tr
 
 ## 6. Daily Caching System
 
-- Create a new Supabase table called `portfolio_cache` with columns:
-  - id (UUID, primary key)
-  - user_id (UUID, references auth.users)
-  - trading212_data (JSONB)
-  - total_value (DECIMAL)
-  - last_fetched (TIMESTAMPTZ)
-  - created_at (TIMESTAMPTZ)
 - When user visits dashboard page:
   - Check if Trading 212 data was fetched today for this user
-  - If not fetched today, make API call to Trading 212, decrypt the stored API key, fetch portfolio data, and save to cache
-  - If already fetched today, use cached data
+  - If not fetched today, make API call to Trading 212, decrypt the stored API key, fetch portfolio data, and save to db
+  - If already fetched today, use current data
   - Display the total portfolio value in the assets list
 
 ## 7. API Endpoints Needed
 
-- `POST /api/credentials/store` - Encrypt and store Trading 212 API key
-- `GET /api/credentials/decrypt` - Decrypt stored API key for API calls
-- `GET /api/trading212/portfolio` - Fetch and cache portfolio data
+- `POST /api/credentials` - Encrypt and store Trading 212 API key
+- `GET /api/credentials` - Decrypt stored API key for API calls
 - `GET /api/assets` - Enhanced to include Trading 212 portfolio value
 
 ## Technical Requirements
