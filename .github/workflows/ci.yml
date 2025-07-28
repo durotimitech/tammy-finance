@@ -69,6 +69,7 @@ jobs:
           wait-on-timeout: 120
           browser: chrome
           record: false
+          parallel: true
           config-file: cypress.config.ts
         env:
           CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
