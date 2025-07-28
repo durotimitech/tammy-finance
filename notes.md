@@ -279,3 +279,84 @@ A next-generation platform built on Open Banking standards that provides real-ti
 - **Category Dominance Potential:** Medium-High - could own the privacy-conscious segment completely
 
 The RegionalWealth Pro approach offers the strongest combination of large addressable market, clear competitive advantage, and feasible implementation path while directly solving the most frequently mentioned pain points in the research.
+
+I need to implement Trading 212 integration for my Next.js/Supabase net worth tracker app. Here's what needs to be built:
+
+## 1. Add Asset Card Enhancement
+
+- Add a shadcn callout component to the existing "Add Asset" card
+- Callout should say "Connect Account" and link to the Settings page in the sidebar
+
+## 2. Settings Page - Connect Accounts Section
+
+- Create/enhance the Settings page with a new "Connect Accounts" section
+- Add a "Connect Account" button that opens a modal
+- Modal should show a list of available third-party accounts (currently only Trading 212)
+
+## 3. Trading 212 Connection Flow
+
+- When Trading 212 is clicked, open a new modal with:
+  - Input field for Trading 212 API key
+  - Info callout directing users to Trading 212 docs: https://helpcentre.trading212.com/hc/en-us/articles/14584770928157-How-can-I-generate-an-API-key
+  - "Connect" button
+
+## 4. Secure API Key Storage
+
+- Create a new Supabase table called `encrypted_credentials` with columns:
+  - id (UUID, primary key)
+  - user_id (UUID, references auth.users)
+  - encrypted_trading212_key (TEXT)
+  - salt (TEXT)
+  - iv (TEXT)
+  - auth_tag (TEXT)
+  - created_at (TIMESTAMPTZ)
+- Enable Row Level Security with policy: users can only access their own credentials
+- Create API endpoint `/api/credentials/store` that encrypts and stores the API key using AES-256-GCM encryption with the user's session as the encryption key
+- After successful storage, show success modal and redirect to dashboard
+
+## 5. Trading 212 Portfolio Integration
+
+- Add new entry on the assets page showing current value of all user's stocks from Trading 212
+- Use Trading 212 API: https://t212public-api-docs.redoc.ly/
+- Specifically use the `/api/v0/equity/portfolio` endpoint to get portfolio data
+
+## 6. Daily Caching System
+
+- Create a new Supabase table called `portfolio_cache` with columns:
+  - id (UUID, primary key)
+  - user_id (UUID, references auth.users)
+  - trading212_data (JSONB)
+  - total_value (DECIMAL)
+  - last_fetched (TIMESTAMPTZ)
+  - created_at (TIMESTAMPTZ)
+- When user visits dashboard page:
+  - Check if Trading 212 data was fetched today for this user
+  - If not fetched today, make API call to Trading 212, decrypt the stored API key, fetch portfolio data, and save to cache
+  - If already fetched today, use cached data
+  - Display the total portfolio value in the assets list
+
+## 7. API Endpoints Needed
+
+- `POST /api/credentials/store` - Encrypt and store Trading 212 API key
+- `GET /api/credentials/decrypt` - Decrypt stored API key for API calls
+- `GET /api/trading212/portfolio` - Fetch and cache portfolio data
+- `GET /api/assets` - Enhanced to include Trading 212 portfolio value
+
+## Technical Requirements
+
+- Use shadcn/ui components for all UI elements
+- Implement proper error handling for all API calls
+- Use crypto module for AES-256-GCM encryption/decryption
+- Ensure all database operations use RLS
+- Follow Next.js 13+ app router patterns
+- Use TypeScript for type safety
+- Implement loading states for all async operations
+
+## Security Notes
+
+- Never log or expose API keys in any form
+- Use environment variables for encryption secrets
+- Implement proper error messages without exposing sensitive information
+- Ensure all database queries are parameterized
+
+Please implement this step by step, creating all necessary files, database schemas, API routes, and UI components. Test the integration thoroughly and provide clear error handling throughout the flow.
