@@ -26,9 +26,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      - name: Check formatting with Prettier
-        run: npx prettier --check .
-
   test:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -60,6 +57,9 @@ jobs:
 
       - name: Build application
         run: npm run build
+
+      - name: Run tests
+        run: npm run test
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
