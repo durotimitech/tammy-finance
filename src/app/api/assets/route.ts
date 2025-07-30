@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { createClient } from '@/lib/supabase/server';
+import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
 import { AssetFormData } from '@/types/financial';
 
 export async function GET() {
@@ -27,7 +29,60 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch assets' }, { status: 500 });
     }
 
-    return NextResponse.json({ assets });
+    // Check if Trading 212 is connected
+    const { data: credential, error: credentialError } = await supabase
+      .from('encrypted_credentials')
+      .select('encrypted_value, salt, iv, auth_tag')
+      .eq('user_id', user.id)
+      .eq('name', 'trading212')
+      .single();
+
+    let trading212Portfolio = null;
+
+    if (credential && !credentialError) {
+      try {
+        // Generate user-specific secret
+        const encryptionSecret = process.env.ENCRYPTION_SECRET;
+        if (!encryptionSecret) {
+          throw new Error('ENCRYPTION_SECRET is not configured');
+        }
+        const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
+
+        // Decrypt API key
+        let apiKey: string | null = null;
+        try {
+          apiKey = decryptApiKey(
+            {
+              encryptedValue: credential.encrypted_value,
+              salt: credential.salt,
+              iv: credential.iv,
+              authTag: credential.auth_tag,
+            },
+            userSecret,
+          );
+        } catch (decryptError) {
+          console.error('Failed to decrypt Trading 212 API key:', decryptError);
+        }
+
+        if (apiKey) {
+          // Fetch portfolio from Trading 212
+          const { data: portfolio, error: portfolioError } = await fetchPortfolio(apiKey);
+
+          if (!portfolioError && portfolio) {
+            // Format portfolio data
+            trading212Portfolio = formatPortfolioData(portfolio);
+          }
+        }
+      } catch (error) {
+        // Log but don't fail the entire request if Trading 212 fetch fails
+        console.error('Error fetching Trading 212 portfolio:', error);
+      }
+    }
+
+    return NextResponse.json({
+      assets,
+      trading212Portfolio,
+    });
   } catch (error) {
     console.error('Error in GET /api/assets:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

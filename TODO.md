@@ -134,22 +134,22 @@ This document tracks the implementation of Trading 212 integration for the Net W
 
 ### Stage 7: Trading 212 Portfolio Integration
 
-- [ ] Create GET /api/trading212/portfolio
+- [x] Create GET /api/trading212/portfolio
   - Get decrypted API key
   - Fetch portfolio data
   - Return formatted response
-- [ ] Enhance GET /api/assets
+- [x] Enhance GET /api/assets
   - Check for Trading 212 connection
   - Include portfolio value if connected
   - Maintain backward compatibility
-- [ ] Write unit tests
+- [x] Write unit tests
   - Test portfolio endpoint
   - Test enhanced assets endpoint
-- [ ] Write E2E tests
+- [x] Write E2E tests
   - Test assets page with Trading 212 data
   - Test without Trading 212 connection
-- [ ] Verify existing assets tests pass
-- [ ] **REVIEW CHECKPOINT** - Wait for approval
+- [x] Verify existing assets tests pass
+- [x] **REVIEW CHECKPOINT** - Wait for approval
 
 ### Stage 8: Assets Display Enhancement
 
@@ -177,6 +177,7 @@ This document tracks the implementation of Trading 212 integration for the Net W
 - Stage 4: Removed API route unit tests due to Next.js server runtime complexity - functionality will be validated through E2E tests
 - Stage 5: Successfully implemented UI components with modal flow for account connection and Trading 212 API key input. All tests passing.
 - Stage 6: Implemented Trading 212 API service with portfolio fetching, rate limiting, and comprehensive tests. All tests passing.
+- Stage 7: Created portfolio API endpoint and enhanced assets endpoint to include Trading 212 data. All tests passing.
 
 ## Environment Variables Required
 
