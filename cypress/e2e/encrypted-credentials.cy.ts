@@ -20,8 +20,8 @@ describe('Encrypted Credentials', () => {
   };
 
   beforeEach(() => {
-    // Reset database state if needed
-    cy.task('resetDb');
+    // Visit the app to establish session
+    cy.visit('/');
   });
 
   describe('RLS Policies', () => {

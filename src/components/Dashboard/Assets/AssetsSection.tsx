@@ -1,11 +1,13 @@
 'use client';
 
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, Link } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
 import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import { Callout } from '@/components/ui/callout';
 import { Asset, AssetFormData } from '@/types/financial';
 
 export default function AssetsSection() {
@@ -17,6 +19,7 @@ export default function AssetsSection() {
     isOpen: boolean;
     assetId: string | null;
   }>({ isOpen: false, assetId: null });
+  const router = useRouter();
 
   // Fetch assets on component mount
   useEffect(() => {
@@ -144,6 +147,24 @@ export default function AssetsSection() {
             <Plus className="w-4 h-4" />
             Add Asset
           </Button>
+        </div>
+
+        {/* Connect Account Callout */}
+        <div className="mb-4">
+          <Callout type="info">
+            <div className="flex items-center justify-between">
+              <p>Connect your investment accounts to automatically track your portfolio value</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push('/dashboard/settings')}
+                className="flex items-center gap-2 ml-4"
+              >
+                <Link className="w-4 h-4" />
+                Connect Account
+              </Button>
+            </div>
+          </Callout>
         </div>
 
         <div className="space-y-3">
