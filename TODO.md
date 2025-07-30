@@ -115,22 +115,22 @@ This document tracks the implementation of Trading 212 integration for the Net W
 
 ### Stage 6: Trading 212 API Service
 
-- [ ] Create /lib/trading212.ts
-- [ ] Implement fetchPortfolio function
+- [x] Create /lib/trading212.ts
+- [x] Implement fetchPortfolio function
   - Call Trading 212 API
   - Parse response
   - Handle errors
-- [ ] Add TypeScript types for API responses
-- [ ] Implement rate limiting
-- [ ] Write unit tests
+- [x] Add TypeScript types for API responses
+- [x] Implement rate limiting
+- [x] Write unit tests
   - Mock API responses
   - Test error scenarios
   - Test data parsing
-- [ ] Write integration tests
+- [x] Write integration tests
   - Test with mock server
   - Test rate limiting
-- [ ] Run all existing tests
-- [ ] **REVIEW CHECKPOINT** - Wait for approval
+- [x] Run all existing tests
+- [x] **REVIEW CHECKPOINT** - Wait for approval
 
 ### Stage 7: Trading 212 Portfolio Integration
 
@@ -176,6 +176,7 @@ This document tracks the implementation of Trading 212 integration for the Net W
 - Stage 4: Added PUT endpoint for updating credentials (not in original spec but useful)
 - Stage 4: Removed API route unit tests due to Next.js server runtime complexity - functionality will be validated through E2E tests
 - Stage 5: Successfully implemented UI components with modal flow for account connection and Trading 212 API key input. All tests passing.
+- Stage 6: Implemented Trading 212 API service with portfolio fetching, rate limiting, and comprehensive tests. All tests passing.
 
 ## Environment Variables Required
 
