@@ -52,19 +52,19 @@ This document tracks the implementation of Trading 212 integration for the Net W
 
 ### Stage 3: Encryption Service
 
-- [ ] Create /lib/crypto.ts
-- [ ] Implement encryptApiKey function
+- [x] Create /lib/crypto.ts
+- [x] Implement encryptApiKey function
   - Use AES-256-GCM
   - Generate salt, iv, auth_tag
-- [ ] Implement decryptApiKey function
-- [ ] Implement key derivation from user session
-- [ ] Write unit tests
+- [x] Implement decryptApiKey function
+- [x] Implement key derivation from user session
+- [x] Write unit tests
   - Test encryption/decryption roundtrip
   - Test with various input types
   - Test error cases
-- [ ] Write performance tests
-- [ ] Run all existing tests
-- [ ] **REVIEW CHECKPOINT** - Wait for approval
+- [x] Write performance tests
+- [x] Run all existing tests
+- [x] **REVIEW CHECKPOINT** - Wait for approval
 
 ### Stage 4: Credentials API Endpoints
 
