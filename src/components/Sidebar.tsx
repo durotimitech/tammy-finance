@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, Wallet, LogOut, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Wallet, LogOut, CreditCard, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -9,6 +9,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
   { name: 'Liabilities', href: '/dashboard/liabilities', icon: CreditCard },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function Sidebar() {

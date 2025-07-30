@@ -36,19 +36,19 @@ This document tracks the implementation of Trading 212 integration for the Net W
 
 ### Stage 2: Settings Page & Navigation
 
-- [ ] Add Settings icon to sidebar navigation
-- [ ] Create /dashboard/settings route
-- [ ] Create Settings page component
-- [ ] Add "Connect Accounts" section to Settings
-- [ ] Write unit tests
+- [x] Add Settings icon to sidebar navigation
+- [x] Create /dashboard/settings route
+- [x] Create Settings page component
+- [x] Add "Connect Accounts" section to Settings
+- [x] Write unit tests
   - Test sidebar navigation update
   - Test Settings page rendering
-- [ ] Write E2E tests
+- [x] Write E2E tests
   - Test navigation to Settings page
   - Test Settings page displays correctly
-- [ ] Verify existing navigation tests pass
-- [ ] Update any broken navigation tests
-- [ ] **REVIEW CHECKPOINT** - Wait for approval
+- [x] Verify existing navigation tests pass
+- [x] Update any broken navigation tests
+- [x] **REVIEW CHECKPOINT** - Wait for approval
 
 ### Stage 3: Encryption Service
 
