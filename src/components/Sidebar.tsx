@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, Wallet, LogOut, CreditCard, Settings } from 'lucide-react';
+import { LayoutDashboard, Wallet, LogOut, CreditCard, Settings, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -12,7 +12,11 @@ const navigation = [
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export default function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -26,8 +30,16 @@ export default function Sidebar() {
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen">
       {/* Logo */}
       <div className="p-6">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between">
           <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -41,6 +53,7 @@ export default function Sidebar() {
               <li key={item.name}>
                 <Link
                   href={item.href}
+                  onClick={onClose}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive
                       ? 'bg-gray-100 text-gray-900 font-medium'

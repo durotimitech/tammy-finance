@@ -69,7 +69,7 @@ export default function NetWorthSummary() {
           ) : (
             <>
               <motion.p
-                className={`text-3xl mb-2 font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}
+                className={`text-2xl sm:text-3xl mb-2 font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}
                 data-testid="net-worth-value"
               >
                 {formatCurrency(animatedNetWorth)}

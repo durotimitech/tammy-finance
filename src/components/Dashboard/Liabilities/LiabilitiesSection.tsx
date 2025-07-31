@@ -248,12 +248,7 @@ export default function LiabilitiesSection() {
                     >
                       <AccordionTrigger className="hover:no-underline py-3">
                         <div className="flex items-center justify-between w-full pr-4">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900">{category}</h3>
-                            <span className="text-sm text-gray-500">
-                              ({categoryLiabilities.length})
-                            </span>
-                          </div>
+                          <h3 className="font-semibold text-gray-900">{category}</h3>
                           <p className="font-semibold text-gray-900">
                             {formatCurrency(categorySubtotals[category])}
                           </p>
@@ -271,7 +266,6 @@ export default function LiabilitiesSection() {
                             >
                               <div className="flex-1 pl-6">
                                 <h4 className="font-medium text-gray-900">{liability.name}</h4>
-                                <p className="text-sm text-gray-500">{liability.category}</p>
                               </div>
                               <div className="flex items-center gap-3">
                                 <p className="font-semibold text-gray-900">

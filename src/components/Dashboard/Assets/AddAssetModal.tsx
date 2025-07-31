@@ -13,6 +13,7 @@ interface AddAssetModalProps {
   initialData?: AssetFormData;
   isEditing?: boolean;
   isLoading?: boolean;
+  isExternalConnection?: boolean;
 }
 
 export default function AddAssetModal({
@@ -22,6 +23,7 @@ export default function AddAssetModal({
   initialData,
   isEditing = false,
   isLoading = false,
+  isExternalConnection = false,
 }: AddAssetModalProps) {
   const [formData, setFormData] = useState<AssetFormData>(
     initialData || {
@@ -112,6 +114,13 @@ export default function AddAssetModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {isExternalConnection && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                External connections can only have their category changed. Name and value are automatically managed.
+              </p>
+            </div>
+          )}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Asset Name
@@ -123,6 +132,8 @@ export default function AddAssetModal({
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Chase Checking Account"
               required
+              disabled={isExternalConnection}
+              className={isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""}
             />
           </div>
 
@@ -186,11 +197,12 @@ export default function AddAssetModal({
                   setValueInput(e.target.value);
                   setFormData({ ...formData, value: parseFloat(e.target.value) || 0 });
                 }}
-                className="pl-8"
+                className={`pl-8 ${isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""}`}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
                 required
+                disabled={isExternalConnection}
               />
             </div>
           </div>

@@ -33,12 +33,12 @@ export default function Header() {
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   return (
-    <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
+    <header className="lg:h-20 bg-white lg:border-b border-gray-200 flex items-center justify-between lg:px-8">
       <div>
         {isLoading ? (
-          <Skeleton className="h-6 w-[250px]" />
+          <Skeleton className="h-6 w-[200px] sm:w-[250px]" />
         ) : (
-          <h1 className="text-2xl text-gray-900">
+          <h1 className="text-xl sm:text-2xl text-gray-900">
             {greeting}, {displayName}
           </h1>
         )}

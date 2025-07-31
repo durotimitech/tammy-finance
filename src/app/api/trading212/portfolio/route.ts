@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
+import { isSameDay } from '@/lib/date-utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -81,8 +82,67 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to decrypt API key' }, { status: 500 });
     }
 
-    // Fetch portfolio from Trading 212
-    const { data: portfolio, error: portfolioError } = await fetchPortfolio(apiKey);
+    // Check if we already have Trading 212 data from today in the assets table
+    const { data: existingAsset } = await supabase
+      .from('assets')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('name', 'Trading 212')
+      .eq('category', 'External Connections')
+      .single();
+
+    // Check if we need to fetch new data or can use cached data
+    const shouldFetchNewData = !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
+
+    let portfolio = null;
+    let portfolioError = null;
+
+    if (shouldFetchNewData) {
+      // Fetch portfolio from Trading 212
+      const result = await fetchPortfolio(apiKey);
+      portfolio = result.data;
+      portfolioError = result.error;
+      
+      // Update or create Trading 212 asset entry if fetch was successful
+      if (!portfolioError && portfolio) {
+        const formattedPortfolio = formatPortfolioData(portfolio);
+        
+        if (existingAsset) {
+          // Update existing asset
+          await supabase
+            .from('assets')
+            .update({
+              value: formattedPortfolio.totalValue,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', existingAsset.id)
+            .eq('user_id', user.id);
+        } else {
+          // Create new asset entry
+          await supabase
+            .from('assets')
+            .insert({
+              user_id: user.id,
+              name: 'Trading 212',
+              category: 'External Connections',
+              value: formattedPortfolio.totalValue,
+            });
+        }
+      }
+    } else {
+      // Use cached data from today
+      portfolio = {
+        positions: [],
+        cash: {
+          total: existingAsset.value,
+          free: 0,
+          invested: 0,
+          ppl: 0,
+          result: 0,
+          pieCash: 0,
+        },
+      };
+    }
 
     if (portfolioError || !portfolio) {
       return NextResponse.json(

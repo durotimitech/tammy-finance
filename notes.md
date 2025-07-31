@@ -1,5 +1,4 @@
 - Connect checking accounts (BOI, AIB, Revolut)
-- Connect investment accounts (trading 212)
 - Connect retirement account (NetBenefits)
 - expense tracking
 - investment portfolio analysis

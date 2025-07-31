@@ -1,7 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2, Link, TrendingUp, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Edit2, Link } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
@@ -19,20 +18,6 @@ import { Asset, AssetFormData } from '@/types/financial';
 
 interface Trading212Portfolio {
   totalValue: number;
-  totalInvested: number;
-  totalProfitLoss: number;
-  profitLossPercentage: number;
-  cashBalance: number;
-  positions: Array<{
-    ticker: string;
-    quantity: number;
-    value: number;
-    averagePrice: number;
-    currentPrice: number;
-    profitLoss: number;
-    profitLossPercentage: number;
-    accountType: string;
-  }>;
 }
 
 export default function AssetsSection() {
@@ -40,7 +25,6 @@ export default function AssetsSection() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [trading212Portfolio, setTrading212Portfolio] = useState<Trading212Portfolio | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -183,25 +167,10 @@ export default function AssetsSection() {
     }).format(value);
   };
 
-  const refreshTrading212 = async () => {
-    setIsRefreshing(true);
-    try {
-      const response = await fetch('/api/trading212/portfolio');
-      if (response.ok) {
-        const data = await response.json();
-        setTrading212Portfolio(data.portfolio || null);
-      }
-      // Also refresh connected accounts status
-      await fetchConnectedAccounts();
-    } catch (error) {
-      console.error('Error refreshing Trading 212 portfolio:', error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
 
   const totalManualAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalValue = totalManualAssets + (trading212Portfolio?.totalValue || 0);
+  const totalExternalAccounts = trading212Portfolio?.totalValue || 0;
+  const totalValue = totalManualAssets + totalExternalAccounts;
 
   // Group assets by category
   const assetsByCategory = assets.reduce(
@@ -307,67 +276,6 @@ export default function AssetsSection() {
                 <p className="text-2xl text-gray-900">{formatCurrency(totalValue)}</p>
               </div>
 
-              {/* Trading 212 Portfolio */}
-              {trading212Portfolio && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">Trading 212 Portfolio</h4>
-                        <p className="text-sm text-gray-600">Connected Investment Account</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={refreshTrading212}
-                      disabled={isRefreshing}
-                      className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
-                      title="Refresh portfolio"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Portfolio Value</p>
-                      <p className="text-xl font-semibold text-gray-900">
-                        {formatCurrency(trading212Portfolio.totalValue)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Profit/Loss</p>
-                      <p
-                        className={`text-xl font-semibold ${
-                          trading212Portfolio.totalProfitLoss >= 0
-                            ? 'text-green-600'
-                            : 'text-red-600'
-                        }`}
-                      >
-                        {trading212Portfolio.totalProfitLoss >= 0 ? '+' : ''}
-                        {formatCurrency(trading212Portfolio.totalProfitLoss)}
-                        <span className="text-sm ml-1">
-                          ({trading212Portfolio.profitLossPercentage.toFixed(2)}%)
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 text-sm text-gray-600">
-                    <p>
-                      Cash Balance: {formatCurrency(trading212Portfolio.cashBalance)} •{' '}
-                      {trading212Portfolio.positions.length} Positions
-                    </p>
-                  </div>
-                </motion.div>
-              )}
 
               {/* Assets Grouped by Category */}
               <Accordion type="multiple" defaultValue={allCategories} className="space-y-4">
@@ -382,10 +290,7 @@ export default function AssetsSection() {
                     >
                       <AccordionTrigger className="hover:no-underline py-3">
                         <div className="flex items-center justify-between w-full pr-4">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900">{category}</h3>
-                            <span className="text-sm text-gray-500">({categoryAssets.length})</span>
-                          </div>
+                          <h3 className="font-semibold text-gray-900">{category}</h3>
                           <p className="font-semibold text-gray-900">
                             {formatCurrency(categorySubtotals[category])}
                           </p>
@@ -394,40 +299,41 @@ export default function AssetsSection() {
                       <AccordionContent className="pt-0 pb-0">
                         <div className="border-t -mx-4" style={{ borderColor: '#e5e7eb' }}>
                           {categoryAssets.map((asset, index) => (
-                            <div
-                              key={asset.id}
-                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
-                                index !== categoryAssets.length - 1 ? 'border-b' : ''
-                              }`}
-                              style={{ borderColor: '#e5e7eb' }}
-                            >
-                              <div className="flex-1 pl-6">
-                                <h4 className="font-medium text-gray-900">{asset.name}</h4>
-                                <p className="text-sm text-gray-500">{asset.category}</p>
+                              <div
+                                key={asset.id}
+                                className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
+                                  index !== categoryAssets.length - 1 ? 'border-b' : ''
+                                }`}
+                                style={{ borderColor: '#e5e7eb' }}
+                              >
+                                <div className="flex-1 pl-6">
+                                  <h4 className="font-medium text-gray-900">{asset.name}</h4>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <p className="font-semibold text-gray-900">
+                                    {formatCurrency(asset.value)}
+                                  </p>
+                                  <button
+                                    onClick={() => handleEdit(asset)}
+                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                                    data-testid={`edit-asset-${asset.id}`}
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </button>
+                                  {asset.category !== 'External Connections' && (
+                                    <button
+                                      onClick={() =>
+                                        setDeleteConfirmation({ isOpen: true, assetId: asset.id })
+                                      }
+                                      className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                                      data-testid={`delete-asset-${asset.id}`}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <p className="font-semibold text-gray-900">
-                                  {formatCurrency(asset.value)}
-                                </p>
-                                <button
-                                  onClick={() => handleEdit(asset)}
-                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                                  data-testid={`edit-asset-${asset.id}`}
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setDeleteConfirmation({ isOpen: true, assetId: asset.id })
-                                  }
-                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                                  data-testid={`delete-asset-${asset.id}`}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -453,6 +359,7 @@ export default function AssetsSection() {
         }
         isEditing={!!editingAsset}
         isLoading={isSavingAsset}
+        isExternalConnection={editingAsset?.category === 'External Connections'}
       />
 
       <ConfirmationModal
