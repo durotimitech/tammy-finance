@@ -27,40 +27,39 @@ describe('AccountConnectionModal', () => {
     expect(screen.getByText('Choose a platform to connect your investment account')).toBeInTheDocument();
   });
 
-  it('displays all integration options', () => {
+  it('displays select dropdown', () => {
     render(<AccountConnectionModal isOpen={true} onClose={mockOnClose} />);
     
-    expect(screen.getByText('Trading 212')).toBeInTheDocument();
-    expect(screen.getByText('Bank of America')).toBeInTheDocument();
-    expect(screen.getByText('Coinbase')).toBeInTheDocument();
-  });
-
-  it('shows coming soon for unavailable integrations', () => {
-    render(<AccountConnectionModal isOpen={true} onClose={mockOnClose} />);
-    
-    const comingSoonBadges = screen.getAllByText('Coming Soon');
-    expect(comingSoonBadges).toHaveLength(2); // Bank of America and Coinbase
+    expect(screen.getByText('Select Account Type')).toBeInTheDocument();
+    expect(screen.getByText('Choose an account type...')).toBeInTheDocument();
   });
 
   it('handles Trading 212 selection', () => {
     render(<AccountConnectionModal isOpen={true} onClose={mockOnClose} />);
     
-    const trading212Button = screen.getByRole('button', { name: /Trading 212/i });
-    fireEvent.click(trading212Button);
+    // Click the dropdown to open it
+    const selectButton = screen.getByText('Choose an account type...');
+    fireEvent.click(selectButton);
+    
+    // Trading 212 option should be visible in dropdown
+    const trading212Option = screen.getByText('Trading 212');
+    fireEvent.click(trading212Option);
+    
+    // Click connect button
+    const connectButton = screen.getByRole('button', { name: /Connect/i });
+    expect(connectButton).not.toBeDisabled();
+    fireEvent.click(connectButton);
     
     // Should set localStorage flag and close modal
     expect(localStorageMock.setItem).toHaveBeenCalledWith('openTrading212Modal', 'true');
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it('disables unavailable integrations', () => {
+  it('disables connect button when no selection', () => {
     render(<AccountConnectionModal isOpen={true} onClose={mockOnClose} />);
     
-    const bankOfAmericaButton = screen.getByText('Bank of America').closest('button');
-    const coinbaseButton = screen.getByText('Coinbase').closest('button');
-    
-    expect(bankOfAmericaButton).toBeDisabled();
-    expect(coinbaseButton).toBeDisabled();
+    const connectButton = screen.getByRole('button', { name: /Connect/i });
+    expect(connectButton).toBeDisabled();
   });
 
   it('handles cancel button', () => {

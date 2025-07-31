@@ -24,6 +24,9 @@ const customJestConfig = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/__tests__/**',
   ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(isows|@supabase|superjson|jose|@panva)/)',
+  ],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

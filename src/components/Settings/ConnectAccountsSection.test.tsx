@@ -1,6 +1,35 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ConnectAccountsSection from './ConnectAccountsSection';
 
+// Mock Supabase client
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: jest.fn().mockReturnValue({
+    auth: {
+      getUser: jest.fn().mockResolvedValue({
+        data: { user: { id: 'test-user-id' } },
+        error: null,
+      }),
+    },
+  }),
+}));
+
+// Mock crypto client
+jest.mock('@/lib/crypto/client', () => ({
+  encryptValue: jest.fn().mockResolvedValue({
+    encryptedValue: 'encrypted',
+    salt: 'salt',
+    iv: 'iv',
+    authTag: 'authTag',
+    algorithm: 'AES-GCM',
+    keyDerivation: {
+      iterations: 10000,
+      hash: 'SHA-256',
+    },
+  }),
+  generateClientPassword: jest.fn().mockReturnValue('test-password'),
+  isEncryptionSupported: jest.fn().mockReturnValue(true),
+}));
+
 // Mock fetch
 global.fetch = jest.fn();
 
@@ -82,7 +111,14 @@ describe('ConnectAccountsSection', () => {
     (fetch as jest.Mock).mockReset();
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ exists: true }),
+      json: async () => ({ 
+        credentials: [{
+          id: '123',
+          name: 'trading212',
+          displayName: 'Trading 212',
+          connectedAt: '2023-01-01T00:00:00Z'
+        }]
+      }),
     });
     
     render(<ConnectAccountsSection />);
@@ -99,12 +135,14 @@ describe('ConnectAccountsSection', () => {
     (fetch as jest.Mock).mockReset();
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ exists: true }),
-    });
-    
-    // Mock successful delete
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
+      json: async () => ({ 
+        credentials: [{
+          id: '123',
+          name: 'trading212',
+          displayName: 'Trading 212',
+          connectedAt: '2023-01-01T00:00:00Z'
+        }]
+      }),
     });
     
     render(<ConnectAccountsSection />);
@@ -112,6 +150,11 @@ describe('ConnectAccountsSection', () => {
     // Wait for the account to be displayed
     await waitFor(() => {
       expect(screen.getByText('Trading 212')).toBeInTheDocument();
+    });
+    
+    // Mock successful delete
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
     });
     
     const disconnectButton = screen.getByRole('button', { name: /disconnect/i });

@@ -1,10 +1,31 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Check if API key is provided in header for validation
+    const headerApiKey = request.headers.get('X-Trading212-ApiKey');
+
+    if (headerApiKey) {
+      // This is a validation request
+      try {
+        const portfolioData = await fetchPortfolio(headerApiKey);
+        if (!portfolioData) {
+          return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
+        }
+        return NextResponse.json({
+          valid: true,
+          portfolio: formatPortfolioData(portfolioData.data!),
+        });
+      } catch (error) {
+        console.error('API key validation error:', error);
+        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
+      }
+    }
+
+    // Normal authenticated request
     const supabase = await createClient();
 
     // Check if user is authenticated

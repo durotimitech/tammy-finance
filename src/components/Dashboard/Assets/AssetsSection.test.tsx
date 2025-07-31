@@ -208,6 +208,30 @@ describe('AssetsSection with Trading 212', () => {
 
       // Trading 212 section should not be visible
       expect(screen.queryByText('Trading 212 Portfolio')).not.toBeInTheDocument();
+      
+      // Connect account callout should be visible when no accounts connected
+      expect(screen.getByText('Connect your accounts to automatically track your portfolio value')).toBeInTheDocument();
+      expect(screen.getByText('Connect Account')).toBeInTheDocument();
+    });
+  });
+
+  it('hides connect account callout when Trading 212 is connected', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        assets: mockAssets,
+        trading212Portfolio: mockTrading212Portfolio,
+      }),
+    });
+
+    render(<AssetsSection />);
+
+    await waitFor(() => {
+      // Trading 212 portfolio should be visible
+      expect(screen.getByText('Trading 212 Portfolio')).toBeInTheDocument();
+      
+      // Connect account callout should NOT be visible when accounts are connected
+      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
     });
   });
 

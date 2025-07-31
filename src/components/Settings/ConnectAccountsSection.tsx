@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Plus, ExternalLink } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AccountConnectionModal from './AccountConnectionModal';
 import Trading212ConnectionModal from './Trading212ConnectionModal';
+import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -26,18 +27,13 @@ export default function ConnectAccountsSection() {
 
   const fetchConnectedAccounts = async () => {
     try {
-      // For now, check if Trading 212 is connected by trying to fetch the credential
-      const response = await fetch('/api/credentials/trading212');
+      const response = await fetch('/api/credentials');
 
       if (response.ok) {
-        setConnectedAccounts([
-          {
-            name: 'trading212',
-            displayName: 'Trading 212',
-            connectedAt: new Date().toISOString(),
-          },
-        ]);
+        const data = await response.json();
+        setConnectedAccounts(data.credentials || []);
       } else {
+        console.error('Failed to fetch connected accounts');
         setConnectedAccounts([]);
       }
     } catch (error) {
@@ -80,10 +76,10 @@ export default function ConnectAccountsSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
     >
-      <Card>
+      <Card className="bg-white text-black border" style={{ borderColor: '#e5e7eb' }}>
         <CardHeader>
-          <CardTitle>Connected Accounts</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-black">Connected Accounts</CardTitle>
+          <CardDescription className="text-gray-600">
             Connect your investment accounts to automatically track your portfolio value
           </CardDescription>
         </CardHeader>
@@ -91,28 +87,20 @@ export default function ConnectAccountsSection() {
           <div className="space-y-4">
             {/* Connected Accounts List */}
             {isLoading ? (
-              <p className="text-sm text-gray-500">Loading...</p>
+              <div className="space-y-2">
+                <Skeleton className="h-12 w-full rounded-lg" />
+              </div>
             ) : connectedAccounts.length === 0 ? (
-              <p className="text-sm text-gray-500">No accounts connected yet</p>
+              <p className="text-sm text-gray-600">No accounts connected yet</p>
             ) : (
               <div className="space-y-2">
                 {connectedAccounts.map((account) => (
                   <div
                     key={account.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
+                    className="flex items-center justify-between p-3 rounded-lg bg-gray-100"
                   >
                     <div>
-                      <span className="font-medium">{account.displayName}</span>
-                      {account.name === 'trading212' && (
-                        <a
-                          href="https://www.trading212.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="ml-2 inline-flex items-center text-xs text-gray-500 hover:text-gray-700"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+                      <span className="font-medium text-black">{account.displayName}</span>
                     </div>
                     <Button
                       variant="secondary"

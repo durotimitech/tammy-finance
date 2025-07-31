@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Callout } from '@/components/ui/callout';
@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { encryptValue, generateClientPassword, isEncryptionSupported } from '@/lib/crypto/client';
+import { createClient } from '@/lib/supabase/client';
 
 interface Trading212ConnectionModalProps {
   isOpen: boolean;
@@ -29,6 +31,21 @@ export default function Trading212ConnectionModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get user ID on component mount
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleConnect = async () => {
     const trimmedKey = apiKey.trim();
@@ -37,10 +54,45 @@ export default function Trading212ConnectionModal({
       return;
     }
 
+    if (!userId) {
+      setError('User not authenticated');
+      return;
+    }
+
+    if (!isEncryptionSupported()) {
+      setError('Your browser does not support encryption. Please use a modern browser.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
+      // First, test the API key by making a test request
+      setError(null);
+      const testResponse = await fetch('/api/trading212/portfolio', {
+        method: 'GET',
+        headers: {
+          'X-Trading212-ApiKey': trimmedKey,
+        },
+      });
+
+      if (!testResponse.ok) {
+        if (testResponse.status === 401) {
+          throw new Error('Invalid API key. Please check your Trading 212 API key and try again.');
+        } else {
+          throw new Error('Failed to validate API key. Please try again.');
+        }
+      }
+
+      // API key is valid, now encrypt and save it
+      // Generate a unique password for this encryption
+      const timestamp = Date.now();
+      const clientPassword = generateClientPassword(userId, timestamp);
+
+      // Encrypt the API key on the client side
+      const encryptedPayload = await encryptValue(trimmedKey, clientPassword);
+
       const response = await fetch('/api/credentials', {
         method: 'POST',
         headers: {
@@ -48,7 +100,8 @@ export default function Trading212ConnectionModal({
         },
         body: JSON.stringify({
           name: 'trading212',
-          value: trimmedKey,
+          value: encryptedPayload,
+          isEncrypted: true,
         }),
       });
 
@@ -81,10 +134,10 @@ export default function Trading212ConnectionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
-          <DialogTitle>Connect Trading 212</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-black">Connect Trading 212</DialogTitle>
+          <DialogDescription className="text-gray-600">
             Enter your Trading 212 API key to connect your investment account
           </DialogDescription>
         </DialogHeader>
@@ -117,6 +170,7 @@ export default function Trading212ConnectionModal({
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="Enter your Trading 212 API key"
                   disabled={isLoading}
+                  className="bg-white border-gray-300 text-black placeholder-gray-400"
                 />
               </div>
 

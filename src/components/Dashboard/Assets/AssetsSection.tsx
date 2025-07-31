@@ -187,23 +187,25 @@ export default function AssetsSection() {
           </Button>
         </div>
 
-        {/* Connect Account Callout */}
-        <div className="mb-4">
-          <Callout type="info">
-            <div className="flex items-center justify-between">
-              <p>Connect your investment accounts to automatically track your portfolio value</p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => router.push('/dashboard/settings')}
-                className="flex items-center gap-2 ml-4"
-              >
-                <Link className="w-4 h-4" />
-                Connect Account
-              </Button>
-            </div>
-          </Callout>
-        </div>
+        {/* Connect Account Callout - Only show if no accounts are connected */}
+        {!trading212Portfolio && (
+          <div className="mb-4">
+            <Callout type="info">
+              <div className="flex items-center justify-between">
+                <p>Connect your accounts to automatically track your portfolio value</p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push('/dashboard/settings')}
+                  className="flex items-center gap-2 ml-4"
+                >
+                  <Link className="w-4 h-4" />
+                  Connect Account
+                </Button>
+              </div>
+            </Callout>
+          </div>
+        )}
 
         <div className="space-y-3">
           {isLoading ? (

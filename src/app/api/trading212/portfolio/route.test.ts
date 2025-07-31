@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+import { NextRequest } from 'next/server';
 import { GET } from './route';
 import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { createClient } from '@/lib/supabase/server';
@@ -113,7 +114,8 @@ describe('/api/trading212/portfolio', () => {
     mockFormatPortfolioData.mockReturnValue(mockFormattedData);
 
     // Call the handler
-    const response = await GET();
+    const request = new Request('http://localhost:3000/api/trading212/portfolio');
+    const response = await GET(request as NextRequest);
     const data = await response.json();
 
     // Verify response
@@ -148,7 +150,8 @@ describe('/api/trading212/portfolio', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as unknown as ReturnType<typeof createClient>);
 
-    const response = await GET();
+    const request = new Request('http://localhost:3000/api/trading212/portfolio');
+    const response = await GET(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -178,7 +181,8 @@ describe('/api/trading212/portfolio', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as unknown as ReturnType<typeof createClient>);
 
-    const response = await GET();
+    const request = new Request('http://localhost:3000/api/trading212/portfolio');
+    const response = await GET(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -214,7 +218,8 @@ describe('/api/trading212/portfolio', () => {
       throw new Error('Decryption failed');
     });
 
-    const response = await GET();
+    const request = new Request('http://localhost:3000/api/trading212/portfolio');
+    const response = await GET(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -249,7 +254,8 @@ describe('/api/trading212/portfolio', () => {
     mockDecryptApiKey.mockReturnValue('decrypted-api-key');
     mockFetchPortfolio.mockResolvedValue({ data: undefined, error: 'API unavailable' });
 
-    const response = await GET();
+    const request = new Request('http://localhost:3000/api/trading212/portfolio');
+    const response = await GET(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(502);
