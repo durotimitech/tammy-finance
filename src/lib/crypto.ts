@@ -3,7 +3,7 @@ import crypto from 'crypto';
 // Encryption configuration
 const ALGORITHM = 'aes-256-gcm';
 const SALT_LENGTH = 32; // 256 bits
-const IV_LENGTH = 16; // 128 bits
+const IV_LENGTH = 12; // 96 bits for GCM
 const KEY_LENGTH = 32; // 256 bits
 const ITERATIONS = 100000; // PBKDF2 iterations
 

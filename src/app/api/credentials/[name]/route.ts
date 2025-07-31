@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decryptApiKey, encryptApiKey, generateUserSecret } from '@/lib/crypto';
+import { EncryptedPayload } from '@/lib/crypto/shared';
 import { createClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
@@ -80,11 +81,25 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     // Parse request body
     const body = await request.json();
-    const { value } = body;
+    const { value, isEncrypted } = body;
 
-    // Validate input
-    if (!value || value.length === 0 || value.length > 1000) {
-      return NextResponse.json({ error: 'Invalid API key value' }, { status: 400 });
+    // Validate input based on whether it's encrypted or not
+    if (isEncrypted && typeof value === 'object') {
+      const encryptedPayload = value as EncryptedPayload;
+      if (
+        !encryptedPayload.encryptedValue ||
+        !encryptedPayload.salt ||
+        !encryptedPayload.iv ||
+        !encryptedPayload.authTag
+      ) {
+        return NextResponse.json({ error: 'Invalid encrypted payload' }, { status: 400 });
+      }
+    } else if (typeof value === 'string') {
+      if (!value || value.length === 0 || value.length > 1000) {
+        return NextResponse.json({ error: 'Invalid API key value' }, { status: 400 });
+      }
+    } else {
+      return NextResponse.json({ error: 'Invalid credential value' }, { status: 400 });
     }
 
     // Check if credential exists
@@ -106,19 +121,31 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
-    const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
+    let encryptedData: { encryptedValue: string; salt: string; iv: string; authTag: string };
 
-    // Encrypt the new API key
-    const encrypted = encryptApiKey(value, userSecret);
+    if (isEncrypted && typeof value === 'object') {
+      // Value is already encrypted on the client side
+      const payload = value as EncryptedPayload;
+      encryptedData = {
+        encryptedValue: payload.encryptedValue,
+        salt: payload.salt,
+        iv: payload.iv,
+        authTag: payload.authTag,
+      };
+    } else {
+      // Value is plain text, encrypt it on the server
+      const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
+      encryptedData = encryptApiKey(value as string, userSecret);
+    }
 
     // Update in database
     const { error: updateError } = await supabase
       .from('encrypted_credentials')
       .update({
-        encrypted_value: encrypted.encryptedValue,
-        salt: encrypted.salt,
-        iv: encrypted.iv,
-        auth_tag: encrypted.authTag,
+        encrypted_value: encryptedData.encryptedValue,
+        salt: encryptedData.salt,
+        iv: encryptedData.iv,
+        auth_tag: encryptedData.authTag,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', user.id)

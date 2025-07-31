@@ -1,7 +1,7 @@
 describe('Enhanced Assets Display with Trading 212', () => {
   beforeEach(() => {
     // Sign in with test user
-    cy.login('test@example.com', 'password123');
+    cy.login();
   });
 
   it('displays Trading 212 portfolio in assets section', () => {

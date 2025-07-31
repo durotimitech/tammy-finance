@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Callout } from '@/components/ui/callout';
@@ -13,8 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { encryptValue, generateClientPassword, isEncryptionSupported } from '@/lib/crypto/client';
-import { createClient } from '@/lib/supabase/client';
 
 interface Trading212ConnectionModalProps {
   isOpen: boolean;
@@ -31,36 +29,11 @@ export default function Trading212ConnectionModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Get user ID on component mount
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
-      }
-    };
-    fetchUser();
-  }, []);
 
   const handleConnect = async () => {
     const trimmedKey = apiKey.trim();
     if (!trimmedKey) {
       setError('Please enter your API key');
-      return;
-    }
-
-    if (!userId) {
-      setError('User not authenticated');
-      return;
-    }
-
-    if (!isEncryptionSupported()) {
-      setError('Your browser does not support encryption. Please use a modern browser.');
       return;
     }
 
@@ -85,25 +58,34 @@ export default function Trading212ConnectionModal({
         }
       }
 
-      // API key is valid, now encrypt and save it
-      // Generate a unique password for this encryption
-      const timestamp = Date.now();
-      const clientPassword = generateClientPassword(userId, timestamp);
+      // API key is valid, now save it (server will handle encryption)
 
-      // Encrypt the API key on the client side
-      const encryptedPayload = await encryptValue(trimmedKey, clientPassword);
+      // First check if credential already exists
+      const checkResponse = await fetch('/api/credentials');
+      let credentialExists = false;
 
-      const response = await fetch('/api/credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      if (checkResponse.ok) {
+        const existingCreds = await checkResponse.json();
+        credentialExists =
+          existingCreds.credentials?.some((cred: { name: string }) => cred.name === 'trading212') ||
+          false;
+      }
+
+      // Use PUT if credential exists, POST if it doesn't
+      const response = await fetch(
+        credentialExists ? '/api/credentials/trading212' : '/api/credentials',
+        {
+          method: credentialExists ? 'PUT' : 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: 'trading212',
+            value: trimmedKey,
+            isEncrypted: false,
+          }),
         },
-        body: JSON.stringify({
-          name: 'trading212',
-          value: encryptedPayload,
-          isEncrypted: true,
-        }),
-      });
+      );
 
       const data = await response.json();
 

@@ -71,7 +71,10 @@ export async function GET(request: NextRequest) {
       );
     } catch (decryptError) {
       console.error('Decryption failed:', decryptError);
-      return NextResponse.json({ error: 'Failed to decrypt API key' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to decrypt API key. Please reconnect your Trading 212 account.' },
+        { status: 500 },
+      );
     }
 
     if (!apiKey) {

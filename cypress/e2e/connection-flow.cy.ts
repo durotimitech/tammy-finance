@@ -1,30 +1,48 @@
 describe('Account Connection Flow', () => {
   beforeEach(() => {
     // Sign in before each test
-    cy.visit('/auth/login');
-    cy.get('input[type="email"]').type('test@example.com');
-    cy.get('input[type="password"]').type('testpass123');
-    cy.get('button[type="submit"]').click();
-    cy.url().should('include', '/dashboard');
+    cy.login();
   });
 
   describe('Assets Page Callout', () => {
     it('should display connect account callout on assets page', () => {
-      cy.visit('/dashboard/assets');
+      // Mock no connected accounts
+      cy.intercept('GET', '/api/credentials', {
+        statusCode: 200,
+        body: { credentials: [] },
+      }).as('getCredentials');
 
-      cy.contains(
-        'Connect your investment accounts to automatically track your portfolio value',
-      ).should('be.visible');
+      cy.intercept('GET', '/api/assets', {
+        statusCode: 200,
+        body: { assets: [] },
+      }).as('getAssets');
+
+      cy.visit('/dashboard/assets');
+      cy.wait(['@getCredentials', '@getAssets']);
+
+      cy.contains('Connect your accounts to automatically track your portfolio value').should(
+        'be.visible',
+      );
       cy.contains('button', 'Connect Account').should('be.visible');
     });
 
     it('should navigate to settings when clicking connect account', () => {
+      // Mock no connected accounts
+      cy.intercept('GET', '/api/credentials', {
+        statusCode: 200,
+        body: { credentials: [] },
+      }).as('getCredentials');
+
+      cy.intercept('GET', '/api/assets', {
+        statusCode: 200,
+        body: { assets: [] },
+      }).as('getAssets');
+
       cy.visit('/dashboard/assets');
+      cy.wait(['@getCredentials', '@getAssets']);
 
       // Click the Connect Account button in the callout
-      cy.get('[class*="Callout"]').within(() => {
-        cy.contains('button', 'Connect Account').click();
-      });
+      cy.contains('button', 'Connect Account').click();
 
       cy.url().should('include', '/dashboard/settings');
     });
@@ -38,12 +56,16 @@ describe('Account Connection Flow', () => {
 
       // Account selection modal should appear
       cy.contains('Choose a platform to connect your investment account').should('be.visible');
-      cy.contains('Trading 212').should('be.visible');
-      cy.contains('Bank of America').should('be.visible');
-      cy.contains('Coinbase').should('be.visible');
+
+      // Click on the searchable select to open dropdown
+      cy.contains('button', 'Choose an account type').click();
+
+      // Only Trading 212 should be available in the dropdown
+      cy.contains('[role="option"]', 'Trading 212').should('be.visible');
     });
 
-    it('should show coming soon for unavailable integrations', () => {
+    it.skip('should show coming soon for unavailable integrations', () => {
+      // Skip this test as the current implementation filters out unavailable integrations
       cy.visit('/dashboard/settings');
       cy.contains('button', 'Connect Account').click();
 
@@ -66,8 +88,12 @@ describe('Account Connection Flow', () => {
       cy.visit('/dashboard/settings');
       cy.contains('button', 'Connect Account').click();
 
-      // Click Trading 212
-      cy.contains('Trading 212').parent().parent().click();
+      // Click on the searchable select and choose Trading 212
+      cy.contains('button', 'Choose an account type').click();
+      cy.contains('[role="option"]', 'Trading 212').click();
+
+      // Click Connect button
+      cy.contains('button', 'Connect').click();
 
       // Should close account selection and open Trading 212 modal
       cy.contains('Choose a platform to connect your investment account').should('not.exist');
@@ -80,7 +106,13 @@ describe('Account Connection Flow', () => {
     beforeEach(() => {
       cy.visit('/dashboard/settings');
       cy.contains('button', 'Connect Account').click();
-      cy.contains('Trading 212').parent().parent().click();
+
+      // Click on the searchable select and choose Trading 212
+      cy.contains('button', 'Choose an account type').click();
+      cy.contains('[role="option"]', 'Trading 212').click();
+
+      // Click Connect button
+      cy.contains('button', 'Connect').click();
     });
 
     it('should display API key input and documentation link', () => {
@@ -141,25 +173,27 @@ describe('Account Connection Flow', () => {
 
   describe('Connected Account Management', () => {
     it('should disconnect account when clicking disconnect', () => {
-      // First connect an account
-      cy.intercept('POST', '/api/credentials', { statusCode: 201, body: { success: true } });
-      cy.intercept('GET', '/api/credentials/trading212', {
+      // Mock connected account
+      cy.intercept('GET', '/api/credentials', {
         statusCode: 200,
-        body: { value: 'test-key' },
-      });
+        body: {
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
+        },
+      }).as('getCredentials');
+
       cy.intercept('DELETE', '/api/credentials/trading212', {
         statusCode: 200,
         body: { success: true },
       }).as('deleteCredential');
 
       cy.visit('/dashboard/settings');
-
-      // Simulate already connected
-      cy.window().then((win) => {
-        win.localStorage.setItem('trading212_connected', 'true');
-      });
-
-      cy.reload();
+      cy.wait('@getCredentials');
 
       // Click disconnect
       cy.contains('Trading 212')
@@ -169,6 +203,12 @@ describe('Account Connection Flow', () => {
         });
 
       cy.wait('@deleteCredential');
+
+      // Mock updated credentials after disconnect
+      cy.intercept('GET', '/api/credentials', {
+        statusCode: 200,
+        body: { credentials: [] },
+      }).as('getUpdatedCredentials');
 
       // Should remove from list
       cy.contains('No accounts connected yet').should('be.visible');

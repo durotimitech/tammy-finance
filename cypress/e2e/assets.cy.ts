@@ -77,16 +77,24 @@ describe('Assets Page', () => {
     cy.contains('Total Assets Value').should('be.visible');
     cy.contains('€55,000.00').should('be.visible');
 
-    // Assets are grouped by category - need to expand categories first
-    // Expand Checking Account category
-    cy.contains('button', 'Checking Account').click();
+    // Assets are grouped by category, accordion is open by default
     cy.contains('Chase Checking').should('be.visible');
-    cy.contains('€5,000.00').should('be.visible');
-
-    // Expand 401(k) category
-    cy.contains('button', '401(k)').click();
     cy.contains('Vanguard 401k').should('be.visible');
-    cy.contains('€50,000.00').should('be.visible');
+
+    // Check individual values are displayed
+    cy.contains('Chase Checking')
+      .parent()
+      .parent()
+      .within(() => {
+        cy.contains('€5,000.00').should('be.visible');
+      });
+
+    cy.contains('Vanguard 401k')
+      .parent()
+      .parent()
+      .within(() => {
+        cy.contains('€50,000.00').should('be.visible');
+      });
   });
 
   it('should open add asset modal when clicking add button', () => {
@@ -98,7 +106,7 @@ describe('Assets Page', () => {
     cy.get('select[id="category"]').should('be.visible');
     cy.get('input[id="value"]').should('be.visible');
     cy.contains('button', 'Cancel').should('be.visible');
-    cy.contains('button', 'Add Asset').should('be.visible');
+    cy.get('form').contains('button', 'Add Asset').should('be.visible');
   });
 
   it('should add a new asset', () => {
@@ -123,12 +131,11 @@ describe('Assets Page', () => {
     // Open modal
     cy.contains('button', 'Add Asset').click();
 
-    // Wait for categories to load
-    cy.wait('@getCategories');
-
     // Fill form
     cy.get('input[id="name"]').type('New Savings Account');
+
     cy.get('select[id="category"]').select('Savings Account');
+
     cy.get('input[id="value"]').type('10000');
 
     // Submit
@@ -140,10 +147,14 @@ describe('Assets Page', () => {
     // Modal should close
     cy.contains('h2', 'Add New Asset').should('not.exist');
 
-    // Expand Savings Account category to see the asset
-    cy.contains('button', 'Savings Account').click();
+    // Asset should be visible (accordion is open by default)
     cy.contains('New Savings Account').should('be.visible');
-    cy.contains('€10,000.00').should('be.visible');
+    cy.contains('New Savings Account')
+      .parent()
+      .parent()
+      .within(() => {
+        cy.contains('€10,000.00').should('be.visible');
+      });
   });
 
   it('should delete an asset', () => {
@@ -167,9 +178,7 @@ describe('Assets Page', () => {
     cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
-    // Expand Savings Account category first to see the asset
-    cy.contains('button', 'Savings Account').click();
-
+    // Asset is visible (accordion is open by default)
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
 
@@ -208,9 +217,7 @@ describe('Assets Page', () => {
     cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
-    // Expand Savings Account category first to see the asset
-    cy.contains('button', 'Savings Account').click();
-
+    // Asset is visible (accordion is open by default)
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
 

@@ -48,6 +48,22 @@ export async function GET() {
         }
         const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
 
+        // Validate credential data
+        if (
+          !credential.encrypted_value ||
+          !credential.salt ||
+          !credential.iv ||
+          !credential.auth_tag
+        ) {
+          console.error('Invalid credential data:', {
+            hasEncryptedValue: !!credential.encrypted_value,
+            hasSalt: !!credential.salt,
+            hasIv: !!credential.iv,
+            hasAuthTag: !!credential.auth_tag,
+          });
+          throw new Error('Invalid credential data');
+        }
+
         // Decrypt API key
         let apiKey: string | null = null;
         try {
@@ -60,8 +76,11 @@ export async function GET() {
             },
             userSecret,
           );
-        } catch (decryptError) {
-          console.error('Failed to decrypt Trading 212 API key:', decryptError);
+        } catch {
+          // Log error but continue - the Trading 212 integration is optional
+          console.error(
+            'Failed to decrypt Trading 212 API key. You may need to reconnect your account.',
+          );
         }
 
         if (apiKey) {

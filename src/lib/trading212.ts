@@ -65,32 +65,7 @@ export async function fetchPortfolio(apiKey: string): Promise<{
     // Enforce rate limiting
     await enforceRateLimit();
 
-    // Fetch positions
-    const positionsResponse = await fetch(`${TRADING_212_API_BASE_URL}/api/v0/equity/portfolio`, {
-      method: 'GET',
-      headers: {
-        Authorization: apiKey,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!positionsResponse.ok) {
-      if (positionsResponse.status === 401) {
-        return { error: 'Invalid API key' };
-      }
-      if (positionsResponse.status === 429) {
-        return { error: 'Rate limit exceeded. Please try again later.' };
-      }
-
-      const errorData = (await positionsResponse.json()) as Trading212ErrorResponse;
-      return { error: errorData.message || 'Failed to fetch portfolio' };
-    }
-
-    const positions = (await positionsResponse.json()) as Trading212Position[];
-
-    // Fetch account cash
-    await enforceRateLimit();
-
+    // Only fetch account cash
     const cashResponse = await fetch(`${TRADING_212_API_BASE_URL}/api/v0/equity/account/cash`, {
       method: 'GET',
       headers: {
@@ -100,6 +75,13 @@ export async function fetchPortfolio(apiKey: string): Promise<{
     });
 
     if (!cashResponse.ok) {
+      if (cashResponse.status === 401) {
+        return { error: 'Invalid API key' };
+      }
+      if (cashResponse.status === 429) {
+        return { error: 'Rate limit exceeded. Please try again later.' };
+      }
+
       const errorData = (await cashResponse.json()) as Trading212ErrorResponse;
       return { error: errorData.message || 'Failed to fetch account cash' };
     }
@@ -108,7 +90,7 @@ export async function fetchPortfolio(apiKey: string): Promise<{
 
     return {
       data: {
-        positions,
+        positions: [], // Empty positions array since we're not fetching them
         cash,
       },
     };
@@ -119,20 +101,13 @@ export async function fetchPortfolio(apiKey: string): Promise<{
 }
 
 /**
- * Calculates the total portfolio value including positions and cash
+ * Calculates the total portfolio value (cash only since we're not fetching positions)
  * @param portfolio - The Trading 212 portfolio data
  * @returns The total portfolio value in the account currency
  */
 export function calculatePortfolioValue(portfolio: Trading212Portfolio): number {
-  // Calculate total value of all positions
-  const positionsValue = portfolio.positions.reduce((total, position) => {
-    return total + position.quantity * position.currentPrice;
-  }, 0);
-
-  // Add free cash
-  const totalValue = positionsValue + portfolio.cash.free;
-
-  return totalValue;
+  // Return only the total cash value
+  return portfolio.cash.total;
 }
 
 /**
@@ -141,30 +116,9 @@ export function calculatePortfolioValue(portfolio: Trading212Portfolio): number 
  * @returns Formatted portfolio data
  */
 export function formatPortfolioData(portfolio: Trading212Portfolio) {
-  const totalValue = calculatePortfolioValue(portfolio);
-  const totalInvested = portfolio.cash.invested;
-  const totalProfitLoss = portfolio.cash.ppl;
-  const profitLossPercentage = totalInvested > 0 ? (totalProfitLoss / totalInvested) * 100 : 0;
-
+  // Only return the cash total
   return {
-    totalValue,
-    totalInvested,
-    totalProfitLoss,
-    profitLossPercentage,
-    cashBalance: portfolio.cash.free,
-    positions: portfolio.positions.map((position) => ({
-      ticker: position.ticker,
-      quantity: position.quantity,
-      value: position.quantity * position.currentPrice,
-      averagePrice: position.averagePrice,
-      currentPrice: position.currentPrice,
-      profitLoss: position.ppl,
-      profitLossPercentage:
-        position.averagePrice > 0
-          ? ((position.currentPrice - position.averagePrice) / position.averagePrice) * 100
-          : 0,
-      accountType: position.frontend,
-    })),
+    totalValue: portfolio.cash.total,
   };
 }
 
