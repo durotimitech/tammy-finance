@@ -12,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { formatCurrency, groupBy, calculateSubtotals } from '@/lib/utils';
 
 interface Liability {
   id: string;
@@ -147,55 +148,31 @@ export default function LiabilitiesSection() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value);
-  };
-
   const totalAmount = liabilities.reduce((sum, liability) => sum + liability.amount_owed, 0);
 
   // Group liabilities by category
-  const liabilitiesByCategory = liabilities.reduce(
-    (acc, liability) => {
-      if (!acc[liability.category]) {
-        acc[liability.category] = [];
-      }
-      acc[liability.category].push(liability);
-      return acc;
-    },
-    {} as Record<string, Liability[]>,
-  );
+  const liabilitiesByCategory = groupBy(liabilities, 'category');
 
   // Calculate subtotals for each category
-  const categorySubtotals = Object.entries(liabilitiesByCategory).reduce(
-    (acc, [category, categoryLiabilities]) => {
-      acc[category] = categoryLiabilities.reduce(
-        (sum, liability) => sum + liability.amount_owed,
-        0,
-      );
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const categorySubtotals = calculateSubtotals(liabilitiesByCategory, 'amount_owed');
 
   // Get all category names for default open state
   const allCategories = Object.keys(liabilitiesByCategory);
 
   return (
     <>
-      <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
-        <div className="flex justify-between items-center mb-4">
+      <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Liabilities</h2>
           <Button
             onClick={() => setIsModalOpen(true)}
             variant="default"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto justify-center"
           >
             <Plus className="w-4 h-4" />
-            Add Liability
+            <span className="hidden sm:inline">Add Liability</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
 
@@ -231,8 +208,8 @@ export default function LiabilitiesSection() {
             <>
               {/* Total Value */}
               <div className="mb-4 pb-4 border-b" style={{ borderColor: '#e5e7eb' }}>
-                <p className="text-sm text-gray-600">Total Liabilities Amount</p>
-                <p className="text-2xl text-gray-900">{formatCurrency(totalAmount)}</p>
+                <p className="text-xs sm:text-sm text-gray-600">Total Liabilities Amount</p>
+                <p className="text-xl sm:text-2xl text-gray-900">{formatCurrency(totalAmount)}</p>
               </div>
 
               {/* Liabilities Grouped by Category */}
@@ -243,13 +220,13 @@ export default function LiabilitiesSection() {
                     <AccordionItem
                       key={category}
                       value={category}
-                      className="border rounded-lg px-4"
+                      className="border rounded-lg px-3 sm:px-4"
                       style={{ borderColor: '#e5e7eb' }}
                     >
-                      <AccordionTrigger className="hover:no-underline py-3">
-                        <div className="flex items-center justify-between w-full pr-4">
-                          <h3 className="font-semibold text-gray-900">{category}</h3>
-                          <p className="font-semibold text-gray-900">
+                      <AccordionTrigger className="hover:no-underline py-2 sm:py-3">
+                        <div className="flex items-center justify-between w-full pr-2 sm:pr-4 gap-2">
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{category}</h3>
+                          <p className="font-semibold text-gray-900 text-sm sm:text-base whitespace-nowrap">
                             {formatCurrency(categorySubtotals[category])}
                           </p>
                         </div>
@@ -259,37 +236,39 @@ export default function LiabilitiesSection() {
                           {categoryLiabilities.map((liability, index) => (
                             <div
                               key={liability.id}
-                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
+                              className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 px-3 sm:px-4 hover:bg-gray-50 transition-colors ${
                                 index !== categoryLiabilities.length - 1 ? 'border-b' : ''
                               }`}
                               style={{ borderColor: '#e5e7eb' }}
                             >
-                              <div className="flex-1 pl-6">
-                                <h4 className="font-medium text-gray-900">{liability.name}</h4>
+                              <div className="flex-1 pl-3 sm:pl-6 mb-2 sm:mb-0">
+                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">{liability.name}</h4>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <p className="font-semibold text-gray-900">
+                              <div className="flex items-center gap-2 sm:gap-3 pl-3 sm:pl-0">
+                                <p className="font-semibold text-gray-900 text-sm sm:text-base flex-1 sm:flex-none">
                                   {formatCurrency(liability.amount_owed)}
                                 </p>
-                                <button
-                                  onClick={() => handleEdit(liability)}
-                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                                  data-testid={`edit-liability-${liability.id}`}
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setDeleteConfirmation({
-                                      isOpen: true,
-                                      liabilityId: liability.id,
-                                    })
-                                  }
-                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                                  data-testid={`delete-liability-${liability.id}`}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <button
+                                    onClick={() => handleEdit(liability)}
+                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                                    data-testid={`edit-liability-${liability.id}`}
+                                  >
+                                    <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      setDeleteConfirmation({
+                                        isOpen: true,
+                                        liabilityId: liability.id,
+                                      })
+                                    }
+                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                                    data-testid={`delete-liability-${liability.id}`}
+                                  >
+                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ))}

@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Callout } from '@/components/ui/callout';
+import { formatCurrency, groupBy, calculateSubtotals } from '@/lib/utils';
 import { Asset, AssetFormData } from '@/types/financial';
 
 interface Trading212Portfolio {
@@ -160,38 +161,16 @@ export default function AssetsSection() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(value);
-  };
-
 
   const totalManualAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalExternalAccounts = trading212Portfolio?.totalValue || 0;
   const totalValue = totalManualAssets + totalExternalAccounts;
 
   // Group assets by category
-  const assetsByCategory = assets.reduce(
-    (acc, asset) => {
-      if (!acc[asset.category]) {
-        acc[asset.category] = [];
-      }
-      acc[asset.category].push(asset);
-      return acc;
-    },
-    {} as Record<string, Asset[]>,
-  );
+  const assetsByCategory = groupBy(assets, 'category');
 
   // Calculate subtotals for each category
-  const categorySubtotals = Object.entries(assetsByCategory).reduce(
-    (acc, [category, categoryAssets]) => {
-      acc[category] = categoryAssets.reduce((sum, asset) => sum + asset.value, 0);
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const categorySubtotals = calculateSubtotals(assetsByCategory, 'value');
 
   // Get all category names for default open state
   const allCategories = Object.keys(assetsByCategory);

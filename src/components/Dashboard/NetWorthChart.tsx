@@ -13,7 +13,7 @@ import {
   AreaChart,
 } from 'recharts';
 import { Skeleton } from '@/components/Skeleton';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, formatCompactNumber } from '@/lib/utils';
 import { HistoricalTrend } from '@/types/financial';
 
 interface NetWorthChartProps {
@@ -105,14 +105,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
     fetchHistoricalData();
   }, [fetchHistoricalData, refreshKey]);
 
-  const formatYAxis = (value: number) => {
-    if (value >= 1000000) {
-      return `$${(value / 1000000).toFixed(1)}M`;
-    } else if (value >= 1000) {
-      return `$${(value / 1000).toFixed(0)}K`;
-    }
-    return `$${value}`;
-  };
+  const formatYAxis = (value: number) => formatCompactNumber(value);
 
   const getTrendIcon = () => {
     if (!trend) return null;
@@ -180,9 +173,9 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
-        <div className="flex justify-between items-start mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Net Worth Over Time</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Net Worth Over Time</h3>
             {trend && !loading && (
               <div className="flex items-center gap-2 mt-2">
                 {getTrendIcon()}
@@ -203,14 +196,14 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2 w-full sm:w-auto overflow-x-auto">
             {(['30d', '90d', '1y', 'all'] as const).map((range) => (
               <motion.button
                 key={range}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setTimeRange(range)}
-                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition-colors whitespace-nowrap ${
                   timeRange === range
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

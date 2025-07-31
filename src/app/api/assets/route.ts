@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
+import { isSameDay } from '@/lib/date-utils';
 import { createClient } from '@/lib/supabase/server';
 import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
 import { AssetFormData } from '@/types/financial';
-import { isSameDay } from '@/lib/date-utils';
 
 export async function GET() {
   try {

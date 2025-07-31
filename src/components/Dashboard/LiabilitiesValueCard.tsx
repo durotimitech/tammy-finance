@@ -59,12 +59,12 @@ export default function LiabilitiesValueCard() {
           ) : (
             <>
               <motion.p
-                className="text-3xl text-gray-900 mb-2"
+                className="text-2xl sm:text-3xl text-gray-900 mb-2"
                 data-testid="total-liabilities-value"
               >
                 {formatCurrency(animatedValue)}
               </motion.p>
-              <p className="text-sm text-gray-500">Current value of all your liabilities</p>
+              <p className="text-xs sm:text-sm text-gray-500">Current value of all your liabilities</p>
             </>
           )}
         </div>
