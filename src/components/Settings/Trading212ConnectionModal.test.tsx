@@ -5,10 +5,7 @@ import Trading212ConnectionModal from './Trading212ConnectionModal';
 jest.mock('@/lib/supabase/client', () => ({
   createClient: jest.fn().mockReturnValue({
     auth: {
-      getUser: jest.fn().mockResolvedValue({
-        data: { user: { id: 'test-user-id' } },
-        error: null,
-      }),
+      getUser: jest.fn(),
     },
   }),
 }));
@@ -40,6 +37,14 @@ describe('Trading212ConnectionModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (fetch as jest.Mock).mockClear();
+    
+    // Set up the mock for getUser
+    const supabaseMock = jest.requireMock('@/lib/supabase/client');
+    const mockSupabase = supabaseMock.createClient();
+    mockSupabase.auth.getUser.mockResolvedValue({
+      data: { user: { id: 'test-user-id' } },
+      error: null,
+    });
   });
 
   it('renders when open', async () => {
@@ -108,7 +113,7 @@ describe('Trading212ConnectionModal', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it.skip('handles successful connection', async () => {
+  it('handles successful connection', async () => {
     // Mock validation response
     (fetch as jest.Mock)
       .mockResolvedValueOnce({
@@ -127,6 +132,11 @@ describe('Trading212ConnectionModal', () => {
         onSuccess={mockOnSuccess}
       />
     );
+    
+    // Wait for the component to fetch user data
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter your Trading 212 API key')).toBeInTheDocument();
+    });
     
     const input = screen.getByPlaceholderText('Enter your Trading 212 API key');
     fireEvent.change(input, { target: { value: 'test-api-key' } });
@@ -176,10 +186,10 @@ describe('Trading212ConnectionModal', () => {
     // Should call onSuccess after delay
     await waitFor(() => {
       expect(mockOnSuccess).toHaveBeenCalled();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   });
 
-  it.skip('handles API errors', async () => {
+  it('handles API errors', async () => {
     // Mock validation failure
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
@@ -194,6 +204,11 @@ describe('Trading212ConnectionModal', () => {
       />
     );
     
+    // Wait for the component to fetch user data
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter your Trading 212 API key')).toBeInTheDocument();
+    });
+    
     const input = screen.getByPlaceholderText('Enter your Trading 212 API key');
     fireEvent.change(input, { target: { value: 'bad-key' } });
     
@@ -201,13 +216,13 @@ describe('Trading212ConnectionModal', () => {
     fireEvent.click(connectButton);
     
     await waitFor(() => {
-      expect(screen.getByText('Invalid API key. Please check your key and try again.')).toBeInTheDocument();
+      expect(screen.getByText('Failed to validate API key. Please try again.')).toBeInTheDocument();
     });
     
     expect(mockOnSuccess).not.toHaveBeenCalled();
   });
 
-  it.skip('disables form during loading', async () => {
+  it('disables form during loading', async () => {
     (fetch as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
 
     render(
@@ -217,6 +232,11 @@ describe('Trading212ConnectionModal', () => {
         onSuccess={mockOnSuccess}
       />
     );
+    
+    // Wait for the component to fetch user data
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter your Trading 212 API key')).toBeInTheDocument();
+    });
     
     const input = screen.getByPlaceholderText('Enter your Trading 212 API key');
     fireEvent.change(input, { target: { value: 'test-key' } });

@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { AssetCategory, AssetFormData } from '@/types/financial';
+import { AssetFormData, UserAssetCategory } from '@/types/financial';
 
 interface AddAssetModalProps {
   isOpen: boolean;
@@ -24,11 +24,14 @@ export default function AddAssetModal({
   const [formData, setFormData] = useState<AssetFormData>(
     initialData || {
       name: '',
-      category: AssetCategory.SAVINGS_ACCOUNT,
+      category: '',
       value: 0,
     },
   );
   const [valueInput, setValueInput] = useState(initialData?.value?.toString() || '');
+  const [categories, setCategories] = useState<UserAssetCategory[]>([]);
+  const [newCategory, setNewCategory] = useState('');
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -37,29 +40,60 @@ export default function AddAssetModal({
     } else {
       setFormData({
         name: '',
-        category: AssetCategory.SAVINGS_ACCOUNT,
+        category: '',
         value: 0,
       });
       setValueInput('');
     }
   }, [initialData]);
 
+  useEffect(() => {
+    if (isOpen) {
+      fetchCategories();
+    }
+  }, [isOpen]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/assets/categories');
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data.categories || []);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    // Use new category if user is adding one
+    const categoryToSubmit = isAddingCategory && newCategory ? newCategory : formData.category;
+    onSubmit({ ...formData, category: categoryToSubmit });
     if (!isEditing) {
       setFormData({
         name: '',
-        category: AssetCategory.SAVINGS_ACCOUNT,
+        category: '',
         value: 0,
       });
       setValueInput('');
+      setNewCategory('');
+      setIsAddingCategory(false);
     }
   };
 
-  const assetCategories = Object.values(AssetCategory);
+  const handleCategoryChange = (value: string) => {
+    if (value === 'add_new') {
+      setIsAddingCategory(true);
+      setFormData({ ...formData, category: '' });
+    } else {
+      setIsAddingCategory(false);
+      setFormData({ ...formData, category: value });
+      setNewCategory('');
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
@@ -90,51 +124,46 @@ export default function AddAssetModal({
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
-            <select
-              id="category"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value as AssetCategory })
-              }
-              className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-            >
-              <optgroup label="Cash & Cash Equivalents">
-                {assetCategories.slice(0, 6).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+            {!isAddingCategory ? (
+              <select
+                id="category"
+                value={formData.category}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.category_name}>
+                    {category.category_name}
                   </option>
                 ))}
-              </optgroup>
-              <optgroup label="Investments">
-                {assetCategories.slice(6, 12).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Real Estate">
-                {assetCategories.slice(12, 16).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Personal Property">
-                {assetCategories.slice(16, 20).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Other">
-                {assetCategories.slice(20).map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
+                <option value="add_new" className="font-semibold text-blue-600">
+                  + Add New Category
+                </option>
+              </select>
+            ) : (
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  placeholder="Enter new category name"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddingCategory(false);
+                    setNewCategory('');
+                    setFormData({ ...formData, category: categories[0]?.category_name || '' });
+                  }}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
 
           <div>

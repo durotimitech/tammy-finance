@@ -15,6 +15,12 @@ jest.mock('framer-motion', () => ({
   },
 }));
 
+// Mock financial types
+jest.mock('@/types/financial', () => ({
+  // No more AssetCategory enum needed
+  UserAssetCategory: jest.fn(),
+}));
+
 // Mock fetch
 global.fetch = jest.fn();
 
@@ -53,17 +59,25 @@ describe('AssetsSection with Trading 212', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (fetch as jest.Mock).mockReset();
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
   });
 
   it('displays Trading 212 portfolio alongside manual assets', async () => {
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        assets: mockAssets,
-        trading212Portfolio: mockTrading212Portfolio,
-      }),
-    });
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assets: mockAssets,
+          trading212Portfolio: mockTrading212Portfolio,
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -94,12 +108,24 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
           portfolio: {
             ...mockTrading212Portfolio,
             totalValue: 5500,
             totalProfitLoss: 1500,
             profitLossPercentage: 37.5,
           },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
         }),
       });
 
@@ -134,6 +160,12 @@ describe('AssetsSection with Trading 212', () => {
           trading212Portfolio: mockTrading212Portfolio,
         }),
       })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      })
       .mockImplementationOnce(
         () =>
           new Promise((resolve) =>
@@ -146,7 +178,13 @@ describe('AssetsSection with Trading 212', () => {
               100,
             ),
           ),
-      );
+      )
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -172,13 +210,20 @@ describe('AssetsSection with Trading 212', () => {
       profitLossPercentage: -12.5,
     };
 
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        assets: mockAssets,
-        trading212Portfolio: portfolioWithLoss,
-      }),
-    });
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assets: mockAssets,
+          trading212Portfolio: portfolioWithLoss,
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -191,13 +236,20 @@ describe('AssetsSection with Trading 212', () => {
   });
 
   it('does not display Trading 212 section when not connected', async () => {
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        assets: mockAssets,
-        trading212Portfolio: null,
-      }),
-    });
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assets: mockAssets,
+          trading212Portfolio: null,
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -216,13 +268,20 @@ describe('AssetsSection with Trading 212', () => {
   });
 
   it('hides connect account callout when Trading 212 is connected', async () => {
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        assets: mockAssets,
-        trading212Portfolio: mockTrading212Portfolio,
-      }),
-    });
+    (fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          assets: mockAssets,
+          trading212Portfolio: mockTrading212Portfolio,
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -246,7 +305,19 @@ describe('AssetsSection with Trading 212', () => {
           trading212Portfolio: mockTrading212Portfolio,
         }),
       })
-      .mockRejectedValueOnce(new Error('Network error'));
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      })
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+        }),
+      });
 
     render(<AssetsSection />);
 
@@ -264,6 +335,55 @@ describe('AssetsSection with Trading 212', () => {
     // Original portfolio data should still be displayed
     expect(screen.getByText('€5,000.00')).toBeInTheDocument();
 
+    consoleSpy.mockRestore();
+  });
+
+  it('hides connect account callout when any account is connected (not just Trading 212)', async () => {
+    // Mock console to avoid error logs
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    
+    // Mock both API calls
+    (fetch as jest.Mock)
+      .mockImplementation((url) => {
+        if (url === '/api/assets') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              assets: [], 
+              trading212Portfolio: null,
+            }),
+          });
+        } else if (url === '/api/credentials') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              credentials: [{ name: 'other-provider', displayName: 'Other Provider', connectedAt: new Date().toISOString() }],
+            }),
+          });
+        } else if (url === '/api/assets/categories') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
+            }),
+          });
+        }
+        return Promise.reject(new Error(`Unexpected API call: ${url}`));
+      });
+
+    render(<AssetsSection />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText('No assets added yet')).toBeInTheDocument();
+    });
+
+    // Wait for credentials to be fetched and state to update
+    await waitFor(() => {
+      // Connect account callout should NOT be visible when any account is connected
+      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
+    }, { timeout: 5000 });
+    
     consoleSpy.mockRestore();
   });
 });

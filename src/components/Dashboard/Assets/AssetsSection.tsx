@@ -40,11 +40,13 @@ export default function AssetsSection() {
     isOpen: boolean;
     assetId: string | null;
   }>({ isOpen: false, assetId: null });
+  const [hasConnectedAccounts, setHasConnectedAccounts] = useState(false);
   const router = useRouter();
 
   // Fetch assets on component mount
   useEffect(() => {
     fetchAssets();
+    fetchConnectedAccounts();
   }, []);
 
   const fetchAssets = async () => {
@@ -59,6 +61,18 @@ export default function AssetsSection() {
       console.error('Error fetching assets:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchConnectedAccounts = async () => {
+    try {
+      const response = await fetch('/api/credentials');
+      if (response.ok) {
+        const data = await response.json();
+        setHasConnectedAccounts(data.credentials && data.credentials.length > 0);
+      }
+    } catch (error) {
+      console.error('Error fetching connected accounts:', error);
     }
   };
 
@@ -161,6 +175,8 @@ export default function AssetsSection() {
         const data = await response.json();
         setTrading212Portfolio(data.portfolio || null);
       }
+      // Also refresh connected accounts status
+      await fetchConnectedAccounts();
     } catch (error) {
       console.error('Error refreshing Trading 212 portfolio:', error);
     } finally {
@@ -188,7 +204,7 @@ export default function AssetsSection() {
         </div>
 
         {/* Connect Account Callout - Only show if no accounts are connected */}
-        {!trading212Portfolio && (
+        {!hasConnectedAccounts && (
           <div className="mb-4">
             <Callout type="info">
               <div className="flex items-center justify-between">

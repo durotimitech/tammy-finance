@@ -1,37 +1,5 @@
-export enum AssetCategory {
-  // Cash & Cash Equivalents
-  CHECKING_ACCOUNT = 'Checking Account',
-  SAVINGS_ACCOUNT = 'Savings Account',
-  HIGH_YIELD_SAVINGS = 'High-Yield Savings',
-  MONEY_MARKET = 'Money Market',
-  CD = 'Certificate of Deposit',
-  CASH = 'Cash',
-
-  // Investments
-  BROKERAGE_ACCOUNT = 'Brokerage Account',
-  RETIREMENT_401K = '401(k)',
-  RETIREMENT_IRA = 'IRA',
-  RETIREMENT_ROTH_IRA = 'Roth IRA',
-  CRYPTOCURRENCY = 'Cryptocurrency',
-  OTHER_INVESTMENT = 'Other Investment',
-
-  // Real Estate
-  PRIMARY_RESIDENCE = 'Primary Residence',
-  RENTAL_PROPERTY = 'Rental Property',
-  LAND = 'Land',
-  OTHER_REAL_ESTATE = 'Other Real Estate',
-
-  // Personal Property
-  VEHICLE = 'Vehicle',
-  JEWELRY = 'Jewelry',
-  COLLECTIBLES = 'Collectibles',
-  OTHER_PERSONAL_PROPERTY = 'Other Personal Property',
-
-  // Other
-  HSA = 'Health Savings Account',
-  BUSINESS_EQUITY = 'Business Equity',
-  OTHER = 'Other Asset',
-}
+// User-defined asset categories are now stored in the database
+export type AssetCategory = string;
 
 export enum LiabilityCategory {
   // Loans
@@ -54,10 +22,17 @@ export interface Asset {
   id: string;
   user_id: string;
   name: string;
-  category: AssetCategory;
+  category: string;
   value: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface UserAssetCategory {
+  id: string;
+  user_id: string;
+  category_name: string;
+  created_at: string;
 }
 
 export interface Liability {
@@ -74,14 +49,14 @@ export interface NetWorthSummary {
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
-  assetsByCategory: Record<AssetCategory, number>;
+  assetsByCategory: Record<string, number>;
   liabilitiesByCategory: Record<LiabilityCategory, number>;
 }
 
 // Form types for creating/updating
 export interface AssetFormData {
   name: string;
-  category: AssetCategory;
+  category: string;
   value: number;
 }
 
