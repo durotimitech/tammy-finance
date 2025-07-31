@@ -6,6 +6,12 @@ import AddLiabilityModal from './AddLiabilityModal';
 import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 interface Liability {
   id: string;
@@ -21,6 +27,7 @@ export default function LiabilitiesSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSavingLiability, setIsSavingLiability] = useState(false);
   const [editingLiability, setEditingLiability] = useState<Liability | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -51,6 +58,7 @@ export default function LiabilitiesSection() {
     category: string;
     amount_owed: number;
   }) => {
+    setIsSavingLiability(true);
     try {
       const response = await fetch('/api/liabilities', {
         method: 'POST',
@@ -65,6 +73,8 @@ export default function LiabilitiesSection() {
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error adding liability:', error);
+    } finally {
+      setIsSavingLiability(false);
     }
   };
 
@@ -75,6 +85,7 @@ export default function LiabilitiesSection() {
   }) => {
     if (!editingLiability) return;
 
+    setIsSavingLiability(true);
     try {
       const response = await fetch('/api/liabilities', {
         method: 'PUT',
@@ -90,6 +101,8 @@ export default function LiabilitiesSection() {
       setEditingLiability(null);
     } catch (error) {
       console.error('Error updating liability:', error);
+    } finally {
+      setIsSavingLiability(false);
     }
   };
 
@@ -143,6 +156,33 @@ export default function LiabilitiesSection() {
 
   const totalAmount = liabilities.reduce((sum, liability) => sum + liability.amount_owed, 0);
 
+  // Group liabilities by category
+  const liabilitiesByCategory = liabilities.reduce(
+    (acc, liability) => {
+      if (!acc[liability.category]) {
+        acc[liability.category] = [];
+      }
+      acc[liability.category].push(liability);
+      return acc;
+    },
+    {} as Record<string, Liability[]>,
+  );
+
+  // Calculate subtotals for each category
+  const categorySubtotals = Object.entries(liabilitiesByCategory).reduce(
+    (acc, [category, categoryLiabilities]) => {
+      acc[category] = categoryLiabilities.reduce(
+        (sum, liability) => sum + liability.amount_owed,
+        0,
+      );
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  // Get all category names for default open state
+  const allCategories = Object.keys(liabilitiesByCategory);
+
   return (
     <>
       <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
@@ -195,41 +235,75 @@ export default function LiabilitiesSection() {
                 <p className="text-2xl text-gray-900">{formatCurrency(totalAmount)}</p>
               </div>
 
-              {/* Liabilities List */}
-              <div className="space-y-2">
-                {liabilities.map((liability) => (
-                  <div
-                    key={liability.id}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{liability.name}</h4>
-                      <p className="text-sm text-gray-500">{liability.category}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <p className="font-semibold text-gray-900">
-                        {formatCurrency(liability.amount_owed)}
-                      </p>
-                      <button
-                        onClick={() => handleEdit(liability)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                        data-testid={`edit-liability-${liability.id}`}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDeleteConfirmation({ isOpen: true, liabilityId: liability.id })
-                        }
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                        data-testid={`delete-liability-${liability.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {/* Liabilities Grouped by Category */}
+              <Accordion type="multiple" defaultValue={allCategories} className="space-y-4">
+                {Object.entries(liabilitiesByCategory)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([category, categoryLiabilities]) => (
+                    <AccordionItem
+                      key={category}
+                      value={category}
+                      className="border rounded-lg px-4"
+                      style={{ borderColor: '#e5e7eb' }}
+                    >
+                      <AccordionTrigger className="hover:no-underline py-3">
+                        <div className="flex items-center justify-between w-full pr-4">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">{category}</h3>
+                            <span className="text-sm text-gray-500">
+                              ({categoryLiabilities.length})
+                            </span>
+                          </div>
+                          <p className="font-semibold text-gray-900">
+                            {formatCurrency(categorySubtotals[category])}
+                          </p>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-0 pb-0">
+                        <div className="border-t -mx-4" style={{ borderColor: '#e5e7eb' }}>
+                          {categoryLiabilities.map((liability, index) => (
+                            <div
+                              key={liability.id}
+                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
+                                index !== categoryLiabilities.length - 1 ? 'border-b' : ''
+                              }`}
+                              style={{ borderColor: '#e5e7eb' }}
+                            >
+                              <div className="flex-1 pl-6">
+                                <h4 className="font-medium text-gray-900">{liability.name}</h4>
+                                <p className="text-sm text-gray-500">{liability.category}</p>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <p className="font-semibold text-gray-900">
+                                  {formatCurrency(liability.amount_owed)}
+                                </p>
+                                <button
+                                  onClick={() => handleEdit(liability)}
+                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                                  data-testid={`edit-liability-${liability.id}`}
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setDeleteConfirmation({
+                                      isOpen: true,
+                                      liabilityId: liability.id,
+                                    })
+                                  }
+                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                                  data-testid={`delete-liability-${liability.id}`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+              </Accordion>
             </>
           )}
         </div>
@@ -250,6 +324,7 @@ export default function LiabilitiesSection() {
               : undefined
           }
           isEditing={!!editingLiability}
+          isLoading={isSavingLiability}
         />
       )}
 

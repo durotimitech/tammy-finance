@@ -260,7 +260,10 @@ describe('AssetsSection with Trading 212', () => {
 
       // Trading 212 section should not be visible
       expect(screen.queryByText('Trading 212 Portfolio')).not.toBeInTheDocument();
-      
+    });
+    
+    // Wait for account check to complete
+    await waitFor(() => {
       // Connect account callout should be visible when no accounts connected
       expect(screen.getByText('Connect your accounts to automatically track your portfolio value')).toBeInTheDocument();
       expect(screen.getByText('Connect Account')).toBeInTheDocument();
@@ -385,5 +388,61 @@ describe('AssetsSection with Trading 212', () => {
     }, { timeout: 5000 });
     
     consoleSpy.mockRestore();
+  });
+
+  it('shows skeleton loader for callout while checking for connected accounts', async () => {
+    // Create a promise that we can control
+    let resolveCredentials: (value: unknown) => void;
+    const credentialsPromise = new Promise((resolve) => {
+      resolveCredentials = resolve;
+    });
+
+    (fetch as jest.Mock)
+      .mockImplementation((url) => {
+        if (url === '/api/assets') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              assets: [],
+              trading212Portfolio: null,
+            }),
+          });
+        } else if (url === '/api/credentials') {
+          return credentialsPromise;
+        } else if (url === '/api/assets/categories') {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
+            }),
+          });
+        }
+        return Promise.reject(new Error(`Unexpected API call: ${url}`));
+      });
+
+    render(<AssetsSection />);
+
+    // Initially, a skeleton should be shown in place of the callout
+    await waitFor(() => {
+      expect(screen.getByText('Assets')).toBeInTheDocument();
+      // Look for a skeleton with the specific height class we used
+      const skeleton = document.querySelector('.h-16.animate-pulse');
+      expect(skeleton).toBeInTheDocument();
+      // Callout should not be visible yet
+      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
+    });
+
+    // Now resolve the credentials promise
+    resolveCredentials!({
+      ok: true,
+      json: async () => ({
+        credentials: [], // No connected accounts
+      }),
+    });
+
+    // After loading, the callout should appear
+    await waitFor(() => {
+      expect(screen.getByText('Connect your accounts to automatically track your portfolio value')).toBeInTheDocument();
+    });
   });
 });

@@ -8,6 +8,12 @@ import AddAssetModal from './AddAssetModal';
 import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Callout } from '@/components/ui/callout';
 import { Asset, AssetFormData } from '@/types/financial';
 
@@ -41,6 +47,8 @@ export default function AssetsSection() {
     assetId: string | null;
   }>({ isOpen: false, assetId: null });
   const [hasConnectedAccounts, setHasConnectedAccounts] = useState(false);
+  const [isCheckingAccounts, setIsCheckingAccounts] = useState(true);
+  const [isSavingAsset, setIsSavingAsset] = useState(false);
   const router = useRouter();
 
   // Fetch assets on component mount
@@ -73,10 +81,13 @@ export default function AssetsSection() {
       }
     } catch (error) {
       console.error('Error fetching connected accounts:', error);
+    } finally {
+      setIsCheckingAccounts(false);
     }
   };
 
   const handleAddAsset = async (data: AssetFormData) => {
+    setIsSavingAsset(true);
     try {
       const response = await fetch('/api/assets', {
         method: 'POST',
@@ -95,12 +106,15 @@ export default function AssetsSection() {
       }
     } catch (error) {
       console.error('Error adding asset:', error);
+    } finally {
+      setIsSavingAsset(false);
     }
   };
 
   const handleUpdateAsset = async (data: AssetFormData) => {
     if (!editingAsset) return;
 
+    setIsSavingAsset(true);
     try {
       const response = await fetch('/api/assets', {
         method: 'PUT',
@@ -120,6 +134,8 @@ export default function AssetsSection() {
       }
     } catch (error) {
       console.error('Error updating asset:', error);
+    } finally {
+      setIsSavingAsset(false);
     }
   };
 
@@ -187,6 +203,30 @@ export default function AssetsSection() {
   const totalManualAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalValue = totalManualAssets + (trading212Portfolio?.totalValue || 0);
 
+  // Group assets by category
+  const assetsByCategory = assets.reduce(
+    (acc, asset) => {
+      if (!acc[asset.category]) {
+        acc[asset.category] = [];
+      }
+      acc[asset.category].push(asset);
+      return acc;
+    },
+    {} as Record<string, Asset[]>,
+  );
+
+  // Calculate subtotals for each category
+  const categorySubtotals = Object.entries(assetsByCategory).reduce(
+    (acc, [category, categoryAssets]) => {
+      acc[category] = categoryAssets.reduce((sum, asset) => sum + asset.value, 0);
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  // Get all category names for default open state
+  const allCategories = Object.keys(assetsByCategory);
+
   return (
     <>
       <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
@@ -204,23 +244,29 @@ export default function AssetsSection() {
         </div>
 
         {/* Connect Account Callout - Only show if no accounts are connected */}
-        {!hasConnectedAccounts && (
+        {isCheckingAccounts ? (
           <div className="mb-4">
-            <Callout type="info">
-              <div className="flex items-center justify-between">
-                <p>Connect your accounts to automatically track your portfolio value</p>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => router.push('/dashboard/settings')}
-                  className="flex items-center gap-2 ml-4"
-                >
-                  <Link className="w-4 h-4" />
-                  Connect Account
-                </Button>
-              </div>
-            </Callout>
+            <Skeleton className="h-16 w-full rounded-lg" />
           </div>
+        ) : (
+          !hasConnectedAccounts && (
+            <div className="mb-4">
+              <Callout type="info">
+                <div className="flex items-center justify-between">
+                  <p>Connect your accounts to automatically track your portfolio value</p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => router.push('/dashboard/settings')}
+                    className="flex items-center gap-2 ml-4"
+                  >
+                    <Link className="w-4 h-4" />
+                    Connect Account
+                  </Button>
+                </div>
+              </Callout>
+            </div>
+          )
         )}
 
         <div className="space-y-3">
@@ -323,37 +369,70 @@ export default function AssetsSection() {
                 </motion.div>
               )}
 
-              {/* Assets List */}
-              <div className="space-y-2">
-                {assets.map((asset) => (
-                  <div
-                    key={asset.id}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{asset.name}</h4>
-                      <p className="text-sm text-gray-500">{asset.category}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <p className="font-semibold text-gray-900">{formatCurrency(asset.value)}</p>
-                      <button
-                        onClick={() => handleEdit(asset)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                        data-testid={`edit-asset-${asset.id}`}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirmation({ isOpen: true, assetId: asset.id })}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                        data-testid={`delete-asset-${asset.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {/* Assets Grouped by Category */}
+              <Accordion type="multiple" defaultValue={allCategories} className="space-y-4">
+                {Object.entries(assetsByCategory)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([category, categoryAssets]) => (
+                    <AccordionItem
+                      key={category}
+                      value={category}
+                      className="border rounded-lg px-4"
+                      style={{ borderColor: '#e5e7eb' }}
+                    >
+                      <AccordionTrigger className="hover:no-underline py-3">
+                        <div className="flex items-center justify-between w-full pr-4">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">{category}</h3>
+                            <span className="text-sm text-gray-500">({categoryAssets.length})</span>
+                          </div>
+                          <p className="font-semibold text-gray-900">
+                            {formatCurrency(categorySubtotals[category])}
+                          </p>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-0 pb-0">
+                        <div className="border-t -mx-4" style={{ borderColor: '#e5e7eb' }}>
+                          {categoryAssets.map((asset, index) => (
+                            <div
+                              key={asset.id}
+                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
+                                index !== categoryAssets.length - 1 ? 'border-b' : ''
+                              }`}
+                              style={{ borderColor: '#e5e7eb' }}
+                            >
+                              <div className="flex-1 pl-6">
+                                <h4 className="font-medium text-gray-900">{asset.name}</h4>
+                                <p className="text-sm text-gray-500">{asset.category}</p>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <p className="font-semibold text-gray-900">
+                                  {formatCurrency(asset.value)}
+                                </p>
+                                <button
+                                  onClick={() => handleEdit(asset)}
+                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                                  data-testid={`edit-asset-${asset.id}`}
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setDeleteConfirmation({ isOpen: true, assetId: asset.id })
+                                  }
+                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                                  data-testid={`delete-asset-${asset.id}`}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+              </Accordion>
             </>
           )}
         </div>
@@ -373,6 +452,7 @@ export default function AssetsSection() {
             : undefined
         }
         isEditing={!!editingAsset}
+        isLoading={isSavingAsset}
       />
 
       <ConfirmationModal

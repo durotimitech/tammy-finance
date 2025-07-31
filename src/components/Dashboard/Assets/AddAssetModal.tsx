@@ -12,6 +12,7 @@ interface AddAssetModalProps {
   onSubmit: (data: AssetFormData) => void;
   initialData?: AssetFormData;
   isEditing?: boolean;
+  isLoading?: boolean;
 }
 
 export default function AddAssetModal({
@@ -20,6 +21,7 @@ export default function AddAssetModal({
   onSubmit,
   initialData,
   isEditing = false,
+  isLoading = false,
 }: AddAssetModalProps) {
   const [formData, setFormData] = useState<AssetFormData>(
     initialData || {
@@ -100,7 +102,11 @@ export default function AddAssetModal({
       <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">{isEditing ? 'Edit Asset' : 'Add New Asset'}</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -195,10 +201,11 @@ export default function AddAssetModal({
               onClick={onClose}
               variant="secondary"
               className="flex-1 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50"
+              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" variant="default" className="flex-1">
+            <Button type="submit" variant="default" className="flex-1" loading={isLoading}>
               {isEditing ? 'Update Asset' : 'Add Asset'}
             </Button>
           </div>

@@ -4,6 +4,14 @@ describe('Assets Page', () => {
     cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
     cy.intercept('GET', '/api/liabilities', { liabilities: [] }).as('getLiabilities');
     cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
+    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
+    cy.intercept('GET', '/api/assets/categories', {
+      categories: [
+        { id: '1', category_name: 'Checking Account' },
+        { id: '2', category_name: 'Savings Account' },
+        { id: '3', category_name: '401(k)' },
+      ],
+    }).as('getCategories');
 
     // Login with real authentication
     cy.login();
@@ -13,6 +21,7 @@ describe('Assets Page', () => {
 
     // Wait for API calls to complete
     cy.wait('@getAssets');
+    cy.wait('@getCredentials');
   });
 
   it('should display the assets page with all elements', () => {
@@ -59,20 +68,24 @@ describe('Assets Page', () => {
     ];
 
     cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
+    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
+    cy.wait('@getCredentials');
 
     // Check total value
     cy.contains('Total Assets Value').should('be.visible');
     cy.contains('€55,000.00').should('be.visible');
 
-    // Check individual assets
+    // Assets are grouped by category - need to expand categories first
+    // Expand Checking Account category
+    cy.contains('button', 'Checking Account').click();
     cy.contains('Chase Checking').should('be.visible');
-    cy.contains('Checking Account').should('be.visible');
     cy.contains('€5,000.00').should('be.visible');
 
+    // Expand 401(k) category
+    cy.contains('button', '401(k)').click();
     cy.contains('Vanguard 401k').should('be.visible');
-    cy.contains('401(k)').should('be.visible');
     cy.contains('€50,000.00').should('be.visible');
   });
 
@@ -90,6 +103,7 @@ describe('Assets Page', () => {
 
   it('should add a new asset', () => {
     cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
+    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
     cy.intercept('POST', '/api/assets', {
       asset: {
         id: 'new-1',
@@ -104,9 +118,13 @@ describe('Assets Page', () => {
 
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
+    cy.wait('@getCredentials');
 
     // Open modal
     cy.contains('button', 'Add Asset').click();
+
+    // Wait for categories to load
+    cy.wait('@getCategories');
 
     // Fill form
     cy.get('input[id="name"]').type('New Savings Account');
@@ -119,8 +137,11 @@ describe('Assets Page', () => {
     // Check API call
     cy.wait('@createAsset');
 
-    // Modal should close and asset should appear
+    // Modal should close
     cy.contains('h2', 'Add New Asset').should('not.exist');
+
+    // Expand Savings Account category to see the asset
+    cy.contains('button', 'Savings Account').click();
     cy.contains('New Savings Account').should('be.visible');
     cy.contains('€10,000.00').should('be.visible');
   });
@@ -139,10 +160,15 @@ describe('Assets Page', () => {
     ];
 
     cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
+    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
     cy.intercept('DELETE', '/api/assets?id=1', { success: true }).as('deleteAsset');
 
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
+    cy.wait('@getCredentials');
+
+    // Expand Savings Account category first to see the asset
+    cy.contains('button', 'Savings Account').click();
 
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
@@ -176,9 +202,14 @@ describe('Assets Page', () => {
     ];
 
     cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
+    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
 
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
+    cy.wait('@getCredentials');
+
+    // Expand Savings Account category first to see the asset
+    cy.contains('button', 'Savings Account').click();
 
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
