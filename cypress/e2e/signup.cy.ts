@@ -1,4 +1,4 @@
-describe.skip('Signup Page', () => {
+describe('Signup Page', () => {
   beforeEach(() => {
     cy.visit('/auth/signup');
   });
@@ -59,18 +59,30 @@ describe.skip('Signup Page', () => {
       cy.findByPlaceholderText('Confirm your password').should('have.attr', 'type', 'password');
 
       // Click first toggle button to show password
-      cy.get('button[type="button"]').first().click();
+      cy.get('input[placeholder="Create a password"]')
+        .parent()
+        .find('button[type="button"]')
+        .click();
       cy.get('input[placeholder="Create a password"]').should('have.attr', 'type', 'text');
 
       // Click second toggle button to show confirm password
-      cy.get('button[type="button"]').last().click();
+      cy.get('input[placeholder="Confirm your password"]')
+        .parent()
+        .find('button[type="button"]')
+        .click();
       cy.get('input[placeholder="Confirm your password"]').should('have.attr', 'type', 'text');
 
       // Click again to hide passwords
-      cy.get('button[type="button"]').first().click();
+      cy.get('input[placeholder="Create a password"]')
+        .parent()
+        .find('button[type="button"]')
+        .click();
       cy.get('input[placeholder="Create a password"]').should('have.attr', 'type', 'password');
 
-      cy.get('button[type="button"]').last().click();
+      cy.get('input[placeholder="Confirm your password"]')
+        .parent()
+        .find('button[type="button"]')
+        .click();
       cy.get('input[placeholder="Confirm your password"]').should('have.attr', 'type', 'password');
     });
 
