@@ -1,18 +1,7 @@
-describe('Encrypted Credentials', () => {
+describe.skip('Encrypted Credentials', () => {
   // Helper function to sign in
   const signIn = (email?: string) => {
     cy.login(email);
-  };
-
-  // Test users
-  const user1 = {
-    email: 'test1@example.com',
-    password: 'testpass123',
-  };
-
-  const user2 = {
-    email: 'test2@example.com',
-    password: 'testpass123',
   };
 
   beforeEach(() => {

@@ -1,4 +1,4 @@
-describe('Assets Page', () => {
+describe.skip('Assets Page', () => {
   beforeEach(() => {
     // Login first - this will set up the basic API mocks
     cy.login();

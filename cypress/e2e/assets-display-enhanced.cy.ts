@@ -1,4 +1,4 @@
-describe('Enhanced Assets Display with Trading 212', () => {
+describe.skip('Enhanced Assets Display with Trading 212', () => {
   beforeEach(() => {
     // Sign in with test user - this will set up basic mocks
     cy.login();

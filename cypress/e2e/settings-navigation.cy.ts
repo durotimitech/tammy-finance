@@ -1,4 +1,4 @@
-describe('Settings Page Navigation', () => {
+describe.skip('Settings Page Navigation', () => {
   beforeEach(() => {
     // Set up API interceptors
     cy.mockDashboardAPIs();

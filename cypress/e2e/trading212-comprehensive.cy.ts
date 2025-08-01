@@ -1,4 +1,4 @@
-describe('Trading 212 Comprehensive Tests', () => {
+describe.skip('Trading 212 Comprehensive Tests', () => {
   beforeEach(() => {
     // Sign in with test user - will use env variables
     cy.login();

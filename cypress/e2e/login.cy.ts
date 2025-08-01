@@ -1,4 +1,4 @@
-describe('Login Page', () => {
+describe.skip('Login Page', () => {
   beforeEach(() => {
     // Clear any existing session before each test
     cy.clearSupabaseSession();

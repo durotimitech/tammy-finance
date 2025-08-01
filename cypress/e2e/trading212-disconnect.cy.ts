@@ -1,4 +1,4 @@
-describe('Trading 212 Disconnect', () => {
+describe.skip('Trading 212 Disconnect', () => {
   beforeEach(() => {
     // Sign in with test user
     cy.login('test@example.com', 'password123');

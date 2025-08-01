@@ -4,7 +4,7 @@ describe.skip('Stage 8: Assets Display Enhancement - OUTDATED', () => {
     cy.login();
   });
 
-  describe('Trading 212 Portfolio Display', () => {
+  describe.skip('Trading 212 Portfolio Display', () => {
     it('displays Trading 212 portfolio as a special non-editable entry', () => {
       // Mock Trading 212 portfolio data
       cy.intercept('GET', '/api/assets', {
@@ -106,7 +106,7 @@ describe.skip('Stage 8: Assets Display Enhancement - OUTDATED', () => {
     });
   });
 
-  describe('Disconnect Functionality', () => {
+  describe.skip('Disconnect Functionality', () => {
     it('allows users to disconnect Trading 212 from Settings', () => {
       // Mock connected account
       cy.intercept('GET', '/api/credentials', {
@@ -217,7 +217,7 @@ describe.skip('Stage 8: Assets Display Enhancement - OUTDATED', () => {
     });
   });
 
-  describe('Refresh Mechanism', () => {
+  describe.skip('Refresh Mechanism', () => {
     it.skip('allows users to refresh Trading 212 portfolio data', () => {
       const initialPortfolio = {
         totalValue: 25000,
@@ -316,7 +316,7 @@ describe.skip('Stage 8: Assets Display Enhancement - OUTDATED', () => {
     });
   });
 
-  describe('Total Net Worth Calculation', () => {
+  describe.skip('Total Net Worth Calculation', () => {
     it.skip('includes Trading 212 portfolio in total assets calculation', () => {
       cy.intercept('GET', '/api/assets', {
         statusCode: 200,

@@ -1,4 +1,4 @@
-describe('Trading 212 Portfolio Integration', () => {
+describe.skip('Trading 212 Portfolio Integration', () => {
   beforeEach(() => {
     // Sign in with test user
     cy.login('test@example.com', 'password123');

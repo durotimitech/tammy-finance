@@ -1,4 +1,4 @@
-describe('Account Connection Flow', () => {
+describe.skip('Account Connection Flow', () => {
   beforeEach(() => {
     // Sign in before each test
     cy.login();

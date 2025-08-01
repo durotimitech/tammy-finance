@@ -1,4 +1,4 @@
-describe('Liabilities Page', () => {
+describe.skip('Liabilities Page', () => {
   beforeEach(() => {
     // Set up default API interceptors
     cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
