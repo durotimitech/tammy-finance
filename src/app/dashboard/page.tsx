@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AssetDistributionChart from '@/components/Dashboard/Assets/AssetDistributionChart';
 import AssetsValueCard from '@/components/Dashboard/AssetsValueCard';
 import LiabilitiesDistributionChart from '@/components/Dashboard/Liabilities/LiabilitiesDistributionChart';
@@ -11,64 +11,27 @@ import NetWorthChart from '@/components/Dashboard/NetWorthChart';
 import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
-import { Asset } from '@/types/financial';
+import { useAssets, useLiabilities } from '@/hooks/use-financial-data';
 
 interface Trading212Portfolio {
   totalValue: number;
 }
 
-interface Liability {
-  id: string;
-  name: string;
-  category: string;
-  amount_owed: number;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function DashboardPage() {
   const [refreshKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [liabilities, setLiabilities] = useState<Liability[]>([]);
-  const [trading212Portfolio, setTrading212Portfolio] = useState<Trading212Portfolio | null>(null);
-  const [isLoadingAssets, setIsLoadingAssets] = useState(true);
-  const [isLoadingLiabilities, setIsLoadingLiabilities] = useState(true);
 
-  useEffect(() => {
-    fetchAssets();
-    fetchLiabilities();
-  }, [refreshKey]);
+  // Use React Query hooks for data fetching
+  const { data: assets = [], isLoading: isLoadingAssets } = useAssets();
+  const { data: liabilities = [], isLoading: isLoadingLiabilities } = useLiabilities();
 
-  const fetchAssets = async () => {
-    try {
-      const response = await fetch('/api/assets');
-      if (response.ok) {
-        const data = await response.json();
-        setAssets(data.assets || []);
-        setTrading212Portfolio(data.trading212Portfolio || null);
-      }
-    } catch (error) {
-      console.error('Error fetching assets:', error);
-    } finally {
-      setIsLoadingAssets(false);
-    }
-  };
-
-  const fetchLiabilities = async () => {
-    try {
-      const response = await fetch('/api/liabilities');
-      if (response.ok) {
-        const data = await response.json();
-        setLiabilities(data.liabilities || []);
-      }
-    } catch (error) {
-      console.error('Error fetching liabilities:', error);
-    } finally {
-      setIsLoadingLiabilities(false);
-    }
-  };
+  // Extract Trading212 data from assets if it exists
+  const trading212Asset = assets.find(
+    (asset) => asset.name === 'Trading 212' && asset.category === 'External Connections',
+  );
+  const trading212Portfolio: Trading212Portfolio | null = trading212Asset
+    ? { totalValue: Number(trading212Asset.value) }
+    : null;
 
   return (
     <div className="relative flex h-screen bg-gray-50">

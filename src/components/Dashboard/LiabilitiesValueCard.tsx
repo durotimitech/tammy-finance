@@ -3,37 +3,17 @@
 import { motion } from 'framer-motion';
 import { TrendingDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/Skeleton';
+import { useLiabilities } from '@/hooks/use-financial-data';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function LiabilitiesValueCard() {
-  const [totalValue, setTotalValue] = useState(0);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data: liabilities = [], isLoading: loading } = useLiabilities();
+
+  const totalValue = liabilities.reduce((sum, liability) => sum + Number(liability.amount_owed), 0);
   const animatedValue = useAnimatedNumber(totalValue, 1.2);
-
-  useEffect(() => {
-    const fetchLiabilities = async () => {
-      try {
-        const response = await fetch('/api/liabilities');
-        if (!response.ok) throw new Error('Failed to fetch liabilities');
-        const data = await response.json();
-        const total = data.liabilities.reduce(
-          (sum: number, liability: { amount_owed: number }) => sum + liability.amount_owed,
-          0,
-        );
-        setTotalValue(total);
-      } catch (error) {
-        console.error('Error fetching liabilities:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLiabilities();
-  }, []);
 
   const handleClick = () => {
     router.push('/dashboard/liabilities');

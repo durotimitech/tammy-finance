@@ -13,14 +13,21 @@ A modern web application for tracking personal net worth by managing assets and 
 - **Real-time Net Worth Calculation:** Automatically calculates total net worth (assets - liabilities)
 - **Category Organization:** Assets and liabilities are organized by predefined categories
 - **Visual Dashboard:** Clean, intuitive interface showing financial overview at a glance
+- **Trading 212 Integration:** Automatic portfolio synchronization with daily caching
+- **Performance Optimized:** In-memory caching reduces database load and improves response times
 
 ### Core Technologies
 
 - **Framework:** [Next.js](https://nextjs.org/) 15+ (App Router with Turbopack)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components:** Custom components with consistent styling (Button component supports only "default" variant)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/) for smooth, declarative animations.
+- **UI Components:** Custom components with consistent styling (Button component supports "default" and "secondary" variants)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/) for smooth, declarative animations
+- **State Management:** [TanStack Query](https://tanstack.com/query) (React Query) for server state management
+- **Caching:**
+  - Client-side: React Query with 24-hour cache time and 5-minute stale time
+  - Automatic cache invalidation on data mutations
+  - Optimistic updates for instant UI feedback
 
 ### Backend & Database
 

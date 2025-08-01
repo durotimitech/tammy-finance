@@ -2,51 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/Skeleton';
+import { useNetWorth } from '@/hooks/use-financial-data';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function NetWorthSummary() {
-  const [netWorth, setNetWorth] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading } = useNetWorth();
+  const netWorth = data?.netWorth || 0;
   const animatedNetWorth = useAnimatedNumber(netWorth, 1.5);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [assetsRes, liabilitiesRes] = await Promise.all([
-          fetch('/api/assets'),
-          fetch('/api/liabilities'),
-        ]);
-
-        if (!assetsRes.ok || !liabilitiesRes.ok) {
-          throw new Error('Failed to fetch data');
-        }
-
-        const assetsData = await assetsRes.json();
-        const liabilitiesData = await liabilitiesRes.json();
-
-        const totalAssets = (assetsData.assets || []).reduce(
-          (sum: number, asset: { value: number }) => sum + (Number(asset.value) || 0),
-          0,
-        );
-        const totalLiabilities = (liabilitiesData.liabilities || []).reduce(
-          (sum: number, liability: { amount_owed: number }) =>
-            sum + (Number(liability.amount_owed) || 0),
-          0,
-        );
-
-        setNetWorth(totalAssets - totalLiabilities);
-      } catch (error) {
-        console.error('Error fetching net worth:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const isPositive = netWorth >= 0;
 

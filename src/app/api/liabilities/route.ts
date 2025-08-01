@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+// Helper function to fetch liabilities - no caching at this level
+async function fetchUserLiabilities(userId: string) {
+  const supabase = await createClient();
+  const { data: liabilities, error } = await supabase
+    .from('liabilities')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return liabilities || [];
+}
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -14,18 +30,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: liabilities, error } = await supabase
-      .from('liabilities')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
+    // Fetch user's liabilities
+    let liabilities;
+    try {
+      liabilities = await fetchUserLiabilities(user.id);
+    } catch (error) {
       console.error('Error fetching liabilities:', error);
       return NextResponse.json({ error: 'Failed to fetch liabilities' }, { status: 500 });
     }
 
-    return NextResponse.json({ liabilities: liabilities || [] });
+    return NextResponse.json(liabilities);
   } catch (error) {
     console.error('Unexpected error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -67,6 +81,8 @@ export async function POST(request: NextRequest) {
       console.error('Error creating liability:', error);
       return NextResponse.json({ error: 'Failed to create liability' }, { status: 500 });
     }
+
+    // No server-side cache invalidation needed
 
     return NextResponse.json({ liability: data });
   } catch (error) {
@@ -112,6 +128,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to update liability' }, { status: 500 });
     }
 
+    // No server-side cache invalidation needed
+
     return NextResponse.json({ liability: data });
   } catch (error) {
     console.error('Unexpected error:', error);
@@ -132,8 +150,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    // Parse request body
+    const body = await request.json();
+    const { id } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing liability ID' }, { status: 400 });
@@ -149,6 +168,8 @@ export async function DELETE(request: NextRequest) {
       console.error('Error deleting liability:', error);
       return NextResponse.json({ error: 'Failed to delete liability' }, { status: 500 });
     }
+
+    // No server-side cache invalidation needed
 
     return NextResponse.json({ success: true });
   } catch (error) {

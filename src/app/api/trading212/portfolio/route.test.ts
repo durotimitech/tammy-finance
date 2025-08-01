@@ -89,17 +89,36 @@ describe('/api/trading212/portfolio', () => {
           error: null,
         }),
       },
-      from: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
-                data: mockCredential,
-                error: null,
+      from: jest.fn((table) => {
+        if (table === 'encrypted_credentials') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  single: jest.fn().mockResolvedValue({
+                    data: mockCredential,
+                    error: null,
+                  }),
+                }),
               }),
             }),
-          }),
-        }),
+          };
+        } else if (table === 'assets') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                eq: jest.fn().mockReturnValue({
+                  eq: jest.fn().mockReturnValue({
+                    single: jest.fn().mockResolvedValue({
+                      data: null,
+                      error: null,
+                    }),
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
       }),
     };
     mockCreateClient.mockResolvedValue(mockSupabase as unknown as ReturnType<typeof createClient>);
@@ -229,7 +248,7 @@ describe('/api/trading212/portfolio', () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe('Failed to decrypt API key');
+    expect(data.error).toBe('Failed to decrypt API key. Please reconnect your Trading 212 account.');
   });
 
   it('returns 502 if Trading 212 API fails', async () => {

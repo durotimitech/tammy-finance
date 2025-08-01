@@ -5,6 +5,22 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
 import { AssetFormData } from '@/types/financial';
 
+// Helper function to fetch assets - no caching at this level
+async function fetchUserAssets(userId: string) {
+  const supabase = await createClient();
+  const { data: assets, error } = await supabase
+    .from('assets')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return assets;
+}
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -19,13 +35,10 @@ export async function GET() {
     }
 
     // Fetch user's assets
-    const { data: assets, error } = await supabase
-      .from('assets')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
+    let assets;
+    try {
+      assets = await fetchUserAssets(user.id);
+    } catch (error) {
       console.error('Error fetching assets:', error);
       return NextResponse.json({ error: 'Failed to fetch assets' }, { status: 500 });
     }
@@ -142,10 +155,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      assets,
-      trading212Portfolio,
-    });
+    return NextResponse.json(assets);
   } catch (error) {
     console.error('Error in GET /api/assets:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -190,6 +200,8 @@ export async function POST(request: NextRequest) {
       console.error('Error creating asset:', error);
       return NextResponse.json({ error: 'Failed to create asset' }, { status: 500 });
     }
+
+    // No server-side cache invalidation needed
 
     return NextResponse.json({ asset }, { status: 201 });
   } catch (error) {
@@ -239,6 +251,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to update asset' }, { status: 500 });
     }
 
+    // No server-side cache invalidation needed
+
     return NextResponse.json({ asset });
   } catch (error) {
     console.error('Error in PUT /api/assets:', error);
@@ -259,9 +273,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get asset ID from URL
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    // Parse request body
+    const body = await request.json();
+    const { id } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Asset ID is required' }, { status: 400 });
@@ -274,6 +288,8 @@ export async function DELETE(request: NextRequest) {
       console.error('Error deleting asset:', error);
       return NextResponse.json({ error: 'Failed to delete asset' }, { status: 500 });
     }
+
+    // No server-side cache invalidation needed
 
     return NextResponse.json({ success: true });
   } catch (error) {

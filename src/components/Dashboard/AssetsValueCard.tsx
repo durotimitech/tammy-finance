@@ -3,40 +3,17 @@
 import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/Skeleton';
+import { useAssets } from '@/hooks/use-financial-data';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/utils';
 
 export default function AssetsValueCard() {
-  const [totalValue, setTotalValue] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { data: assets = [], isLoading } = useAssets();
+
+  const totalValue = assets.reduce((sum, asset) => sum + Number(asset.value), 0);
   const animatedValue = useAnimatedNumber(totalValue, 1.2);
-
-  useEffect(() => {
-    fetchAssetsTotal();
-  }, []);
-
-  const fetchAssetsTotal = async () => {
-    try {
-      const response = await fetch('/api/assets');
-
-      if (response.ok) {
-        const data = await response.json();
-        const assets = data.assets || [];
-        const total = assets.reduce(
-          (sum: number, asset: { value: number }) => sum + asset.value,
-          0,
-        );
-        setTotalValue(total);
-      }
-    } catch (error) {
-      console.error('Error fetching assets:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleClick = () => {
     router.push('/dashboard/assets');

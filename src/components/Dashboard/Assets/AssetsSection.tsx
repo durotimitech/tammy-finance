@@ -14,6 +14,12 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Callout } from '@/components/ui/callout';
+import {
+  useAssets,
+  useCreateAsset,
+  useUpdateAsset,
+  useDeleteAsset,
+} from '@/hooks/use-financial-data';
 import { formatCurrency, groupBy, calculateSubtotals } from '@/lib/utils';
 import { Asset, AssetFormData } from '@/types/financial';
 
@@ -23,9 +29,6 @@ interface Trading212Portfolio {
 
 export default function AssetsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [trading212Portfolio, setTrading212Portfolio] = useState<Trading212Portfolio | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -33,29 +36,26 @@ export default function AssetsSection() {
   }>({ isOpen: false, assetId: null });
   const [hasConnectedAccounts, setHasConnectedAccounts] = useState(false);
   const [isCheckingAccounts, setIsCheckingAccounts] = useState(true);
-  const [isSavingAsset, setIsSavingAsset] = useState(false);
   const router = useRouter();
 
-  // Fetch assets on component mount
+  // Use React Query hooks
+  const { data: assets = [], isLoading } = useAssets();
+  const createAssetMutation = useCreateAsset();
+  const updateAssetMutation = useUpdateAsset();
+  const deleteAssetMutation = useDeleteAsset();
+
+  // Extract Trading212 data from assets if it exists
+  const trading212Asset = assets.find(
+    (asset) => asset.name === 'Trading 212' && asset.category === 'External Connections',
+  );
+  const trading212Portfolio: Trading212Portfolio | null = trading212Asset
+    ? { totalValue: Number(trading212Asset.value) }
+    : null;
+
+  // Fetch connected accounts on component mount
   useEffect(() => {
-    fetchAssets();
     fetchConnectedAccounts();
   }, []);
-
-  const fetchAssets = async () => {
-    try {
-      const response = await fetch('/api/assets');
-      if (response.ok) {
-        const data = await response.json();
-        setAssets(data.assets || []);
-        setTrading212Portfolio(data.trading212Portfolio || null);
-      }
-    } catch (error) {
-      console.error('Error fetching assets:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchConnectedAccounts = async () => {
     try {
@@ -72,55 +72,23 @@ export default function AssetsSection() {
   };
 
   const handleAddAsset = async (data: AssetFormData) => {
-    setIsSavingAsset(true);
     try {
-      const response = await fetch('/api/assets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const { asset } = await response.json();
-        setAssets([asset, ...assets]);
-        setIsModalOpen(false);
-      } else {
-        console.error('Failed to add asset');
-      }
+      await createAssetMutation.mutateAsync(data);
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error adding asset:', error);
-    } finally {
-      setIsSavingAsset(false);
     }
   };
 
   const handleUpdateAsset = async (data: AssetFormData) => {
     if (!editingAsset) return;
 
-    setIsSavingAsset(true);
     try {
-      const response = await fetch('/api/assets', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...data, id: editingAsset.id }),
-      });
-
-      if (response.ok) {
-        const { asset } = await response.json();
-        setAssets(assets.map((a) => (a.id === asset.id ? asset : a)));
-        setIsModalOpen(false);
-        setEditingAsset(null);
-      } else {
-        console.error('Failed to update asset');
-      }
+      await updateAssetMutation.mutateAsync({ id: editingAsset.id, ...data });
+      setIsModalOpen(false);
+      setEditingAsset(null);
     } catch (error) {
       console.error('Error updating asset:', error);
-    } finally {
-      setIsSavingAsset(false);
     }
   };
 
@@ -146,16 +114,8 @@ export default function AssetsSection() {
     if (!deleteConfirmation.assetId) return;
 
     try {
-      const response = await fetch(`/api/assets?id=${deleteConfirmation.assetId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setAssets(assets.filter((asset) => asset.id !== deleteConfirmation.assetId));
-        setDeleteConfirmation({ isOpen: false, assetId: null });
-      } else {
-        console.error('Failed to delete asset');
-      }
+      await deleteAssetMutation.mutateAsync(deleteConfirmation.assetId);
+      setDeleteConfirmation({ isOpen: false, assetId: null });
     } catch (error) {
       console.error('Error deleting asset:', error);
     }
@@ -192,133 +152,142 @@ export default function AssetsSection() {
 
         {/* Connect Account Callout - Only show if no accounts are connected */}
         {isCheckingAccounts ? (
-          <div className="mb-4">
+          <div className="py-4">
             <Skeleton className="h-16 w-full rounded-lg" />
           </div>
+        ) : !hasConnectedAccounts ? (
+          <Callout className="mb-6">
+            <Link className="h-4 w-4" />
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h3 className="font-medium">Connect your investment accounts</h3>
+                <p className="text-sm text-gray-600">
+                  Automatically import your portfolio data from brokers
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push('/dashboard/integrations')}
+                variant="secondary"
+                size="sm"
+              >
+                Connect Account
+              </Button>
+            </div>
+          </Callout>
+        ) : null}
+
+        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-600">Total Value</span>
+            <span className="text-xl font-semibold">{formatCurrency(totalValue)}</span>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         ) : (
-          !hasConnectedAccounts && (
-            <div className="mb-4">
-              <Callout type="info">
-                <div className="flex items-center justify-between">
-                  <p>Connect your accounts to automatically track your portfolio value</p>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => router.push('/dashboard/settings')}
-                    className="flex items-center gap-2 ml-4"
-                  >
-                    <Link className="w-4 h-4" />
-                    Connect Account
-                  </Button>
-                </div>
-              </Callout>
-            </div>
-          )
-        )}
-
-        <div className="space-y-3">
-          {isLoading ? (
-            <div className="space-y-3">
-              {/* Skeleton for Total Value */}
-              <div className="mb-4 pb-4 border-b" style={{ borderColor: '#e5e7eb' }}>
-                <Skeleton className="h-4 w-32 mb-2" />
-                <Skeleton className="h-7 w-40" />
+          <>
+            {assets.length === 0 && !trading212Portfolio ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No assets added yet</p>
+                <p className="text-sm mt-2">
+                  Click &quot;Add Asset&quot; to start tracking your wealth
+                </p>
               </div>
-
-              {/* Skeleton for Asset Items */}
-              {[1, 2, 3].map((index) => (
-                <div key={index} className="flex items-center justify-between p-3">
-                  <div className="flex-1">
-                    <Skeleton className="h-5 w-48 mb-2" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-8 w-8" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : assets.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p className="mb-2">No assets added yet</p>
-              <p className="text-sm">
-                Click &quot;Add Asset&quot; to start tracking your portfolio
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Total Value */}
-              <div className="mb-4 pb-4 border-b" style={{ borderColor: '#e5e7eb' }}>
-                <p className="text-sm text-gray-600">Total Assets Value</p>
-                <p className="text-2xl text-gray-900">{formatCurrency(totalValue)}</p>
-              </div>
-
-              {/* Assets Grouped by Category */}
-              <Accordion type="multiple" defaultValue={allCategories} className="space-y-4">
-                {Object.entries(assetsByCategory)
-                  .sort(([a], [b]) => a.localeCompare(b))
-                  .map(([category, categoryAssets]) => (
-                    <AccordionItem
-                      key={category}
-                      value={category}
-                      className="border rounded-lg px-4"
-                      style={{ borderColor: '#e5e7eb' }}
-                    >
-                      <AccordionTrigger className="hover:no-underline py-3">
-                        <div className="flex items-center justify-between w-full pr-4">
-                          <h3 className="font-semibold text-gray-900">{category}</h3>
-                          <p className="font-semibold text-gray-900">
-                            {formatCurrency(categorySubtotals[category])}
+            ) : (
+              <div className="space-y-4">
+                {/* External Accounts Section - Show if Trading 212 is connected */}
+                {trading212Portfolio && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">External Accounts</h3>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">Trading 212</p>
+                          <p className="text-sm text-gray-600">
+                            Last updated: {new Date().toLocaleDateString()}
                           </p>
                         </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="pt-0 pb-0">
-                        <div className="border-t -mx-4" style={{ borderColor: '#e5e7eb' }}>
-                          {categoryAssets.map((asset, index) => (
-                            <div
-                              key={asset.id}
-                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
-                                index !== categoryAssets.length - 1 ? 'border-b' : ''
-                              }`}
-                              style={{ borderColor: '#e5e7eb' }}
-                            >
-                              <div className="flex-1 pl-6">
-                                <h4 className="font-medium text-gray-900">{asset.name}</h4>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <p className="font-semibold text-gray-900">
-                                  {formatCurrency(asset.value)}
-                                </p>
-                                <button
-                                  onClick={() => handleEdit(asset)}
-                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                                  data-testid={`edit-asset-${asset.id}`}
-                                >
-                                  <Edit2 className="w-4 h-4" />
-                                </button>
-                                {asset.category !== 'External Connections' && (
-                                  <button
-                                    onClick={() =>
-                                      setDeleteConfirmation({ isOpen: true, assetId: asset.id })
-                                    }
-                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                                    data-testid={`delete-asset-${asset.id}`}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                )}
-                              </div>
+                        <p className="text-lg font-semibold">
+                          {formatCurrency(trading212Portfolio.totalValue)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Manual Assets Section */}
+                {assets.length > 0 && (
+                  <>
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Manual Assets</h3>
+                    <Accordion type="multiple" defaultValue={allCategories} className="space-y-2">
+                      {Object.entries(assetsByCategory).map(([category, categoryAssets]) => (
+                        <AccordionItem
+                          key={category}
+                          value={category}
+                          className="border rounded-lg px-4"
+                        >
+                          <AccordionTrigger className="py-3 hover:no-underline">
+                            <div className="flex justify-between items-center w-full pr-2">
+                              <span className="font-medium">{category}</span>
+                              <span className="text-sm text-gray-600">
+                                {formatCurrency(categorySubtotals[category] || 0)}
+                              </span>
                             </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-              </Accordion>
-            </>
-          )}
-        </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="pb-3">
+                            <div className="space-y-2">
+                              {(categoryAssets as Asset[]).map((asset) => (
+                                <div
+                                  key={asset.id}
+                                  className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md group hover:bg-gray-100 transition-colors"
+                                >
+                                  <div className="flex-1">
+                                    <p className="font-medium text-sm">{asset.name}</p>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <p className="text-sm font-medium">
+                                      {formatCurrency(asset.value)}
+                                    </p>
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button
+                                        onClick={() => handleEdit(asset)}
+                                        className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                        aria-label="Edit asset"
+                                      >
+                                        <Edit2 className="w-4 h-4 text-gray-600" />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          setDeleteConfirmation({
+                                            isOpen: true,
+                                            assetId: asset.id,
+                                          })
+                                        }
+                                        className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                        aria-label="Delete asset"
+                                      >
+                                        <Trash2 className="w-4 h-4 text-red-600" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <AddAssetModal
@@ -334,9 +303,7 @@ export default function AssetsSection() {
               }
             : undefined
         }
-        isEditing={!!editingAsset}
-        isLoading={isSavingAsset}
-        isExternalConnection={editingAsset?.category === 'External Connections'}
+        isLoading={createAssetMutation.isPending || updateAssetMutation.isPending}
       />
 
       <ConfirmationModal
@@ -347,7 +314,6 @@ export default function AssetsSection() {
         message="Are you sure you want to delete this asset? This action cannot be undone."
         confirmText="Delete"
         cancelText="Cancel"
-        isDestructive={true}
       />
     </>
   );

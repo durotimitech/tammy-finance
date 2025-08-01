@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Lato, Pirata_One } from 'next/font/google';
 import './globals.css';
 import AnimatedLayout from './AnimatedLayout';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: {
@@ -68,7 +69,9 @@ export default function RootLayout({
             }),
           }}
         />
-        <AnimatedLayout>{children}</AnimatedLayout>
+        <Providers>
+          <AnimatedLayout>{children}</AnimatedLayout>
+        </Providers>
       </body>
     </html>
   );
