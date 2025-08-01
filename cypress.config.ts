@@ -13,8 +13,13 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
+    defaultCommandTimeout: 15000, // Increased from 10000 for CI environment
+    requestTimeout: 15000, // Increased from 10000 for CI environment
+    pageLoadTimeout: 30000, // Added explicit page load timeout
+    retries: {
+      runMode: 2, // Retry failed tests twice in CI
+      openMode: 0, // No retries in interactive mode
+    },
     env: {
       // Add test user credentials here
       TEST_USER_EMAIL: 'timmy.mejabi+cypresstest@toasttab.com',

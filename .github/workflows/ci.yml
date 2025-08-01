@@ -66,10 +66,12 @@ jobs:
         with:
           start: npm start
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
+          wait-on-timeout: 180
           browser: chrome
           record: false
           config-file: cypress.config.ts
+          # Add environment variable to detect CI
+          env: CI=true
         env:
           CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
           CYPRESS_TEST_USER_PASSWORD: ${{ secrets.CYPRESS_TEST_USER_PASSWORD }}

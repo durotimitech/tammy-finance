@@ -1,11 +1,13 @@
 describe('Settings Page Navigation', () => {
   beforeEach(() => {
-    // Sign in before each test
-    cy.visit('/auth/login');
-    cy.get('input[type="email"]').type('test@example.com');
-    cy.get('input[type="password"]').type('testpass123');
-    cy.get('button[type="submit"]').click();
-    cy.url().should('include', '/dashboard');
+    // Set up API interceptors
+    cy.mockDashboardAPIs();
+
+    // Use the proper login command that mocks authentication
+    cy.login();
+
+    // Wait for dashboard to load
+    cy.waitForApi(['getAssets', 'getLiabilities']);
   });
 
   it('should display Settings link in sidebar', () => {
@@ -25,6 +27,7 @@ describe('Settings Page Navigation', () => {
 
   it('should highlight Settings link when on Settings page', () => {
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     cy.get('nav').within(() => {
       cy.contains('Settings')
@@ -37,6 +40,7 @@ describe('Settings Page Navigation', () => {
 
   it('should display Connect Accounts section on Settings page', () => {
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     // Check for Connect Accounts section
     cy.contains('Connected Accounts').should('be.visible');
@@ -49,6 +53,7 @@ describe('Settings Page Navigation', () => {
 
   it('should show Connect Account button with plus icon', () => {
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     cy.contains('button', 'Connect Account')
       .should('be.visible')
@@ -60,6 +65,7 @@ describe('Settings Page Navigation', () => {
 
   it('should handle Connect Account button click', () => {
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     // For now, just verify the button is clickable
     // Modal functionality will be tested in Stage 5
@@ -68,6 +74,7 @@ describe('Settings Page Navigation', () => {
 
   it('should apply animations when loading Settings page', () => {
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     // Check that the main content has animation classes
     cy.get('main').within(() => {
@@ -78,6 +85,7 @@ describe('Settings Page Navigation', () => {
   it('should maintain consistent layout with other dashboard pages', () => {
     // Visit Settings page
     cy.visit('/dashboard/settings');
+    cy.waitForPageLoad();
 
     // Check for standard dashboard layout elements
     cy.get('[class*="flex h-screen"]').should('exist'); // Main container

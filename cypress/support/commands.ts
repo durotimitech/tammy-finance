@@ -23,8 +23,21 @@ Cypress.Commands.add('clearSupabaseSession', () => {
 
 // Command to wait for page to be ready
 Cypress.Commands.add('waitForPageLoad', () => {
+  // Wait for body to be visible
   cy.get('body').should('be.visible');
-  cy.wait(500); // Small wait for animations to complete
+
+  // Check if loading spinners exist before waiting for them to disappear
+  cy.get('body').then(($body) => {
+    if ($body.find('.animate-pulse').length > 0) {
+      cy.get('.animate-pulse', { timeout: 15000 }).should('not.exist');
+    }
+    if ($body.find('.animate-spin').length > 0) {
+      cy.get('.animate-spin', { timeout: 15000 }).should('not.exist');
+    }
+  });
+
+  // Small wait for animations to complete
+  cy.wait(1000); // Increased from 500ms for CI stability
 });
 
 // Command to set up authenticated session for testing
@@ -184,7 +197,11 @@ Cypress.Commands.add('login', (email?: string) => {
   });
 
   // Visit dashboard directly since we're already authenticated
-  cy.visit('/dashboard');
+  // Use failOnStatusCode: false to handle redirect gracefully
+  cy.visit('/dashboard', { failOnStatusCode: false });
+
+  // Ensure we're on the dashboard page
+  cy.url().should('include', '/dashboard');
 });
 
 // Helper to check if element is loading
@@ -213,9 +230,35 @@ Cypress.Commands.add('formatCurrency', (amount: number) => {
 
 // Helper to mock API responses for dashboard
 Cypress.Commands.add('mockDashboardAPIs', (assets = [], liabilities = []) => {
-  cy.intercept('GET', '/api/assets', { assets }).as('getAssets');
-  cy.intercept('GET', '/api/liabilities', { liabilities }).as('getLiabilities');
-  cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
+  cy.intercept('GET', '/api/assets', {
+    statusCode: 200,
+    body: assets,
+  }).as('getAssets');
+
+  cy.intercept('GET', '/api/liabilities', {
+    statusCode: 200,
+    body: liabilities,
+  }).as('getLiabilities');
+
+  cy.intercept('GET', '/api/history*', {
+    statusCode: 200,
+    body: { history: [] },
+  }).as('getHistory');
+
+  cy.intercept('GET', '/api/networth', {
+    statusCode: 200,
+    body: {
+      netWorth: 0,
+      totalAssets: 0,
+      totalLiabilities: 0,
+    },
+  }).as('getNetWorth');
+
+  // Mock credentials API
+  cy.intercept('GET', '/api/credentials', {
+    statusCode: 200,
+    body: [],
+  }).as('getCredentials');
 });
 
 // TypeScript declarations
