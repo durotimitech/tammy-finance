@@ -16,7 +16,9 @@ const mockCreateClient = createClient as jest.MockedFunction<typeof createClient
 const mockGenerateUserSecret = generateUserSecret as jest.MockedFunction<typeof generateUserSecret>;
 const mockDecryptApiKey = decryptApiKey as jest.MockedFunction<typeof decryptApiKey>;
 const mockFetchPortfolio = fetchPortfolio as jest.MockedFunction<typeof fetchPortfolio>;
-const mockFormatPortfolioData = formatPortfolioData as jest.MockedFunction<typeof formatPortfolioData>;
+const mockFormatPortfolioData = formatPortfolioData as jest.MockedFunction<
+  typeof formatPortfolioData
+>;
 
 describe('/api/trading212/portfolio', () => {
   const mockUser = { id: 'test-user-id' };
@@ -125,7 +127,11 @@ describe('/api/trading212/portfolio', () => {
 
     // Verify mocks were called correctly
     expect(mockSupabase.auth.getUser).toHaveBeenCalled();
-    expect(mockGenerateUserSecret).toHaveBeenCalledWith('test-user-id', 'test-user-id', 'test-secret');
+    expect(mockGenerateUserSecret).toHaveBeenCalledWith(
+      'test-user-id',
+      'test-user-id',
+      'test-secret',
+    );
     expect(mockDecryptApiKey).toHaveBeenCalledWith(
       {
         encryptedValue: 'encrypted',
@@ -133,7 +139,7 @@ describe('/api/trading212/portfolio', () => {
         iv: 'iv',
         authTag: 'auth_tag',
       },
-      'user-secret'
+      'user-secret',
     );
     expect(mockFetchPortfolio).toHaveBeenCalledWith('decrypted-api-key');
     expect(mockFormatPortfolioData).toHaveBeenCalledWith(mockPortfolio);

@@ -198,6 +198,7 @@ Rule: Run Linter After Each Coding Iteration and Use Framer Motion for Animation
 - Ensure consistent formatting (spacing, indentation, trailing commas).
 - Catch TypeScript errors and fix incorrect types.
 - Use Prettier for final formatting after linting.
+- Run `npx lint-staged`
 
 ## Animation & Interactions with Framer Motion
 

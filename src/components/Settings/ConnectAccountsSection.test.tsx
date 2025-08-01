@@ -60,12 +60,14 @@ describe('ConnectAccountsSection', () => {
 
   it('renders the section with title and description', async () => {
     render(<ConnectAccountsSection />);
-    
+
     expect(screen.getByText('Connected Accounts')).toBeInTheDocument();
     expect(
-      screen.getByText('Connect your investment accounts to automatically track your portfolio value')
+      screen.getByText(
+        'Connect your investment accounts to automatically track your portfolio value',
+      ),
     ).toBeInTheDocument();
-    
+
     // Wait for loading to complete
     await waitFor(() => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
@@ -74,7 +76,7 @@ describe('ConnectAccountsSection', () => {
 
   it('shows empty state when no accounts are connected', async () => {
     render(<ConnectAccountsSection />);
-    
+
     // Wait for loading to complete
     await waitFor(() => {
       expect(screen.getByText('No accounts connected yet')).toBeInTheDocument();
@@ -83,7 +85,7 @@ describe('ConnectAccountsSection', () => {
 
   it('shows Connect Account button', async () => {
     render(<ConnectAccountsSection />);
-    
+
     await waitFor(() => {
       const button = screen.getByRole('button', { name: /connect account/i });
       expect(button).toBeInTheDocument();
@@ -93,14 +95,14 @@ describe('ConnectAccountsSection', () => {
 
   it('handles Connect Account button click', async () => {
     render(<ConnectAccountsSection />);
-    
+
     await waitFor(() => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
     });
-    
+
     const button = screen.getByRole('button', { name: /connect account/i });
     fireEvent.click(button);
-    
+
     // The modal should open (we can't test the actual modal here as it's a separate component)
     // Just verify the button click worked by checking that no errors were thrown
     expect(true).toBe(true);
@@ -111,18 +113,20 @@ describe('ConnectAccountsSection', () => {
     (fetch as jest.Mock).mockReset();
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ 
-        credentials: [{
-          id: '123',
-          name: 'trading212',
-          displayName: 'Trading 212',
-          connectedAt: '2023-01-01T00:00:00Z'
-        }]
+      json: async () => ({
+        credentials: [
+          {
+            id: '123',
+            name: 'trading212',
+            displayName: 'Trading 212',
+            connectedAt: '2023-01-01T00:00:00Z',
+          },
+        ],
       }),
     });
-    
+
     render(<ConnectAccountsSection />);
-    
+
     // Wait for the account to be displayed
     await waitFor(() => {
       expect(screen.getByText('Trading 212')).toBeInTheDocument();
@@ -135,31 +139,33 @@ describe('ConnectAccountsSection', () => {
     (fetch as jest.Mock).mockReset();
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ 
-        credentials: [{
-          id: '123',
-          name: 'trading212',
-          displayName: 'Trading 212',
-          connectedAt: '2023-01-01T00:00:00Z'
-        }]
+      json: async () => ({
+        credentials: [
+          {
+            id: '123',
+            name: 'trading212',
+            displayName: 'Trading 212',
+            connectedAt: '2023-01-01T00:00:00Z',
+          },
+        ],
       }),
     });
-    
+
     render(<ConnectAccountsSection />);
-    
+
     // Wait for the account to be displayed
     await waitFor(() => {
       expect(screen.getByText('Trading 212')).toBeInTheDocument();
     });
-    
+
     // Mock successful delete
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
     });
-    
+
     const disconnectButton = screen.getByRole('button', { name: /disconnect/i });
     fireEvent.click(disconnectButton);
-    
+
     // Verify DELETE request was made
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/credentials/trading212', {

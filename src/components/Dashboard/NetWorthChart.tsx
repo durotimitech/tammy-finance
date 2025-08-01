@@ -175,7 +175,9 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
       <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Net Worth Over Time</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+              Net Worth Over Time
+            </h3>
             {trend && !loading && (
               <div className="flex items-center gap-2 mt-2">
                 {getTrendIcon()}

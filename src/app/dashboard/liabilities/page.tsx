@@ -67,7 +67,7 @@ export default function LiabilitiesPage() {
             <div className="lg:hidden">
               <Header />
             </div>
-            
+
             <DashboardHeaderText title="Liabilities Management" />
             <LiabilitiesSection />
           </motion.div>

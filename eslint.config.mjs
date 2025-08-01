@@ -35,9 +35,10 @@ const eslintConfig = [
       '@typescript-eslint/no-namespace': 'off', // Required for Cypress type declarations
     },
   },
+  {
+    // Ignore patterns using flat config ignores
+    ignores: ['.next/**'],
+  },
 ];
 
 export default eslintConfig;
-
-// Ignore build output
-export const ignores = ['.next/**'];

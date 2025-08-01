@@ -25,9 +25,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          liabilities: [
-            { id: '1', name: 'Liability 1', amount_owed: 0.05 },
-          ],
+          liabilities: [{ id: '1', name: 'Liability 1', amount_owed: 0.05 }],
         }),
       });
 
@@ -56,9 +54,7 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          liabilities: [
-            { id: '1', name: 'Credit Card', amount_owed: 200 },
-          ],
+          liabilities: [{ id: '1', name: 'Credit Card', amount_owed: 200 }],
         }),
       });
 
@@ -107,17 +103,13 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          assets: [
-            { id: '1', name: 'Huge Asset', value: maxSafeValue },
-          ],
+          assets: [{ id: '1', name: 'Huge Asset', value: maxSafeValue }],
         }),
       })
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          liabilities: [
-            { id: '1', name: 'Huge Debt', amount_owed: maxSafeValue / 2 },
-          ],
+          liabilities: [{ id: '1', name: 'Huge Debt', amount_owed: maxSafeValue / 2 }],
         }),
       });
 
@@ -127,12 +119,12 @@ describe('NetWorthSummary - Edge Cases and Calculation Accuracy', () => {
       expect(screen.getByTestId('net-worth-value')).toBeInTheDocument();
     });
 
-    const expectedValue = maxSafeValue - (maxSafeValue / 2);
+    const expectedValue = maxSafeValue - maxSafeValue / 2;
     const formattedValue = expectedValue.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    
+
     expect(screen.getByTestId('net-worth-value')).toHaveTextContent(`€${formattedValue}`);
   });
 

@@ -60,7 +60,7 @@ describe('Trading 212 Integration Tests', () => {
             Authorization: 'valid-api-key',
             'Content-Type': 'application/json',
           },
-        })
+        }),
       );
     });
 
@@ -114,7 +114,7 @@ describe('Trading 212 Integration Tests', () => {
             Authorization: 'valid-api-key',
             'Content-Type': 'application/json',
           },
-        })
+        }),
       );
     });
 
@@ -159,13 +159,13 @@ describe('Trading 212 Integration Tests', () => {
         .mockResolvedValueOnce({ ok: true, json: async () => mockCash });
 
       const start = Date.now();
-      
+
       // First portfolio fetch (2 API calls with 1s delay between)
       await fetchPortfolio('valid-api-key');
-      
+
       // Second portfolio fetch (2 more API calls with delays)
       await fetchPortfolio('valid-api-key');
-      
+
       const duration = Date.now() - start;
 
       // Should take at least 3 seconds:

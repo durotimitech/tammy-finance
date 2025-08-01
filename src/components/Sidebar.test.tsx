@@ -47,7 +47,7 @@ describe('Sidebar', () => {
 
   it('highlights active Settings link when on settings page', () => {
     (usePathname as jest.Mock).mockReturnValue('/dashboard/settings');
-    
+
     render(<Sidebar />);
 
     const settingsLink = screen.getByRole('link', { name: /settings/i });

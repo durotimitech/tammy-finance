@@ -55,10 +55,10 @@ describe('NetWorthSummary', () => {
     // Total liabilities: 200,000 + 25,000 = 225,000
     // Net worth: 425,000 - 225,000 = 200,000
     expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€200,000.00');
-    
+
     // Check that it's displayed in green for positive net worth
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-green-600');
-    
+
     // Check for trending up icon
     expect(screen.getByTestId('trending-up-icon')).toBeInTheDocument();
   });
@@ -96,10 +96,10 @@ describe('NetWorthSummary', () => {
     // Total liabilities: 15,000 + 30,000 = 45,000
     // Net worth: 7,000 - 45,000 = -38,000
     expect(screen.getByTestId('net-worth-value')).toHaveTextContent('-€38,000.00');
-    
+
     // Check that it's displayed in red for negative net worth
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-red-600');
-    
+
     // Check for trending down icon
     expect(screen.getByTestId('trending-down-icon')).toBeInTheDocument();
   });
@@ -110,17 +110,13 @@ describe('NetWorthSummary', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          assets: [
-            { id: '1', name: 'Savings', value: 25000 },
-          ],
+          assets: [{ id: '1', name: 'Savings', value: 25000 }],
         }),
       })
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          liabilities: [
-            { id: '1', name: 'Loan', amount_owed: 25000 },
-          ],
+          liabilities: [{ id: '1', name: 'Loan', amount_owed: 25000 }],
         }),
       });
 
@@ -135,7 +131,7 @@ describe('NetWorthSummary', () => {
     // Total liabilities: 25,000
     // Net worth: 25,000 - 25,000 = 0
     expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
-    
+
     // Zero is considered positive (green)
     expect(screen.getByTestId('net-worth-value')).toHaveClass('text-green-600');
   });
@@ -194,7 +190,7 @@ describe('NetWorthSummary', () => {
 
     // Should display €0.00 when there's an error
     expect(screen.getByTestId('net-worth-value')).toHaveTextContent('€0.00');
-    
+
     // Check that error was logged
     expect(consoleSpy).toHaveBeenCalledWith('Error fetching net worth:', expect.any(Error));
 
@@ -252,9 +248,7 @@ describe('NetWorthSummary', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          liabilities: [
-            { id: '1', name: 'Credit Card', amount_owed: 543.21 },
-          ],
+          liabilities: [{ id: '1', name: 'Credit Card', amount_owed: 543.21 }],
         }),
       });
 

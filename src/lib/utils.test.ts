@@ -107,7 +107,7 @@ describe('Utils', () => {
       const groupedData = {
         A: [
           { category: 'A', value: 10 },
-          { category: 'A', value: 'invalid' as any },
+          { category: 'A', value: 'invalid' as unknown as number },
         ],
       };
 

@@ -161,7 +161,6 @@ export default function AssetsSection() {
     }
   };
 
-
   const totalManualAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
   const totalExternalAccounts = trading212Portfolio?.totalValue || 0;
   const totalValue = totalManualAssets + totalExternalAccounts;
@@ -255,7 +254,6 @@ export default function AssetsSection() {
                 <p className="text-2xl text-gray-900">{formatCurrency(totalValue)}</p>
               </div>
 
-
               {/* Assets Grouped by Category */}
               <Accordion type="multiple" defaultValue={allCategories} className="space-y-4">
                 {Object.entries(assetsByCategory)
@@ -278,41 +276,41 @@ export default function AssetsSection() {
                       <AccordionContent className="pt-0 pb-0">
                         <div className="border-t -mx-4" style={{ borderColor: '#e5e7eb' }}>
                           {categoryAssets.map((asset, index) => (
-                              <div
-                                key={asset.id}
-                                className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
-                                  index !== categoryAssets.length - 1 ? 'border-b' : ''
-                                }`}
-                                style={{ borderColor: '#e5e7eb' }}
-                              >
-                                <div className="flex-1 pl-6">
-                                  <h4 className="font-medium text-gray-900">{asset.name}</h4>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <p className="font-semibold text-gray-900">
-                                    {formatCurrency(asset.value)}
-                                  </p>
-                                  <button
-                                    onClick={() => handleEdit(asset)}
-                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
-                                    data-testid={`edit-asset-${asset.id}`}
-                                  >
-                                    <Edit2 className="w-4 h-4" />
-                                  </button>
-                                  {asset.category !== 'External Connections' && (
-                                    <button
-                                      onClick={() =>
-                                        setDeleteConfirmation({ isOpen: true, assetId: asset.id })
-                                      }
-                                      className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
-                                      data-testid={`delete-asset-${asset.id}`}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </button>
-                                  )}
-                                </div>
+                            <div
+                              key={asset.id}
+                              className={`flex items-center justify-between p-3 px-4 hover:bg-gray-50 transition-colors ${
+                                index !== categoryAssets.length - 1 ? 'border-b' : ''
+                              }`}
+                              style={{ borderColor: '#e5e7eb' }}
+                            >
+                              <div className="flex-1 pl-6">
+                                <h4 className="font-medium text-gray-900">{asset.name}</h4>
                               </div>
-                            ))}
+                              <div className="flex items-center gap-3">
+                                <p className="font-semibold text-gray-900">
+                                  {formatCurrency(asset.value)}
+                                </p>
+                                <button
+                                  onClick={() => handleEdit(asset)}
+                                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                                  data-testid={`edit-asset-${asset.id}`}
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                {asset.category !== 'External Connections' && (
+                                  <button
+                                    onClick={() =>
+                                      setDeleteConfirmation({ isOpen: true, assetId: asset.id })
+                                    }
+                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors hover:cursor-pointer"
+                                    data-testid={`delete-asset-${asset.id}`}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </AccordionContent>
                     </AccordionItem>

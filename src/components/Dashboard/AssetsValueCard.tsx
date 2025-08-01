@@ -63,7 +63,10 @@ export default function AssetsValueCard() {
           </>
         ) : (
           <>
-            <motion.p className="text-2xl sm:text-3xl text-gray-900 mb-2" data-testid="total-assets-value">
+            <motion.p
+              className="text-2xl sm:text-3xl text-gray-900 mb-2"
+              data-testid="total-assets-value"
+            >
               {formatCurrency(animatedValue)}
             </motion.p>
             <div className="flex items-center justify-between">

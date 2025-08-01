@@ -8,24 +8,35 @@ jest.mock('@/lib/supabase/server');
 jest.mock('@/lib/crypto');
 jest.mock('@/lib/trading212');
 
-const mockSupabase = {
+interface MockSupabase {
+  auth: {
+    getUser: jest.Mock;
+  };
+  from: jest.Mock;
+  select: jest.Mock;
+  eq: jest.Mock;
+  order: jest.Mock;
+  single: jest.Mock;
+  insert: jest.Mock;
+  update: jest.Mock;
+}
+
+const mockSupabase: MockSupabase = {
   auth: {
     getUser: jest.fn(),
   },
-  from: jest.fn(() => mockSupabase),
-  select: jest.fn(() => mockSupabase),
-  eq: jest.fn(() => mockSupabase),
-  order: jest.fn(() => mockSupabase),
-  single: jest.fn(() => mockSupabase),
-  insert: jest.fn(() => mockSupabase),
-  update: jest.fn(() => mockSupabase),
+  from: jest.fn((): MockSupabase => mockSupabase),
+  select: jest.fn((): MockSupabase => mockSupabase),
+  eq: jest.fn((): MockSupabase => mockSupabase),
+  order: jest.fn((): MockSupabase => mockSupabase),
+  single: jest.fn((): MockSupabase => mockSupabase),
+  insert: jest.fn((): MockSupabase => mockSupabase),
+  update: jest.fn((): MockSupabase => mockSupabase),
 };
 
 describe('Trading 212 Caching in GET /api/assets', () => {
   const mockUser = { id: 'user-123' };
-  const mockAssets = [
-    { id: '1', name: 'Test Asset', category: 'Investments', value: 1000 },
-  ];
+  const mockAssets = [{ id: '1', name: 'Test Asset', category: 'Investments', value: 1000 }];
   const mockCredential = {
     encrypted_value: 'encrypted-api-key',
     salt: 'salt',
@@ -67,7 +78,7 @@ describe('Trading 212 Caching in GET /api/assets', () => {
     });
 
     // Mock database queries
-    mockSupabase.from.mockImplementation((table) => {
+    mockSupabase.from.mockImplementation((table: string) => {
       if (table === 'assets') {
         return {
           ...mockSupabase,
@@ -122,7 +133,7 @@ describe('Trading 212 Caching in GET /api/assets', () => {
   it('should fetch new Trading 212 data if not fetched today', async () => {
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    
+
     const yesterdayAsset = {
       id: 'trading212-id',
       user_id: 'user-123',
@@ -139,7 +150,7 @@ describe('Trading 212 Caching in GET /api/assets', () => {
     });
 
     // Mock database queries
-    mockSupabase.from.mockImplementation((table) => {
+    mockSupabase.from.mockImplementation((table: string) => {
       if (table === 'assets') {
         return {
           ...mockSupabase,
@@ -219,7 +230,7 @@ describe('Trading 212 Caching in GET /api/assets', () => {
     });
 
     // Mock database queries
-    mockSupabase.from.mockImplementation((table) => {
+    mockSupabase.from.mockImplementation((table: string) => {
       if (table === 'assets') {
         return {
           ...mockSupabase,

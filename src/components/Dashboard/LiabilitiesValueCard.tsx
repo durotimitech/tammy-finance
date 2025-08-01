@@ -64,7 +64,9 @@ export default function LiabilitiesValueCard() {
               >
                 {formatCurrency(animatedValue)}
               </motion.p>
-              <p className="text-xs sm:text-sm text-gray-500">Current value of all your liabilities</p>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Current value of all your liabilities
+              </p>
             </>
           )}
         </div>

@@ -109,7 +109,7 @@ describe('Crypto Service Performance', () => {
       const memoryPerOperation = memoryIncrease / iterations;
 
       console.log(`Memory per operation: ${memoryPerOperation.toFixed(0)} bytes`);
-      
+
       // Should not increase by more than 10KB per operation on average
       // Node.js crypto operations can allocate temporary buffers
       expect(memoryPerOperation).toBeLessThan(10240);

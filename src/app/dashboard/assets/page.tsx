@@ -67,7 +67,7 @@ export default function AssetsPage() {
             <div className="lg:hidden mb-4">
               <Header />
             </div>
-            
+
             <DashboardHeaderText title="Assets Management" />
             <AssetsSection />
           </motion.div>

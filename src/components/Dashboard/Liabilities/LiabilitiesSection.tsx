@@ -225,7 +225,9 @@ export default function LiabilitiesSection() {
                     >
                       <AccordionTrigger className="hover:no-underline py-2 sm:py-3">
                         <div className="flex items-center justify-between w-full pr-2 sm:pr-4 gap-2">
-                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{category}</h3>
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                            {category}
+                          </h3>
                           <p className="font-semibold text-gray-900 text-sm sm:text-base whitespace-nowrap">
                             {formatCurrency(categorySubtotals[category])}
                           </p>
@@ -242,7 +244,9 @@ export default function LiabilitiesSection() {
                               style={{ borderColor: '#e5e7eb' }}
                             >
                               <div className="flex-1 pl-3 sm:pl-6 mb-2 sm:mb-0">
-                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">{liability.name}</h4>
+                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">
+                                  {liability.name}
+                                </h4>
                               </div>
                               <div className="flex items-center gap-2 sm:gap-3 pl-3 sm:pl-0">
                                 <p className="font-semibold text-gray-900 text-sm sm:text-base flex-1 sm:flex-none">

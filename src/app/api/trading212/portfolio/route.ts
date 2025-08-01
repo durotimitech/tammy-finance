@@ -92,7 +92,8 @@ export async function GET(request: NextRequest) {
       .single();
 
     // Check if we need to fetch new data or can use cached data
-    const shouldFetchNewData = !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
+    const shouldFetchNewData =
+      !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
 
     let portfolio = null;
     let portfolioError = null;
@@ -102,11 +103,11 @@ export async function GET(request: NextRequest) {
       const result = await fetchPortfolio(apiKey);
       portfolio = result.data;
       portfolioError = result.error;
-      
+
       // Update or create Trading 212 asset entry if fetch was successful
       if (!portfolioError && portfolio) {
         const formattedPortfolio = formatPortfolioData(portfolio);
-        
+
         if (existingAsset) {
           // Update existing asset
           await supabase
@@ -119,14 +120,12 @@ export async function GET(request: NextRequest) {
             .eq('user_id', user.id);
         } else {
           // Create new asset entry
-          await supabase
-            .from('assets')
-            .insert({
-              user_id: user.id,
-              name: 'Trading 212',
-              category: 'External Connections',
-              value: formattedPortfolio.totalValue,
-            });
+          await supabase.from('assets').insert({
+            user_id: user.id,
+            name: 'Trading 212',
+            category: 'External Connections',
+            value: formattedPortfolio.totalValue,
+          });
         }
       }
     } else {

@@ -71,7 +71,7 @@ describe('Crypto Service', () => {
 
     it('should fail with wrong user secret', () => {
       const encrypted = encryptApiKey(testApiKey, testUserSecret);
-      
+
       expect(() => {
         decryptApiKey(encrypted, 'wrong-secret');
       }).toThrow();
@@ -153,7 +153,7 @@ describe('Crypto Service', () => {
 
     it('should return a base64 string', () => {
       const secret = generateUserSecret(testUserId, testSessionId, testEncryptionSecret);
-      
+
       // Should be a valid base64 string
       expect(typeof secret).toBe('string');
       expect(() => Buffer.from(secret, 'base64')).not.toThrow();

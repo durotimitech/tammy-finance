@@ -103,7 +103,9 @@ export default function AddAssetModal({
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg sm:text-xl font-semibold">{isEditing ? 'Edit Asset' : 'Add New Asset'}</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">
+            {isEditing ? 'Edit Asset' : 'Add New Asset'}
+          </h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -117,7 +119,8 @@ export default function AddAssetModal({
           {isExternalConnection && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-blue-800">
-                External connections can only have their category changed. Name and value are automatically managed.
+                External connections can only have their category changed. Name and value are
+                automatically managed.
               </p>
             </div>
           )}
@@ -133,7 +136,7 @@ export default function AddAssetModal({
               placeholder="e.g., Chase Checking Account"
               required
               disabled={isExternalConnection}
-              className={isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""}
+              className={isExternalConnection ? 'bg-gray-100 cursor-not-allowed' : ''}
             />
           </div>
 
@@ -197,7 +200,7 @@ export default function AddAssetModal({
                   setValueInput(e.target.value);
                   setFormData({ ...formData, value: parseFloat(e.target.value) || 0 });
                 }}
-                className={`pl-8 ${isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`pl-8 ${isExternalConnection ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -217,7 +220,12 @@ export default function AddAssetModal({
             >
               Cancel
             </Button>
-            <Button type="submit" variant="default" className="w-full sm:flex-1 order-1 sm:order-2" loading={isLoading}>
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full sm:flex-1 order-1 sm:order-2"
+              loading={isLoading}
+            >
               {isEditing ? 'Update Asset' : 'Add Asset'}
             </Button>
           </div>

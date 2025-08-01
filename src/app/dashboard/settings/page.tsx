@@ -67,7 +67,7 @@ export default function SettingsPage() {
             <div className="lg:hidden">
               <Header />
             </div>
-            
+
             <DashboardHeaderText title="Settings" />
 
             {/* Connect Accounts Section */}

@@ -11,7 +11,9 @@ jest.mock('next/navigation', () => ({
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
   },
 }));
 
@@ -75,7 +77,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -108,7 +116,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       })
       .mockResolvedValueOnce({
@@ -125,7 +139,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -163,7 +183,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       })
       .mockImplementationOnce(
@@ -182,7 +208,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -221,7 +253,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -261,11 +299,13 @@ describe('AssetsSection with Trading 212', () => {
       // Trading 212 section should not be visible
       expect(screen.queryByText('Trading 212 Portfolio')).not.toBeInTheDocument();
     });
-    
+
     // Wait for account check to complete
     await waitFor(() => {
       // Connect account callout should be visible when no accounts connected
-      expect(screen.getByText('Connect your accounts to automatically track your portfolio value')).toBeInTheDocument();
+      expect(
+        screen.getByText('Connect your accounts to automatically track your portfolio value'),
+      ).toBeInTheDocument();
       expect(screen.getByText('Connect Account')).toBeInTheDocument();
     });
   });
@@ -282,7 +322,13 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -291,9 +337,11 @@ describe('AssetsSection with Trading 212', () => {
     await waitFor(() => {
       // Trading 212 portfolio should be visible
       expect(screen.getByText('Trading 212 Portfolio')).toBeInTheDocument();
-      
+
       // Connect account callout should NOT be visible when accounts are connected
-      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Connect your accounts to automatically track your portfolio value'),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -311,14 +359,26 @@ describe('AssetsSection with Trading 212', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       })
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          credentials: [{ name: 'trading212', displayName: 'Trading 212', connectedAt: new Date().toISOString() }],
+          credentials: [
+            {
+              name: 'trading212',
+              displayName: 'Trading 212',
+              connectedAt: new Date().toISOString(),
+            },
+          ],
         }),
       });
 
@@ -344,35 +404,40 @@ describe('AssetsSection with Trading 212', () => {
   it('hides connect account callout when any account is connected (not just Trading 212)', async () => {
     // Mock console to avoid error logs
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     // Mock both API calls
-    (fetch as jest.Mock)
-      .mockImplementation((url) => {
-        if (url === '/api/assets') {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              assets: [], 
-              trading212Portfolio: null,
-            }),
-          });
-        } else if (url === '/api/credentials') {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              credentials: [{ name: 'other-provider', displayName: 'Other Provider', connectedAt: new Date().toISOString() }],
-            }),
-          });
-        } else if (url === '/api/assets/categories') {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
-            }),
-          });
-        }
-        return Promise.reject(new Error(`Unexpected API call: ${url}`));
-      });
+    (fetch as jest.Mock).mockImplementation((url) => {
+      if (url === '/api/assets') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            assets: [],
+            trading212Portfolio: null,
+          }),
+        });
+      } else if (url === '/api/credentials') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            credentials: [
+              {
+                name: 'other-provider',
+                displayName: 'Other Provider',
+                connectedAt: new Date().toISOString(),
+              },
+            ],
+          }),
+        });
+      } else if (url === '/api/assets/categories') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
+          }),
+        });
+      }
+      return Promise.reject(new Error(`Unexpected API call: ${url}`));
+    });
 
     render(<AssetsSection />);
 
@@ -382,11 +447,16 @@ describe('AssetsSection with Trading 212', () => {
     });
 
     // Wait for credentials to be fetched and state to update
-    await waitFor(() => {
-      // Connect account callout should NOT be visible when any account is connected
-      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
-    }, { timeout: 5000 });
-    
+    await waitFor(
+      () => {
+        // Connect account callout should NOT be visible when any account is connected
+        expect(
+          screen.queryByText('Connect your accounts to automatically track your portfolio value'),
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
+
     consoleSpy.mockRestore();
   });
 
@@ -397,28 +467,27 @@ describe('AssetsSection with Trading 212', () => {
       resolveCredentials = resolve;
     });
 
-    (fetch as jest.Mock)
-      .mockImplementation((url) => {
-        if (url === '/api/assets') {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              assets: [],
-              trading212Portfolio: null,
-            }),
-          });
-        } else if (url === '/api/credentials') {
-          return credentialsPromise;
-        } else if (url === '/api/assets/categories') {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({
-              categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
-            }),
-          });
-        }
-        return Promise.reject(new Error(`Unexpected API call: ${url}`));
-      });
+    (fetch as jest.Mock).mockImplementation((url) => {
+      if (url === '/api/assets') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            assets: [],
+            trading212Portfolio: null,
+          }),
+        });
+      } else if (url === '/api/credentials') {
+        return credentialsPromise;
+      } else if (url === '/api/assets/categories') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            categories: [{ id: '1', category_name: 'Cash', user_id: 'test-user' }],
+          }),
+        });
+      }
+      return Promise.reject(new Error(`Unexpected API call: ${url}`));
+    });
 
     render(<AssetsSection />);
 
@@ -429,7 +498,9 @@ describe('AssetsSection with Trading 212', () => {
       const skeleton = document.querySelector('.h-16.animate-pulse');
       expect(skeleton).toBeInTheDocument();
       // Callout should not be visible yet
-      expect(screen.queryByText('Connect your accounts to automatically track your portfolio value')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Connect your accounts to automatically track your portfolio value'),
+      ).not.toBeInTheDocument();
     });
 
     // Now resolve the credentials promise
@@ -442,7 +513,9 @@ describe('AssetsSection with Trading 212', () => {
 
     // After loading, the callout should appear
     await waitFor(() => {
-      expect(screen.getByText('Connect your accounts to automatically track your portfolio value')).toBeInTheDocument();
+      expect(
+        screen.getByText('Connect your accounts to automatically track your portfolio value'),
+      ).toBeInTheDocument();
     });
   });
 });

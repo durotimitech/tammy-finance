@@ -52,7 +52,8 @@ export async function GET() {
           .single();
 
         // Check if we need to fetch new data
-        const shouldFetchNewData = !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
+        const shouldFetchNewData =
+          !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
 
         if (shouldFetchNewData) {
           // Generate user-specific secret
@@ -104,7 +105,7 @@ export async function GET() {
             if (!portfolioError && portfolio) {
               // Format portfolio data
               trading212Portfolio = formatPortfolioData(portfolio);
-              
+
               // Update or create Trading 212 asset entry
               if (trading212Portfolio && trading212Portfolio.totalValue >= 0) {
                 if (existingAsset) {
@@ -119,14 +120,12 @@ export async function GET() {
                     .eq('user_id', user.id);
                 } else {
                   // Create new asset entry
-                  await supabase
-                    .from('assets')
-                    .insert({
-                      user_id: user.id,
-                      name: 'Trading 212',
-                      category: 'External Connections',
-                      value: trading212Portfolio.totalValue,
-                    });
+                  await supabase.from('assets').insert({
+                    user_id: user.id,
+                    name: 'Trading 212',
+                    category: 'External Connections',
+                    value: trading212Portfolio.totalValue,
+                  });
                 }
               }
             }
