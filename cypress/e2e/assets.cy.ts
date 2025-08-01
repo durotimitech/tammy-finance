@@ -1,9 +1,10 @@
 describe('Assets Page', () => {
   beforeEach(() => {
-    // Set up default API interceptors
+    // Login first - this will set up the basic API mocks
+    cy.login();
+
+    // Then override with specific interceptors for this test
     cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
-    cy.intercept('GET', '/api/liabilities', { liabilities: [] }).as('getLiabilities');
-    cy.intercept('GET', '/api/history*', { history: [] }).as('getHistory');
     cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
     cy.intercept('GET', '/api/assets/categories', {
       categories: [
@@ -12,9 +13,6 @@ describe('Assets Page', () => {
         { id: '3', category_name: '401(k)' },
       ],
     }).as('getCategories');
-
-    // Login with real authentication
-    cy.login();
 
     // Navigate to assets page
     cy.visit('/dashboard/assets');

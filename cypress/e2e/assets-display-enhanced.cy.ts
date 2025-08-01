@@ -1,7 +1,10 @@
 describe('Enhanced Assets Display with Trading 212', () => {
   beforeEach(() => {
-    // Sign in with test user
+    // Sign in with test user - this will set up basic mocks
     cy.login();
+
+    // Ensure we're on dashboard before proceeding
+    cy.url({ timeout: 30000 }).should('include', '/dashboard');
   });
 
   it('displays Trading 212 portfolio in assets section', () => {

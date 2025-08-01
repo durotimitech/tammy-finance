@@ -67,19 +67,33 @@ Cypress.Commands.add(
     // Set the new Supabase auth cookies format
     // Cookie name is based on the Supabase project ref from the URL
     const authTokenName = 'sb-dadycsocuxvqnvvksbkz-auth-token';
-    const cookieValue = btoa(
-      JSON.stringify({
-        access_token: 'mock-access-token',
-        refresh_token: 'mock-refresh-token',
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        expires_in: 3600,
-        token_type: 'bearer',
-        user,
-      }),
-    );
+    const authTokenData = {
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      expires_at: session.expires_at,
+      expires_in: session.expires_in,
+      token_type: session.token_type,
+      user: session.user,
+    };
+    const cookieValue = btoa(JSON.stringify(authTokenData));
 
     // Set the main auth token cookie
     cy.setCookie(authTokenName, cookieValue, {
+      path: '/',
+      sameSite: 'lax',
+      secure: false,
+      httpOnly: false,
+    });
+
+    // Also set the auth token in a base64 encoded format
+    cy.setCookie(`${authTokenName}.0`, btoa(JSON.stringify(authTokenData)), {
+      path: '/',
+      sameSite: 'lax',
+      secure: false,
+      httpOnly: false,
+    });
+
+    cy.setCookie(`${authTokenName}.1`, '', {
       path: '/',
       sameSite: 'lax',
       secure: false,
@@ -97,6 +111,7 @@ Cypress.Commands.add(
     });
 
     // Mock successful auth check - this is what the middleware calls
+    // Use force: true to ensure this intercept takes precedence
     cy.intercept('GET', '**/auth/v1/user', {
       statusCode: 200,
       body: {
@@ -136,6 +151,12 @@ Cypress.Commands.add(
       statusCode: 200,
       body: session,
     }).as('sessionCheck');
+
+    // Also intercept token refresh endpoint
+    cy.intercept('POST', '**/auth/v1/token?grant_type=refresh_token', {
+      statusCode: 200,
+      body: session,
+    }).as('tokenRefresh');
   },
 );
 
@@ -190,6 +211,9 @@ Cypress.Commands.add('mockSupabaseAuth', () => {
 
 // Simplified login command used in tests - uses mocked authentication
 Cypress.Commands.add('login', (email?: string) => {
+  // Mock all required API endpoints BEFORE setting up authentication
+  cy.mockDashboardAPIs();
+
   // Use mock authenticated session instead of real login
   cy.mockAuthenticatedSession({
     id: 'test-user-id',
@@ -200,8 +224,11 @@ Cypress.Commands.add('login', (email?: string) => {
   // Use failOnStatusCode: false to handle redirect gracefully
   cy.visit('/dashboard', { failOnStatusCode: false });
 
+  // Wait for the page to actually load
+  cy.get('body', { timeout: 30000 }).should('be.visible');
+
   // Ensure we're on the dashboard page
-  cy.url().should('include', '/dashboard');
+  cy.url({ timeout: 30000 }).should('include', '/dashboard');
 });
 
 // Helper to check if element is loading

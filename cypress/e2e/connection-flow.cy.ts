@@ -2,6 +2,9 @@ describe('Account Connection Flow', () => {
   beforeEach(() => {
     // Sign in before each test
     cy.login();
+
+    // Ensure we're authenticated before proceeding
+    cy.url({ timeout: 30000 }).should('include', '/dashboard');
   });
 
   describe('Assets Page Callout', () => {
