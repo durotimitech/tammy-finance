@@ -115,6 +115,10 @@ describe('Trading212ConnectionModal', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
+        json: async () => ({ credentials: [] }), // No existing credentials
+      })
+      .mockResolvedValueOnce({
+        ok: true,
         json: async () => ({ success: true }),
       });
 
@@ -143,7 +147,12 @@ describe('Trading212ConnectionModal', () => {
       });
     });
 
-    // Second call is to save the encrypted credential
+    // Second call is to check if credential exists
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith('/api/credentials');
+    });
+
+    // Third call is to save the credential
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/credentials', {
         method: 'POST',
@@ -152,18 +161,8 @@ describe('Trading212ConnectionModal', () => {
         },
         body: JSON.stringify({
           name: 'trading212',
-          value: {
-            encryptedValue: 'encrypted',
-            salt: 'salt',
-            iv: 'iv',
-            authTag: 'authTag',
-            algorithm: 'AES-GCM',
-            keyDerivation: {
-              iterations: 10000,
-              hash: 'SHA-256',
-            },
-          },
-          isEncrypted: true,
+          value: 'test-api-key',
+          isEncrypted: false,
         }),
       });
     });

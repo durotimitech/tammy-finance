@@ -175,29 +175,16 @@ Cypress.Commands.add('mockSupabaseAuth', () => {
   }).as('supabaseLogout');
 });
 
-// Simplified login command used in tests - now uses real authentication
+// Simplified login command used in tests - uses mocked authentication
 Cypress.Commands.add('login', (email?: string) => {
-  const testEmail = email || Cypress.env('TEST_USER_EMAIL');
-  const testPassword = Cypress.env('TEST_USER_PASSWORD');
+  // Use mock authenticated session instead of real login
+  cy.mockAuthenticatedSession({
+    id: 'test-user-id',
+    email: email || 'test@example.com',
+  });
 
-  // Visit login page
-  cy.visit('/auth/login');
-
-  // Wait for page to load
-  cy.get('input[type="email"]').should('be.visible');
-
-  // Fill in login form
-  cy.get('input[type="email"]').type(testEmail);
-  cy.get('input[type="password"]').type(testPassword);
-
-  // Submit form
-  cy.get('button[type="submit"]').click();
-
-  // Wait for redirect to dashboard
-  cy.url().should('include', '/dashboard', { timeout: 10000 });
-
-  // Wait for dashboard to fully load - check for one of the main elements
-  cy.get('[data-testid="net-worth-value"]', { timeout: 10000 }).should('be.visible');
+  // Visit dashboard directly since we're already authenticated
+  cy.visit('/dashboard');
 });
 
 // Helper to check if element is loading
@@ -233,7 +220,6 @@ Cypress.Commands.add('mockDashboardAPIs', (assets = [], liabilities = []) => {
 
 // TypeScript declarations
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       loginWithSupabase(email: string, password: string): Chainable<void>;

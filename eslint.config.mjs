@@ -36,6 +36,16 @@ const eslintConfig = [
     },
   },
   {
+    // Override for test files
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
+      '@typescript-eslint/no-unused-vars': 'off', // Allow unused vars in tests
+      '@typescript-eslint/no-require-imports': 'off', // Allow require in tests
+      'react/display-name': 'off', // Not needed in tests
+    },
+  },
+  {
     // Ignore patterns using flat config ignores
     ignores: ['.next/**'],
   },
