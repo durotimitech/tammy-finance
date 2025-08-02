@@ -221,16 +221,41 @@ describe('Assets Page', () => {
       },
     ];
 
-    cy.intercept('GET', '/api/assets', mockAssets).as('getAssets');
+    // Set up initial interceptors
     cy.intercept('GET', '/api/credentials', []).as('getCredentials');
     cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
     cy.intercept('GET', '/api/history*', []).as('getHistory');
-    cy.intercept('GET', '/api/networth', {
-      netWorth: 5000,
-      totalAssets: 5000,
-      totalLiabilities: 0,
+
+    // Set up a counter to track GET /api/assets calls
+    let assetCallCount = 0;
+    cy.intercept('GET', '/api/assets', (req) => {
+      assetCallCount++;
+      if (assetCallCount === 1) {
+        // First call - return the asset
+        req.reply(mockAssets);
+      } else {
+        // Subsequent calls after delete - return empty
+        req.reply([]);
+      }
+    }).as('getAssets');
+
+    cy.intercept('GET', '/api/networth', (req) => {
+      if (assetCallCount === 1) {
+        req.reply({
+          netWorth: 5000,
+          totalAssets: 5000,
+          totalLiabilities: 0,
+        });
+      } else {
+        req.reply({
+          netWorth: 0,
+          totalAssets: 0,
+          totalLiabilities: 0,
+        });
+      }
     }).as('getNetWorth');
-    cy.intercept('DELETE', '/api/assets?id=1', { success: true }).as('deleteAsset');
+
+    cy.intercept('DELETE', '/api/assets', { success: true }).as('deleteAsset');
 
     // Visit dashboard first
     cy.visit('/dashboard');
@@ -243,6 +268,8 @@ describe('Assets Page', () => {
     cy.wait('@getCredentials');
 
     // Asset is visible (accordion is open by default)
+    cy.contains('Test Asset').should('be.visible');
+
     // Click delete button
     cy.get('[data-testid="delete-asset-1"]').click();
 
@@ -255,6 +282,9 @@ describe('Assets Page', () => {
 
     // Check API call
     cy.wait('@deleteAsset');
+
+    // Wait for the refetch after deletion
+    cy.wait('@getAssets');
 
     // Asset should be removed
     cy.contains('Test Asset').should('not.exist');
