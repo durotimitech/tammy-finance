@@ -1,11 +1,15 @@
-describe.skip('Assets Page', () => {
+describe('Assets Page', () => {
   beforeEach(() => {
-    // Login first - this will set up the basic API mocks
-    cy.login();
-
-    // Then override with specific interceptors for this test
-    cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
-    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
+    // Set up API interceptors
+    cy.intercept('GET', '/api/assets', []).as('getAssets');
+    cy.intercept('GET', '/api/credentials', []).as('getCredentials');
+    cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', []).as('getHistory');
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 0,
+      totalAssets: 0,
+      totalLiabilities: 0,
+    }).as('getNetWorth');
     cy.intercept('GET', '/api/assets/categories', {
       categories: [
         { id: '1', category_name: 'Checking Account' },
@@ -14,8 +18,13 @@ describe.skip('Assets Page', () => {
       ],
     }).as('getCategories');
 
-    // Navigate to assets page
-    cy.visit('/dashboard/assets');
+    // Visit dashboard first to ensure auth bypass works
+    cy.visit('/dashboard');
+    cy.url().should('include', '/dashboard');
+
+    // Navigate to assets page via sidebar
+    cy.get('nav').contains('Assets').click();
+    cy.url().should('include', '/dashboard/assets');
 
     // Wait for API calls to complete
     cy.wait('@getAssets');
@@ -35,12 +44,12 @@ describe.skip('Assets Page', () => {
   });
 
   it('should show empty state when no assets exist', () => {
-    cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
+    cy.intercept('GET', '/api/assets', []).as('getAssets');
     cy.visit('/dashboard/assets');
     cy.wait('@getAssets');
 
     cy.contains('No assets added yet').should('be.visible');
-    cy.contains('Click "Add Asset" to start tracking your portfolio').should('be.visible');
+    cy.contains('Click "Add Asset" to start tracking your wealth').should('be.visible');
   });
 
   it('should display assets list when assets exist', () => {
@@ -65,14 +74,28 @@ describe.skip('Assets Page', () => {
       },
     ];
 
-    cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
-    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
-    cy.visit('/dashboard/assets');
+    cy.intercept('GET', '/api/assets', mockAssets).as('getAssets');
+    cy.intercept('GET', '/api/credentials', []).as('getCredentials');
+    cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', []).as('getHistory');
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 55000,
+      totalAssets: 55000,
+      totalLiabilities: 0,
+    }).as('getNetWorth');
+
+    // Visit dashboard first
+    cy.visit('/dashboard');
+    cy.url().should('include', '/dashboard');
+
+    // Navigate to assets page
+    cy.get('nav').contains('Assets').click();
+    cy.url().should('include', '/dashboard/assets');
     cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
     // Check total value
-    cy.contains('Total Assets Value').should('be.visible');
+    cy.contains('Total Value').should('be.visible');
     cy.contains('€55,000.00').should('be.visible');
 
     // Assets are grouped by category, accordion is open by default
@@ -108,22 +131,39 @@ describe.skip('Assets Page', () => {
   });
 
   it('should add a new asset', () => {
-    cy.intercept('GET', '/api/assets', { assets: [] }).as('getAssets');
-    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
+    // Mock asset to be returned after creation
+    const newAsset = {
+      id: 'new-1',
+      name: 'New Savings Account',
+      category: 'Savings Account',
+      value: 10000,
+      user_id: 'test-user',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    // Initial interceptors - empty assets
+    cy.intercept('GET', '/api/assets', []).as('getAssetsEmpty');
+    cy.intercept('GET', '/api/credentials', []).as('getCredentials');
+    cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', []).as('getHistory');
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 0,
+      totalAssets: 0,
+      totalLiabilities: 0,
+    }).as('getNetWorth');
     cy.intercept('POST', '/api/assets', {
-      asset: {
-        id: 'new-1',
-        name: 'New Savings Account',
-        category: 'Savings Account',
-        value: 10000,
-        user_id: 'test-user',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
+      asset: newAsset,
     }).as('createAsset');
 
-    cy.visit('/dashboard/assets');
-    cy.wait('@getAssets');
+    // Visit dashboard first
+    cy.visit('/dashboard');
+    cy.url().should('include', '/dashboard');
+
+    // Navigate to assets page
+    cy.get('nav').contains('Assets').click();
+    cy.url().should('include', '/dashboard/assets');
+    cy.wait('@getAssetsEmpty');
     cy.wait('@getCredentials');
 
     // Open modal
@@ -141,6 +181,19 @@ describe.skip('Assets Page', () => {
 
     // Check API call
     cy.wait('@createAsset');
+
+    // Update the GET interceptor to return the new asset for subsequent calls
+    cy.intercept('GET', '/api/assets', [newAsset]).as('getAssetsWithNew');
+
+    // Update networth interceptor to reflect new asset
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 10000,
+      totalAssets: 10000,
+      totalLiabilities: 0,
+    }).as('getNetWorthUpdated');
+
+    // Wait for the refetch after creation
+    cy.wait('@getAssetsWithNew');
 
     // Modal should close
     cy.contains('h2', 'Add New Asset').should('not.exist');
@@ -168,11 +221,24 @@ describe.skip('Assets Page', () => {
       },
     ];
 
-    cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
-    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
+    cy.intercept('GET', '/api/assets', mockAssets).as('getAssets');
+    cy.intercept('GET', '/api/credentials', []).as('getCredentials');
+    cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', []).as('getHistory');
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 5000,
+      totalAssets: 5000,
+      totalLiabilities: 0,
+    }).as('getNetWorth');
     cy.intercept('DELETE', '/api/assets?id=1', { success: true }).as('deleteAsset');
 
-    cy.visit('/dashboard/assets');
+    // Visit dashboard first
+    cy.visit('/dashboard');
+    cy.url().should('include', '/dashboard');
+
+    // Navigate to assets page
+    cy.get('nav').contains('Assets').click();
+    cy.url().should('include', '/dashboard/assets');
     cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
@@ -208,10 +274,23 @@ describe.skip('Assets Page', () => {
       },
     ];
 
-    cy.intercept('GET', '/api/assets', { assets: mockAssets }).as('getAssets');
-    cy.intercept('GET', '/api/credentials', { credentials: [] }).as('getCredentials');
+    cy.intercept('GET', '/api/assets', mockAssets).as('getAssets');
+    cy.intercept('GET', '/api/credentials', []).as('getCredentials');
+    cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
+    cy.intercept('GET', '/api/history*', []).as('getHistory');
+    cy.intercept('GET', '/api/networth', {
+      netWorth: 5000,
+      totalAssets: 5000,
+      totalLiabilities: 0,
+    }).as('getNetWorth');
 
-    cy.visit('/dashboard/assets');
+    // Visit dashboard first
+    cy.visit('/dashboard');
+    cy.url().should('include', '/dashboard');
+
+    // Navigate to assets page
+    cy.get('nav').contains('Assets').click();
+    cy.url().should('include', '/dashboard/assets');
     cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
