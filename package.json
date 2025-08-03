@@ -12,10 +12,10 @@
     "test:e2e:watch": "jest --config jest.e2e.config.js --watch",
     "test:e2e:headless": "HEADLESS=true jest --config jest.e2e.config.js",
     "test:e2e:debug": "HEADLESS=false DEVTOOLS=true jest --config jest.e2e.config.js",
-    "cypress": "cypress open",
-    "cypress:headless": "cypress run",
-    "cypress:component": "cypress open --component",
-    "test:cypress": "start-server-and-test dev http://localhost:3000 cypress:headless",
+    "cypress": "CYPRESS=true cypress open",
+    "cypress:headless": "CYPRESS=true cypress run",
+    "cypress:component": "CYPRESS=true cypress open --component",
+    "test:cypress": "CYPRESS=true start-server-and-test dev http://localhost:3000 cypress:headless",
     "prepare": "husky"
   },
   "dependencies": {

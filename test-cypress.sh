@@ -4,18 +4,18 @@
 echo "Building application..."
 npm run build
 
-# Start the server in background
+# Start the server in background with CYPRESS environment variable
 echo "Starting server..."
-npm start &
+CYPRESS=true npm start &
 SERVER_PID=$!
 
 # Wait for server to be ready
 echo "Waiting for server to be ready..."
 npx wait-on http://localhost:3000 -t 30000
 
-# Run the test
+# Run the test with CYPRESS environment variable
 echo "Running Cypress test..."
-npm run cypress:headless -- --spec cypress/e2e/settings-navigation.cy.ts
+CYPRESS=true npm run cypress:headless -- --spec cypress/e2e/settings-navigation.cy.ts
 
 # Capture exit code
 EXIT_CODE=$?

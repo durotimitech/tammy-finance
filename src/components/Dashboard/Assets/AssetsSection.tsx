@@ -166,7 +166,7 @@ export default function AssetsSection() {
                 </p>
               </div>
               <Button
-                onClick={() => router.push('/dashboard/integrations')}
+                onClick={() => router.push('/dashboard/settings')}
                 variant="secondary"
                 size="sm"
               >
@@ -270,6 +270,7 @@ export default function AssetsSection() {
                                         }
                                         className="p-1 hover:bg-gray-200 rounded transition-colors"
                                         aria-label="Delete asset"
+                                        data-testid={`delete-asset-${asset.id}`}
                                       >
                                         <Trash2 className="w-4 h-4 text-red-600" />
                                       </button>

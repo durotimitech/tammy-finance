@@ -209,26 +209,16 @@ Cypress.Commands.add('mockSupabaseAuth', () => {
   }).as('supabaseLogout');
 });
 
-// Simplified login command used in tests - uses mocked authentication
-Cypress.Commands.add('login', (email?: string) => {
-  // Mock all required API endpoints BEFORE setting up authentication
-  cy.mockDashboardAPIs();
+// Simplified login command - relies on Cypress auth bypass in middleware
+Cypress.Commands.add('login', () => {
+  // Visit dashboard directly - auth bypass in middleware will handle authentication
+  cy.visit('/dashboard');
 
-  // Use mock authenticated session instead of real login
-  cy.mockAuthenticatedSession({
-    id: 'test-user-id',
-    email: email || 'test@example.com',
-  });
+  // Verify we're on the dashboard (auth bypass worked)
+  cy.url().should('include', '/dashboard');
 
-  // Visit dashboard directly since we're already authenticated
-  // Use failOnStatusCode: false to handle redirect gracefully
-  cy.visit('/dashboard', { failOnStatusCode: false });
-
-  // Wait for the page to actually load
-  cy.get('body', { timeout: 30000 }).should('be.visible');
-
-  // Ensure we're on the dashboard page
-  cy.url({ timeout: 30000 }).should('include', '/dashboard');
+  // Wait for the page to load
+  cy.get('body').should('be.visible');
 });
 
 // Helper to check if element is loading
@@ -297,7 +287,7 @@ declare global {
       waitForPageLoad(): Chainable<void>;
       mockAuthenticatedSession(user?: { id: string; email: string }): Chainable<void>;
       mockSupabaseAuth(): Chainable<void>;
-      login(email?: string): Chainable<void>;
+      login(): Chainable<void>;
       shouldBeLoading(selector: string): Chainable<void>;
       shouldNotBeLoading(selector: string): Chainable<void>;
       waitForApi(alias: string | string[]): Chainable<void>;

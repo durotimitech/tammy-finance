@@ -9,5 +9,6 @@ declare namespace Cypress {
     waitForPageLoad(): Chainable<void>;
     mockAuthenticatedSession(user?: { id: string; email: string }): Chainable<void>;
     mockSupabaseAuth(): Chainable<void>;
+    login(): Chainable<void>;
   }
 }

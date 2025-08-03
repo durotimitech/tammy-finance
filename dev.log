@@ -4,9 +4,492 @@
 
    ▲ Next.js 15.3.5 (Turbopack)
    - Local:        http://localhost:3000
-   - Network:      http://192.168.7.94:3000
+   - Network:      http://192.168.6.253:3000
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Compiled middleware in 99ms
- ✓ Ready in 782ms
+ ✓ Compiled middleware in 92ms
+ ✓ Ready in 685ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 3s
+ GET /dashboard 200 in 3237ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 440ms
+ GET /api/liabilities 401 in 460ms
+ ○ Compiling /dashboard/assets ...
+ ✓ Compiled /dashboard/assets in 654ms
+ GET /dashboard/assets 200 in 716ms
+ GET /dashboard 200 in 44ms
+ GET /api/liabilities 401 in 36ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 41ms
+ GET /dashboard/assets 200 in 66ms
+ ✓ Compiled /api/assets in 206ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 556ms
+ GET /dashboard/settings 200 in 574ms
+ GET /dashboard 200 in 45ms
+ GET /dashboard/settings 200 in 89ms
+ GET /api/assets 401 in 89ms
+ GET /api/liabilities 401 in 92ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 91ms
+ ✓ Compiled /api/credentials in 176ms
+ GET /dashboard 200 in 52ms
+ GET /dashboard/settings 200 in 66ms
+ GET /api/assets 401 in 65ms
+ GET /api/liabilities 401 in 70ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 68ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 55ms
+ GET /dashboard/settings 200 in 81ms
+ GET /api/assets 401 in 78ms
+ GET /api/liabilities 401 in 83ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 79ms
+ GET /api/credentials 401 in 27ms
+ GET /dashboard 200 in 46ms
+ GET /dashboard/settings 200 in 60ms
+ GET /api/liabilities 200 in 53ms
+ GET /api/assets 200 in 56ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 52ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 49ms
+ GET /dashboard/settings 200 in 59ms
+ GET /api/assets 401 in 58ms
+ GET /api/liabilities 401 in 62ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 60ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 46ms
+ GET /dashboard/settings 200 in 66ms
+ GET /api/assets 401 in 65ms
+ GET /api/liabilities 401 in 68ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 66ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 40ms
+ GET /dashboard/settings 200 in 53ms
+ GET /api/assets 401 in 56ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 53ms
+ GET /api/liabilities 200 in 55ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 44ms
+ GET /dashboard/settings 200 in 57ms
+ GET /api/assets 401 in 57ms
+ GET /api/liabilities 401 in 60ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 58ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 40ms
+ GET /dashboard/settings 200 in 58ms
+ GET /api/assets 401 in 61ms
+ GET /api/liabilities 401 in 64ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 67ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/settings 200 in 64ms
+ GET /api/assets 401 in 66ms
+ GET /api/liabilities 401 in 69ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 68ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 48ms
+ GET /dashboard/settings 200 in 71ms
+ GET /api/assets 401 in 70ms
+ GET /api/liabilities 401 in 74ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 75ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 38ms
+ GET /dashboard/settings 200 in 61ms
+ GET /api/assets 401 in 58ms
+ GET /api/liabilities 401 in 62ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 61ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/settings 200 in 49ms
+ GET /api/liabilities 200 in 44ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 42ms
+ GET /api/assets 200 in 45ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 40ms
+ GET /dashboard/settings 200 in 58ms
+ GET /api/assets 401 in 59ms
+ GET /api/liabilities 200 in 58ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 60ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 37ms
+ GET /dashboard/settings 200 in 66ms
+ GET /api/assets 401 in 68ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 68ms
+ GET /api/liabilities 401 in 71ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/settings 200 in 66ms
+ GET /api/assets 401 in 67ms
+ GET /api/liabilities 401 in 69ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 71ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 37ms
+ GET /api/assets 401 in 39ms
+ GET /api/liabilities 401 in 42ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 42ms
+ GET /dashboard/settings 200 in 62ms
+ GET /dashboard 200 in 38ms
+ GET /api/assets 401 in 44ms
+ GET /api/liabilities 401 in 47ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 49ms
+ GET /dashboard/settings 200 in 68ms
+ GET /dashboard 200 in 45ms
+ GET /api/assets 401 in 38ms
+ GET /api/liabilities 401 in 41ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 44ms
+ GET /dashboard/settings 200 in 63ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/assets 200 in 70ms
+ GET /api/liabilities 401 in 65ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 64ms
+ GET /dashboard 200 in 36ms
+ GET /api/assets 401 in 34ms
+ GET /api/liabilities 401 in 37ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 39ms
+ GET /dashboard/assets 200 in 56ms
+ GET /dashboard/settings 200 in 24ms
+ GET /dashboard 200 in 37ms
+ GET /dashboard/settings 200 in 55ms
+ GET /api/assets 401 in 55ms
+ GET /api/liabilities 401 in 61ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 58ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 36ms
+ GET /dashboard/settings 200 in 57ms
+ GET /api/assets 401 in 56ms
+ GET /api/liabilities 401 in 58ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 55ms
+ GET /api/credentials 401 in 27ms
+ GET /dashboard 200 in 62ms
+ GET /dashboard/settings 200 in 56ms
+ GET /api/assets 401 in 56ms
+ GET /api/liabilities 200 in 54ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 51ms
+ GET /api/credentials 401 in 27ms
+ GET /dashboard 200 in 38ms
+ GET /dashboard/settings 200 in 60ms
+ GET /api/liabilities 200 in 57ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 54ms
+ GET /api/assets 200 in 57ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 54ms
+ GET /dashboard/settings 200 in 64ms
+ GET /api/assets 401 in 65ms
+ GET /api/liabilities 401 in 68ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 67ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 40ms
+ GET /dashboard/settings 200 in 55ms
+ GET /api/assets 401 in 55ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 53ms
+ GET /api/liabilities 200 in 56ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 37ms
+ GET /dashboard/settings 200 in 54ms
+ GET /api/assets 401 in 54ms
+ GET /api/liabilities 401 in 58ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 55ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 38ms
+ GET /dashboard/settings 200 in 58ms
+ GET /api/assets 401 in 58ms
+ GET /api/liabilities 401 in 61ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 60ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 63ms
+ GET /dashboard/settings 200 in 69ms
+ GET /api/assets 401 in 68ms
+ GET /api/liabilities 401 in 70ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 72ms
+ GET /api/credentials 401 in 28ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/settings 200 in 51ms
+ GET /api/assets 200 in 50ms
+ GET /api/liabilities 200 in 48ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 45ms
+ GET /api/credentials 401 in 26ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/settings 200 in 71ms
+ GET /api/assets 401 in 72ms
+ GET /api/liabilities 401 in 72ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 76ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 45ms
+ GET /dashboard/settings 200 in 56ms
+ GET /api/assets 401 in 55ms
+ GET /api/liabilities 401 in 59ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 61ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/settings 200 in 60ms
+ GET /api/assets 401 in 61ms
+ GET /api/liabilities 401 in 62ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 60ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 51ms
+ GET /dashboard/settings 200 in 64ms
+ GET /api/liabilities 401 in 58ms
+ GET /api/assets 401 in 64ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 62ms
+ GET /api/credentials 401 in 24ms
+ GET /dashboard 200 in 42ms
+ GET /dashboard/settings 200 in 60ms
+ GET /api/assets 401 in 63ms
+ GET /api/liabilities 200 in 65ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 63ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/settings 200 in 46ms
+ GET /api/history?startDate=2025-05-04&limit=365 200 in 43ms
+ GET /api/liabilities 200 in 44ms
+ GET /api/assets 200 in 46ms
+ GET /api/credentials 401 in 25ms
+ GET /dashboard 200 in 36ms
+ GET /api/assets 401 in 40ms
+ GET /api/liabilities 401 in 42ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 44ms
+ GET /dashboard/settings 200 in 62ms
+ GET /dashboard 200 in 41ms
+ GET /api/assets 401 in 38ms
+ GET /api/liabilities 401 in 40ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 42ms
+ GET /dashboard/settings 200 in 60ms
+ GET /dashboard 200 in 40ms
+ GET /api/assets 401 in 30ms
+ GET /api/liabilities 401 in 35ms
+ GET /api/history?startDate=2025-05-04&limit=365 401 in 37ms
+ GET /dashboard/settings 200 in 47ms
+ GET /dashboard 200 in 78ms
+ GET /dashboard/assets 200 in 32ms
+ GET /dashboard 200 in 64ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 40ms
+ GET /dashboard 200 in 75ms
+ GET /dashboard/assets 200 in 26ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard 200 in 67ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard 200 in 68ms
+ GET /dashboard/assets 200 in 40ms
+ GET /dashboard/assets 200 in 23ms
+ GET /dashboard 200 in 76ms
+ GET /dashboard/assets 200 in 43ms
+ GET /dashboard/assets 200 in 26ms
+ GET /dashboard 200 in 68ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard/assets 200 in 33ms
+ GET /dashboard 200 in 70ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard 200 in 63ms
+ GET /dashboard/assets 200 in 51ms
+ GET /dashboard 200 in 77ms
+ GET /dashboard/assets 200 in 35ms
+ GET /dashboard 200 in 51ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard/assets 200 in 43ms
+ ✓ Compiled /_not-found/page in 425ms
+ GET /__/fonts/FiraCode-VF.woff2 404 in 453ms
+ GET /dashboard 200 in 73ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 23ms
+ GET /dashboard 200 in 71ms
+ GET /dashboard/assets 200 in 43ms
+ GET /dashboard 200 in 51ms
+ GET /dashboard/assets 200 in 35ms
+ GET /dashboard/assets 200 in 40ms
+ GET /dashboard 200 in 63ms
+ GET /dashboard/assets 200 in 39ms
+ GET /dashboard/assets 200 in 40ms
+ GET /dashboard 200 in 75ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard/assets 200 in 40ms
+ GET /dashboard 200 in 75ms
+ GET /dashboard/assets 200 in 26ms
+ GET /dashboard/assets 200 in 25ms
+ GET /dashboard 200 in 44ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard/assets 200 in 32ms
+ GET /dashboard 200 in 92ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard 200 in 73ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard 200 in 57ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard/assets 200 in 23ms
+ GET /dashboard 200 in 44ms
+ GET /dashboard/assets 200 in 35ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard 200 in 64ms
+ GET /dashboard/assets 200 in 108ms
+ GET /dashboard 200 in 77ms
+ GET /dashboard/assets 200 in 45ms
+ GET /dashboard 200 in 53ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard/assets 200 in 134ms
+ GET /dashboard 200 in 50ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard/assets 200 in 24ms
+ GET /dashboard 200 in 80ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard 200 in 59ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 24ms
+ GET /dashboard 200 in 100ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard 200 in 58ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard/assets 200 in 25ms
+ GET /dashboard 200 in 100ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 26ms
+ GET /dashboard 200 in 81ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard 200 in 101ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard/assets 200 in 22ms
+ GET /dashboard 200 in 67ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard/assets 200 in 26ms
+ GET /dashboard 200 in 60ms
+ GET /dashboard/assets 200 in 49ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/assets 200 in 31ms
+ GET /dashboard/assets 200 in 44ms
+ GET /dashboard 200 in 39ms
+ GET /dashboard/assets 200 in 27ms
+ GET /dashboard 200 in 38ms
+ GET /dashboard/assets 200 in 39ms
+ GET /dashboard 200 in 47ms
+ GET /dashboard/assets 200 in 41ms
+ GET /dashboard 200 in 48ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard 200 in 74ms
+ GET /dashboard/assets 200 in 29ms
+ GET /dashboard 200 in 43ms
+ GET /dashboard/assets 200 in 32ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/assets 200 in 31ms
+ GET /dashboard 200 in 44ms
+ GET /dashboard/assets 200 in 31ms
+ GET /dashboard 200 in 67ms
+ GET /dashboard/assets 200 in 37ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/assets 200 in 27ms
+ DELETE /api/assets 401 in 28ms
+ DELETE /api/assets 401 in 42ms
+ GET /dashboard 200 in 72ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard 200 in 41ms
+ GET /dashboard/assets 200 in 29ms
+ DELETE /api/assets 401 in 62ms
+ DELETE /api/assets 401 in 44ms
+ GET /dashboard 200 in 52ms
+ GET /dashboard/assets 200 in 28ms
+ GET /dashboard 200 in 55ms
+ GET /dashboard/assets 200 in 33ms
+ DELETE /api/assets 401 in 54ms
+ DELETE /api/assets 401 in 44ms
+ GET /dashboard 200 in 70ms
+ GET /dashboard/assets 200 in 34ms
+ GET /dashboard 200 in 40ms
+ GET /dashboard/assets 200 in 30ms
+ GET /dashboard 200 in 77ms
+ GET /dashboard/assets 200 in 33ms
+ GET /dashboard 200 in 66ms
+ GET /dashboard/assets 200 in 30ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ✓ Compiled /_error in 342ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.r3h13pia49'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.r3h13pia49'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.zsyyjqkqqzg'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.zsyyjqkqqzg'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.84z3xvx2flh'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.84z3xvx2flh'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ewu89q4exki'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ewu89q4exki'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.v9ckadanjis'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.v9ckadanjis'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.qzs7dqiwpsl'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.qzs7dqiwpsl'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ysayuagh2aa'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ysayuagh2aa'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/server/app/dashboard/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.50t1v7wk8fb'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.50t1v7wk8fb'
+}
+[Error: ENOENT: no such file or directory, open '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ml8wxhqaer'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/oluwadurotimimejabi/Documents/code/projects/networth_tracker/.next/static/development/_buildManifest.js.tmp.ml8wxhqaer'
+}
+[?25h

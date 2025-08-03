@@ -13,3 +13,12 @@ import 'cypress-real-events';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Set a cookie to indicate Cypress is running
+beforeEach(() => {
+  cy.setCookie('cypress-test-mode', 'true', {
+    path: '/',
+    sameSite: 'lax',
+    secure: false,
+  });
+});

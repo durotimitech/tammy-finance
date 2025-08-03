@@ -17,15 +17,13 @@ describe.skip('Account Connection Flow', () => {
 
       cy.intercept('GET', '/api/assets', {
         statusCode: 200,
-        body: { assets: [] },
+        body: [],
       }).as('getAssets');
 
       cy.visit('/dashboard/assets');
       cy.wait(['@getCredentials', '@getAssets']);
 
-      cy.contains('Connect your accounts to automatically track your portfolio value').should(
-        'be.visible',
-      );
+      cy.contains('Automatically import your portfolio data from brokers').should('be.visible');
       cy.contains('button', 'Connect Account').should('be.visible');
     });
 
@@ -38,7 +36,7 @@ describe.skip('Account Connection Flow', () => {
 
       cy.intercept('GET', '/api/assets', {
         statusCode: 200,
-        body: { assets: [] },
+        body: [],
       }).as('getAssets');
 
       cy.visit('/dashboard/assets');
@@ -61,10 +59,10 @@ describe.skip('Account Connection Flow', () => {
       cy.contains('Choose a platform to connect your investment account').should('be.visible');
 
       // Click on the searchable select to open dropdown
-      cy.contains('button', 'Choose an account type').click();
+      cy.contains('button', 'Choose an account type...').click();
 
       // Only Trading 212 should be available in the dropdown
-      cy.contains('[role="option"]', 'Trading 212').should('be.visible');
+      cy.contains('button', 'Trading 212').should('be.visible');
     });
 
     it.skip('should show coming soon for unavailable integrations', () => {
@@ -92,16 +90,21 @@ describe.skip('Account Connection Flow', () => {
       cy.contains('button', 'Connect Account').click();
 
       // Click on the searchable select and choose Trading 212
-      cy.contains('button', 'Choose an account type').click();
-      cy.contains('[role="option"]', 'Trading 212').click();
+      cy.contains('button', 'Choose an account type...').click();
+      cy.contains('button', 'Trading 212').click();
 
       // Click Connect button
-      cy.contains('button', 'Connect').click();
+      cy.contains('button', 'Connect').click({ force: true });
+
+      // Wait for modal transition (the code uses setTimeout 100ms)
+      cy.wait(200);
 
       // Should close account selection and open Trading 212 modal
       cy.contains('Choose a platform to connect your investment account').should('not.exist');
       cy.contains('Connect Trading 212').should('be.visible');
-      cy.contains('Enter your Trading 212 API key').should('be.visible');
+      cy.contains('Enter your Trading 212 API key to connect your investment account').should(
+        'be.visible',
+      );
     });
   });
 
@@ -111,11 +114,11 @@ describe.skip('Account Connection Flow', () => {
       cy.contains('button', 'Connect Account').click();
 
       // Click on the searchable select and choose Trading 212
-      cy.contains('button', 'Choose an account type').click();
-      cy.contains('[role="option"]', 'Trading 212').click();
+      cy.contains('button', 'Choose an account type...').click();
+      cy.contains('button', 'Trading 212').click();
 
       // Click Connect button
-      cy.contains('button', 'Connect').click();
+      cy.contains('button', 'Connect').click({ force: true });
     });
 
     it('should display API key input and documentation link', () => {
@@ -130,7 +133,7 @@ describe.skip('Account Connection Flow', () => {
     });
 
     it('should validate empty API key', () => {
-      cy.contains('button', 'Connect').click();
+      cy.contains('button', 'Connect').click({ force: true });
       cy.contains('Please enter your API key').should('be.visible');
     });
 
@@ -143,7 +146,7 @@ describe.skip('Account Connection Flow', () => {
 
       // Enter API key
       cy.get('input[type="password"]').type('test-api-key-12345');
-      cy.contains('button', 'Connect').click();
+      cy.contains('button', 'Connect').click({ force: true });
 
       // Wait for API call
       cy.wait('@createCredential');
@@ -167,7 +170,7 @@ describe.skip('Account Connection Flow', () => {
       }).as('createCredentialError');
 
       cy.get('input[type="password"]').type('bad-key');
-      cy.contains('button', 'Connect').click();
+      cy.contains('button', 'Connect').click({ force: true });
 
       cy.wait('@createCredentialError');
       cy.contains('Invalid API key format').should('be.visible');

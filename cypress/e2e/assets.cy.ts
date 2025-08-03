@@ -142,18 +142,29 @@ describe('Assets Page', () => {
       updated_at: new Date().toISOString(),
     };
 
-    // Initial interceptors - empty assets
-    cy.intercept('GET', '/api/assets', []).as('getAssetsEmpty');
+    // Track if asset has been created
+    let assetCreated = false;
+
+    cy.intercept('GET', '/api/assets', (req) => {
+      req.reply(assetCreated ? [newAsset] : []);
+    }).as('getAssets');
+
     cy.intercept('GET', '/api/credentials', []).as('getCredentials');
     cy.intercept('GET', '/api/liabilities', []).as('getLiabilities');
     cy.intercept('GET', '/api/history*', []).as('getHistory');
-    cy.intercept('GET', '/api/networth', {
-      netWorth: 0,
-      totalAssets: 0,
-      totalLiabilities: 0,
+    cy.intercept('GET', '/api/networth', (req) => {
+      req.reply({
+        netWorth: assetCreated ? 10000 : 0,
+        totalAssets: assetCreated ? 10000 : 0,
+        totalLiabilities: 0,
+      });
     }).as('getNetWorth');
-    cy.intercept('POST', '/api/assets', {
-      asset: newAsset,
+    cy.intercept('POST', '/api/assets', (req) => {
+      assetCreated = true;
+      req.reply({
+        statusCode: 200,
+        body: newAsset,
+      });
     }).as('createAsset');
 
     // Visit dashboard first
@@ -163,7 +174,7 @@ describe('Assets Page', () => {
     // Navigate to assets page
     cy.get('nav').contains('Assets').click();
     cy.url().should('include', '/dashboard/assets');
-    cy.wait('@getAssetsEmpty');
+    cy.wait('@getAssets');
     cy.wait('@getCredentials');
 
     // Open modal
@@ -182,18 +193,9 @@ describe('Assets Page', () => {
     // Check API call
     cy.wait('@createAsset');
 
-    // Update the GET interceptor to return the new asset for subsequent calls
-    cy.intercept('GET', '/api/assets', [newAsset]).as('getAssetsWithNew');
-
-    // Update networth interceptor to reflect new asset
-    cy.intercept('GET', '/api/networth', {
-      netWorth: 10000,
-      totalAssets: 10000,
-      totalLiabilities: 0,
-    }).as('getNetWorthUpdated');
-
     // Wait for the refetch after creation
-    cy.wait('@getAssetsWithNew');
+    cy.wait('@getAssets');
+    cy.wait('@getNetWorth');
 
     // Modal should close
     cy.contains('h2', 'Add New Asset').should('not.exist');
