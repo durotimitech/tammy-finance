@@ -2,8 +2,7 @@
 
 import { LayoutDashboard, Wallet, LogOut, CreditCard, Settings, X } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { usePathname } from 'next/navigation';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -18,12 +17,19 @@ interface SidebarProps {
 
 export default function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/auth/login');
+    try {
+      // Call the logout API route
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+
+      // Force a hard refresh to clear all client-side state and cookies
+      window.location.href = '/auth/login';
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
