@@ -1,16 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, TrendingUp, TrendingDown } from 'lucide-react';
 import { useState } from 'react';
 import AssetDistributionChart from '@/components/Dashboard/Assets/AssetDistributionChart';
-import AssetsValueCard from '@/components/Dashboard/AssetsValueCard';
 import LiabilitiesDistributionChart from '@/components/Dashboard/Liabilities/LiabilitiesDistributionChart';
-import LiabilitiesValueCard from '@/components/Dashboard/LiabilitiesValueCard';
 import NetWorthChart from '@/components/Dashboard/NetWorthChart';
 import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
+import ValueCard from '@/components/ValueCard';
 import { useAssets, useLiabilities } from '@/hooks/use-financial-data';
 
 interface Trading212Portfolio {
@@ -136,10 +135,29 @@ export default function DashboardPage() {
             {/* Assets and Liabilities Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Assets Value Card */}
-              <AssetsValueCard />
+              <ValueCard
+                title="Total Assets"
+                value={assets.reduce((sum, asset) => sum + Number(asset.value), 0)}
+                description="Current value of all your assets"
+                icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+                href="/dashboard/assets"
+                isLoading={isLoadingAssets}
+                testId="total-assets-card"
+              />
 
               {/* Liabilities Value Card */}
-              <LiabilitiesValueCard />
+              <ValueCard
+                title="Total Liabilities"
+                value={liabilities.reduce(
+                  (sum, liability) => sum + Number(liability.amount_owed),
+                  0,
+                )}
+                description="Current value of all your liabilities"
+                icon={<TrendingDown className="w-5 h-5 text-red-400" />}
+                href="/dashboard/liabilities"
+                isLoading={isLoadingLiabilities}
+                testId="total-liabilities-card"
+              />
             </div>
           </motion.div>
         </main>
