@@ -33,9 +33,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left side - Gradient Background with Centered Image */}
+      {/* Left side - Orange Background with Centered Image */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400"
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
+        style={{ backgroundColor: '#ff5722' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
