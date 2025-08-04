@@ -2,13 +2,22 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Trading212ConnectionModal from './Trading212ConnectionModal';
 
 // Mock Supabase client
-jest.mock('@/lib/supabase/client', () => ({
-  createClient: jest.fn().mockReturnValue({
-    auth: {
-      getUser: jest.fn(),
+jest.mock('@/lib/supabase/client', () => {
+  const mockGetUser = jest.fn();
+  return {
+    createClient: jest.fn().mockReturnValue({
+      auth: {
+        getUser: jest.fn(),
+      },
+    }),
+    supabase: {
+      auth: {
+        getUser: mockGetUser,
+      },
     },
-  }),
-}));
+    __mockGetUser: mockGetUser,
+  };
+});
 
 // Mock crypto client
 jest.mock('@/lib/crypto/client', () => ({
@@ -38,8 +47,17 @@ describe('Trading212ConnectionModal', () => {
     jest.clearAllMocks();
     (fetch as jest.Mock).mockClear();
 
-    // Set up the mock for getUser
+    // Get the mockGetUser from the module
     const supabaseMock = jest.requireMock('@/lib/supabase/client');
+    const mockGetUser = supabaseMock.__mockGetUser;
+
+    // Set up default mock for getUser
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'test-user-id' } },
+      error: null,
+    });
+
+    // Set up the mock for getUser on createClient
     const mockSupabase = supabaseMock.createClient();
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: 'test-user-id' } },
@@ -106,7 +124,7 @@ describe('Trading212ConnectionModal', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('handles successful connection', async () => {
+  it('handles successful connection with encryption', async () => {
     // Mock validation response
     (fetch as jest.Mock)
       .mockResolvedValueOnce({
@@ -152,7 +170,7 @@ describe('Trading212ConnectionModal', () => {
       expect(fetch).toHaveBeenCalledWith('/api/credentials');
     });
 
-    // Third call is to save the credential
+    // Third call is to save the credential (now with encryption)
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/credentials', {
         method: 'POST',
@@ -161,8 +179,18 @@ describe('Trading212ConnectionModal', () => {
         },
         body: JSON.stringify({
           name: 'trading212',
-          value: 'test-api-key',
-          isEncrypted: false,
+          value: {
+            encryptedValue: 'encrypted',
+            salt: 'salt',
+            iv: 'iv',
+            authTag: 'authTag',
+            algorithm: 'AES-GCM',
+            keyDerivation: {
+              iterations: 10000,
+              hash: 'SHA-256',
+            },
+          },
+          isEncrypted: true,
         }),
       });
     });
@@ -247,5 +275,78 @@ describe('Trading212ConnectionModal', () => {
     fireEvent.click(cancelButton);
 
     expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it('handles encryption not supported', async () => {
+    // Mock encryption not supported
+    const cryptoMock = jest.requireMock('@/lib/crypto/client');
+    cryptoMock.isEncryptionSupported.mockReturnValue(false);
+
+    // Mock validation response
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { totalValue: 1000 } }),
+    });
+
+    render(
+      <Trading212ConnectionModal isOpen={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />,
+    );
+
+    // Wait for the component to fetch user data
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter your Trading 212 API key')).toBeInTheDocument();
+    });
+
+    const input = screen.getByPlaceholderText('Enter your Trading 212 API key');
+    fireEvent.change(input, { target: { value: 'test-api-key' } });
+
+    const connectButton = screen.getByRole('button', { name: /Connect/i });
+    fireEvent.click(connectButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Your browser does not support secure encryption. Please use a modern browser.'),
+      ).toBeInTheDocument();
+    });
+
+    // Reset the mock
+    cryptoMock.isEncryptionSupported.mockReturnValue(true);
+  });
+
+  it('handles user not authenticated', async () => {
+    // Get the mockGetUser from the module
+    const supabaseMock = jest.requireMock('@/lib/supabase/client');
+    const mockGetUser = supabaseMock.__mockGetUser;
+
+    // Mock user not authenticated
+    mockGetUser.mockResolvedValue({
+      data: { user: null },
+      error: null,
+    });
+
+    // Mock validation response
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { totalValue: 1000 } }),
+    });
+
+    render(
+      <Trading212ConnectionModal isOpen={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />,
+    );
+
+    // Wait for the component to fetch user data
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Enter your Trading 212 API key')).toBeInTheDocument();
+    });
+
+    const input = screen.getByPlaceholderText('Enter your Trading 212 API key');
+    fireEvent.change(input, { target: { value: 'test-api-key' } });
+
+    const connectButton = screen.getByRole('button', { name: /Connect/i });
+    fireEvent.click(connectButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('User not authenticated')).toBeInTheDocument();
+    });
   });
 });

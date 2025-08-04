@@ -60,7 +60,11 @@ export default function FinancialAccordion<T extends FinancialItem>({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: categoryIndex * 0.1, duration: 0.4 }}
         >
-          <AccordionItem value={category} className="border rounded-lg px-4">
+          <AccordionItem
+            value={category}
+            className="rounded-lg px-4"
+            style={{ border: '1px solid #e5e7eb' }}
+          >
             <AccordionTrigger className="py-3 hover:no-underline">
               <div className="flex justify-between items-center w-full pr-2">
                 <span className="font-medium">{category}</span>

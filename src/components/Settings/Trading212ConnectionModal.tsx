@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { encryptValue, generateClientPassword, isEncryptionSupported } from '@/lib/crypto/client';
+import { supabase } from '@/lib/supabase/client';
 
 interface Trading212ConnectionModalProps {
   isOpen: boolean;
@@ -58,7 +60,29 @@ export default function Trading212ConnectionModal({
         }
       }
 
-      // API key is valid, now save it (server will handle encryption)
+      // API key is valid, now encrypt it on the client side before saving
+
+      // Check if encryption is supported
+      if (!isEncryptionSupported()) {
+        throw new Error(
+          'Your browser does not support secure encryption. Please use a modern browser.',
+        );
+      }
+
+      // Get the current user for generating encryption password
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Generate a unique password for this encryption
+      const timestamp = Date.now();
+      const clientPassword = generateClientPassword(user.id, timestamp);
+
+      // Encrypt the API key on the client side
+      const encryptedPayload = await encryptValue(trimmedKey, clientPassword);
 
       // First check if credential already exists
       const checkResponse = await fetch('/api/credentials');
@@ -81,8 +105,8 @@ export default function Trading212ConnectionModal({
           },
           body: JSON.stringify({
             name: 'trading212',
-            value: trimmedKey,
-            isEncrypted: false,
+            value: encryptedPayload,
+            isEncrypted: true,
           }),
         },
       );
