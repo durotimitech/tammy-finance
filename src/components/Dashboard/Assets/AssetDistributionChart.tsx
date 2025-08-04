@@ -5,7 +5,6 @@ import { Asset } from '@/types/financial';
 
 interface AssetDistributionChartProps {
   assets: Asset[];
-  trading212Portfolio: { totalValue: number } | null;
 }
 
 const ASSET_COLORS = [
@@ -21,25 +20,13 @@ const ASSET_COLORS = [
   '#f97316', // Orange
 ];
 
-export default function AssetDistributionChart({
-  assets,
-  trading212Portfolio,
-}: AssetDistributionChartProps) {
+export default function AssetDistributionChart({ assets }: AssetDistributionChartProps) {
   // Create individual asset entries
   const assetEntries: ChartDataItem[] = assets.map((asset) => ({
     name: asset.name,
     value: asset.value,
     percentage: 0, // Will calculate after we have total
   }));
-
-  // Add Trading212 portfolio as a single entry if available
-  if (trading212Portfolio && trading212Portfolio.totalValue > 0) {
-    assetEntries.push({
-      name: 'Trading 212 Portfolio',
-      value: trading212Portfolio.totalValue,
-      percentage: 0,
-    });
-  }
 
   // Calculate total value
   const totalValue = assetEntries.reduce((sum, asset) => sum + asset.value, 0);

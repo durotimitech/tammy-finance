@@ -23,10 +23,6 @@ import {
 import { formatCurrency, groupBy, calculateSubtotals } from '@/lib/utils';
 import { Asset, AssetFormData } from '@/types/financial';
 
-interface Trading212Portfolio {
-  totalValue: number;
-}
-
 export default function AssetsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
@@ -43,14 +39,6 @@ export default function AssetsSection() {
   const createAssetMutation = useCreateAsset();
   const updateAssetMutation = useUpdateAsset();
   const deleteAssetMutation = useDeleteAsset();
-
-  // Extract Trading212 data from assets if it exists
-  const trading212Asset = assets.find(
-    (asset) => asset.name === 'Trading 212' && asset.category === 'External Connections',
-  );
-  const trading212Portfolio: Trading212Portfolio | null = trading212Asset
-    ? { totalValue: Number(trading212Asset.value) }
-    : null;
 
   // Fetch connected accounts on component mount
   useEffect(() => {
@@ -121,9 +109,7 @@ export default function AssetsSection() {
     }
   };
 
-  const totalManualAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalExternalAccounts = trading212Portfolio?.totalValue || 0;
-  const totalValue = totalManualAssets + totalExternalAccounts;
+  const totalValue = assets.reduce((sum, asset) => sum + asset.value, 0);
 
   // Group assets by category
   const assetsByCategory = groupBy(assets, 'category');
@@ -191,7 +177,7 @@ export default function AssetsSection() {
           </div>
         ) : (
           <>
-            {assets.length === 0 && !trading212Portfolio ? (
+            {assets.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p>No assets added yet</p>
                 <p className="text-sm mt-2">
@@ -200,30 +186,9 @@ export default function AssetsSection() {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* External Accounts Section - Show if Trading 212 is connected */}
-                {trading212Portfolio && (
-                  <div className="mb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">External Accounts</h3>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">Trading 212</p>
-                          <p className="text-sm text-gray-600">
-                            Last updated: {new Date().toLocaleDateString()}
-                          </p>
-                        </div>
-                        <p className="text-lg font-semibold">
-                          {formatCurrency(trading212Portfolio.totalValue)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Manual Assets Section */}
+                {/* Assets Section */}
                 {assets.length > 0 && (
                   <>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Manual Assets</h3>
                     <Accordion type="multiple" defaultValue={allCategories} className="space-y-2">
                       {Object.entries(assetsByCategory).map(([category, categoryAssets]) => (
                         <AccordionItem

@@ -12,10 +12,6 @@ import Sidebar from '@/components/Sidebar';
 import ValueCard from '@/components/ValueCard';
 import { useAssets, useLiabilities } from '@/hooks/use-financial-data';
 
-interface Trading212Portfolio {
-  totalValue: number;
-}
-
 export default function DashboardPage() {
   const [refreshKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,14 +19,6 @@ export default function DashboardPage() {
   // Use React Query hooks for data fetching
   const { data: assets = [], isLoading: isLoadingAssets } = useAssets();
   const { data: liabilities = [], isLoading: isLoadingLiabilities } = useLiabilities();
-
-  // Extract Trading212 data from assets if it exists
-  const trading212Asset = assets.find(
-    (asset) => asset.name === 'Trading 212' && asset.category === 'External Connections',
-  );
-  const trading212Portfolio: Trading212Portfolio | null = trading212Asset
-    ? { totalValue: Number(trading212Asset.value) }
-    : null;
 
   return (
     <div className="relative flex h-screen bg-gray-50">
@@ -109,10 +97,7 @@ export default function DashboardPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                      <AssetDistributionChart
-                        assets={assets}
-                        trading212Portfolio={trading212Portfolio}
-                      />
+                      <AssetDistributionChart assets={assets} />
                     </motion.div>
                   )}
 
