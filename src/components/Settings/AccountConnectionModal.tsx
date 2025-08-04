@@ -10,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useFeatureFlags } from '@/hooks/use-feature-flags';
+import { FEATURE_FLAGS } from '@/types/feature-flags';
 
 interface AccountConnectionModalProps {
   isOpen: boolean;
@@ -50,6 +52,8 @@ const integrations: IntegrationOption[] = [
 
 export default function AccountConnectionModal({ isOpen, onClose }: AccountConnectionModalProps) {
   const [selectedIntegration, setSelectedIntegration] = useState<string>('');
+  const { isFeatureEnabled } = useFeatureFlags();
+  const isTrading212Enabled = isFeatureEnabled(FEATURE_FLAGS.TRADING_212_CONNECTION_ENABLED);
 
   const handleConnect = () => {
     if (selectedIntegration === 'trading212') {
@@ -61,7 +65,13 @@ export default function AccountConnectionModal({ isOpen, onClose }: AccountConne
 
   // Transform integrations to options format for SearchableSelect
   const integrationOptions = integrations
-    .filter((i) => i.available)
+    .filter((i) => {
+      // Filter out Trading 212 if feature flag is disabled
+      if (i.id === 'trading212' && !isTrading212Enabled) {
+        return false;
+      }
+      return i.available;
+    })
     .map((integration) => ({
       value: integration.id,
       label: integration.name,

@@ -20,7 +20,7 @@ CREATE TRIGGER update_feature_flags_updated_at BEFORE UPDATE ON feature_flags
 -- Insert initial feature flag
 INSERT INTO feature_flags (name, description, dev, staging, prod)
 VALUES (
-    'SHOW_FINANCIAL_CHARTS',
+    'TRADING_212_CONNECTION_ENABLED',
     'Controls visibility of asset and liability distribution charts on the dashboard',
     0,
     0,

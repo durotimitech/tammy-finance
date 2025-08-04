@@ -14,7 +14,7 @@ export interface FeatureFlag {
 export type FeatureFlagMap = Record<string, boolean>;
 
 export const FEATURE_FLAGS = {
-  SHOW_FINANCIAL_CHARTS: 'SHOW_FINANCIAL_CHARTS',
+  TRADING_212_CONNECTION_ENABLED: 'TRADING_212_CONNECTION_ENABLED',
 } as const;
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS;
