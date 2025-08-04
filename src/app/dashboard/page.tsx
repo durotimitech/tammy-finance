@@ -65,6 +65,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            aria-label={isSidebarOpen ? 'Close sidebar menu' : 'Open sidebar menu'}
           >
             {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>

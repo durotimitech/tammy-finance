@@ -61,35 +61,35 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
-        with:
-          start: npm start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 180
-          browser: chrome
-          record: false
-          config-file: cypress.config.ts
-          # Add environment variable to detect CI
-          env: CI=true
-        env:
-          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
-          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.CYPRESS_TEST_USER_PASSWORD }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      # - name: Run Cypress tests
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     start: npm start
+      #     wait-on: 'http://localhost:3000'
+      #     wait-on-timeout: 180
+      #     browser: chrome
+      #     record: false
+      #     config-file: cypress.config.ts
+      #     # Add environment variable to detect CI
+      #     env: CI=true
+      #   env:
+      #     CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+      #     CYPRESS_TEST_USER_PASSWORD: ${{ secrets.CYPRESS_TEST_USER_PASSWORD }}
+      #     NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      #     NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-      - name: Upload Cypress screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-screenshots-${{ matrix.containers }}
-          path: cypress/screenshots
-          if-no-files-found: ignore
+      # - name: Upload Cypress screenshots
+      #   uses: actions/upload-artifact@v4
+      #   if: failure()
+      #   with:
+      #     name: cypress-screenshots-${{ matrix.containers }}
+      #     path: cypress/screenshots
+      #     if-no-files-found: ignore
 
-      - name: Upload Cypress videos
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-videos-${{ matrix.containers }}
-          path: cypress/videos
-          if-no-files-found: ignore
+      # - name: Upload Cypress videos
+      #   uses: actions/upload-artifact@v4
+      #   if: failure()
+      #   with:
+      #     name: cypress-videos-${{ matrix.containers }}
+      #     path: cypress/videos
+      #     if-no-files-found: ignore

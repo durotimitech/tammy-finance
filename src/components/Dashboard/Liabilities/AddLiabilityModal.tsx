@@ -110,6 +110,7 @@ export default function AddLiabilityModal({
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
