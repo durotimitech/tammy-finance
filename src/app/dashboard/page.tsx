@@ -10,7 +10,9 @@ import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ValueCard from '@/components/ValueCard';
+import { useFeatureFlags } from '@/hooks/use-feature-flags';
 import { useAssets, useLiabilities } from '@/hooks/use-financial-data';
+import { FEATURE_FLAGS } from '@/types/feature-flags';
 
 export default function DashboardPage() {
   const [refreshKey] = useState(0);
@@ -19,6 +21,10 @@ export default function DashboardPage() {
   // Use React Query hooks for data fetching
   const { data: assets = [], isLoading: isLoadingAssets } = useAssets();
   const { data: liabilities = [], isLoading: isLoadingLiabilities } = useLiabilities();
+
+  // Feature flags
+  const { isFeatureEnabled } = useFeatureFlags();
+  const showFinancialCharts = isFeatureEnabled(FEATURE_FLAGS.SHOW_FINANCIAL_CHARTS);
 
   return (
     <div className="relative flex h-screen bg-gray-50">
@@ -87,7 +93,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Distribution Charts Side-by-Side */}
-            {(!isLoadingAssets || !isLoadingLiabilities) &&
+            {showFinancialCharts &&
+              (!isLoadingAssets || !isLoadingLiabilities) &&
               (assets.length > 0 || liabilities.length > 0) && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* Asset Distribution Chart */}
