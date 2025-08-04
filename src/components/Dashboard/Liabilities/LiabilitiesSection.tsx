@@ -1,17 +1,12 @@
 'use client';
 
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import AddLiabilityModal from './AddLiabilityModal';
 import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import FinancialAccordion from '@/components/ui/FinancialAccordion';
 import {
   useLiabilities,
   useCreateLiability,
@@ -97,6 +92,10 @@ export default function LiabilitiesSection() {
     }
   };
 
+  const handleDeleteClick = (liabilityId: string) => {
+    setDeleteConfirmation({ isOpen: true, liabilityId });
+  };
+
   const totalOwed = liabilities.reduce((sum, liability) => sum + Number(liability.amount_owed), 0);
 
   // Group liabilities by category
@@ -147,60 +146,14 @@ export default function LiabilitiesSection() {
                 </p>
               </div>
             ) : (
-              <Accordion type="multiple" defaultValue={allCategories} className="space-y-2">
-                {Object.entries(liabilitiesByCategory).map(([category, categoryLiabilities]) => (
-                  <AccordionItem key={category} value={category} className="border rounded-lg px-4">
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <div className="flex justify-between items-center w-full pr-2">
-                        <span className="font-medium">{category}</span>
-                        <span className="text-sm text-gray-600">
-                          {formatCurrency(categorySubtotals[category] || 0)}
-                        </span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-3">
-                      <div className="space-y-2">
-                        {(categoryLiabilities as Liability[]).map((liability) => (
-                          <div
-                            key={liability.id}
-                            className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md group hover:bg-gray-100 transition-colors"
-                          >
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{liability.name}</p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <p className="text-sm font-medium text-red-600">
-                                {formatCurrency(Number(liability.amount_owed))}
-                              </p>
-                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                  onClick={() => handleEdit(liability)}
-                                  className="p-1 hover:bg-gray-200 rounded transition-colors"
-                                  aria-label="Edit liability"
-                                >
-                                  <Edit2 className="w-4 h-4 text-gray-600" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setDeleteConfirmation({
-                                      isOpen: true,
-                                      liabilityId: liability.id,
-                                    })
-                                  }
-                                  className="p-1 hover:bg-gray-200 rounded transition-colors"
-                                  aria-label="Delete liability"
-                                >
-                                  <Trash2 className="w-4 h-4 text-red-600" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <FinancialAccordion
+                items={liabilitiesByCategory}
+                subtotals={categorySubtotals}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                type="liability"
+                defaultOpenCategories={allCategories}
+              />
             )}
           </>
         )}

@@ -1,18 +1,13 @@
 'use client';
 
-import { Plus, Trash2, Edit2, Link } from 'lucide-react';
+import { Plus, Link } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import AddAssetModal from './AddAssetModal';
 import { Skeleton } from '@/components/Skeleton';
 import { Button } from '@/components/ui/Button';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import FinancialAccordion from '@/components/ui/FinancialAccordion';
 import { Callout } from '@/components/ui/callout';
 import {
   useAssets,
@@ -109,6 +104,10 @@ export default function AssetsSection() {
     }
   };
 
+  const handleDeleteClick = (assetId: string) => {
+    setDeleteConfirmation({ isOpen: true, assetId });
+  };
+
   const totalValue = assets.reduce((sum, asset) => sum + asset.value, 0);
 
   // Group assets by category
@@ -185,72 +184,14 @@ export default function AssetsSection() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {/* Assets Section */}
-                {assets.length > 0 && (
-                  <>
-                    <Accordion type="multiple" defaultValue={allCategories} className="space-y-2">
-                      {Object.entries(assetsByCategory).map(([category, categoryAssets]) => (
-                        <AccordionItem
-                          key={category}
-                          value={category}
-                          className="border rounded-lg px-4"
-                        >
-                          <AccordionTrigger className="py-3 hover:no-underline">
-                            <div className="flex justify-between items-center w-full pr-2">
-                              <span className="font-medium">{category}</span>
-                              <span className="text-sm text-gray-600">
-                                {formatCurrency(categorySubtotals[category] || 0)}
-                              </span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="pb-3">
-                            <div className="space-y-2">
-                              {(categoryAssets as Asset[]).map((asset) => (
-                                <div
-                                  key={asset.id}
-                                  className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md group hover:bg-gray-100 transition-colors"
-                                >
-                                  <div className="flex-1">
-                                    <p className="font-medium text-sm">{asset.name}</p>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <p className="text-sm font-medium">
-                                      {formatCurrency(asset.value)}
-                                    </p>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        onClick={() => handleEdit(asset)}
-                                        className="p-1 hover:bg-gray-200 rounded transition-colors"
-                                        aria-label="Edit asset"
-                                      >
-                                        <Edit2 className="w-4 h-4 text-gray-600" />
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          setDeleteConfirmation({
-                                            isOpen: true,
-                                            assetId: asset.id,
-                                          })
-                                        }
-                                        className="p-1 hover:bg-gray-200 rounded transition-colors"
-                                        aria-label="Delete asset"
-                                        data-testid={`delete-asset-${asset.id}`}
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-600" />
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </>
-                )}
-              </div>
+              <FinancialAccordion
+                items={assetsByCategory}
+                subtotals={categorySubtotals}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                type="asset"
+                defaultOpenCategories={allCategories}
+              />
             )}
           </>
         )}
