@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -39,47 +40,30 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left side - Gradient Background */}
+      {/* Left side - Gradient Background with Centered Image */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black"
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Gradient waves background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-blue-600 opacity-80" />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-              radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-              radial-gradient(ellipse at bottom right, rgba(255, 119, 198, 0.3) 0%, transparent 50%)
-            `,
-            }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div>
-            <p className="text-sm uppercase tracking-wider mb-8 opacity-80">Join Today</p>
-          </div>
-
-          <div>
-            <h1 className="text-6xl font-light leading-tight mb-8">
-              Start Your
-              <br />
-              Financial
-              <br />
-              Journey
-            </h1>
-            <p className="text-lg opacity-90 max-w-md">
-              Take control of your finances and watch your wealth grow
-              <br />
-              with our intuitive tracking tools.
-            </p>
-          </div>
+        {/* Centered Image Container */}
+        <div className="relative w-full h-full flex items-center justify-center p-12">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="relative w-full max-w-2xl"
+          >
+            <Image
+              src="/auth_hero.png"
+              alt="Net Worth Tracker Dashboard"
+              width={800}
+              height={600}
+              className="w-full h-auto rounded-lg shadow-2xl"
+              priority
+            />
+          </motion.div>
         </div>
       </motion.div>
 
