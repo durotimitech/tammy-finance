@@ -1,5 +1,16 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import ConnectAccountsSection from './ConnectAccountsSection';
+
+// Mock useFeatureFlags hook
+jest.mock('@/hooks/use-feature-flags', () => ({
+  useFeatureFlags: () => ({
+    flags: { enableTrading212: true },
+    isLoading: false,
+    isFeatureEnabled: jest.fn(() => true),
+  }),
+}));
 
 // Mock Supabase client
 jest.mock('@/lib/supabase/client', () => ({
@@ -47,6 +58,19 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 });
 
+// Create a wrapper component with QueryClient
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 describe('ConnectAccountsSection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -59,7 +83,7 @@ describe('ConnectAccountsSection', () => {
   });
 
   it('renders the section with title and description', async () => {
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     expect(screen.getByText('Connected Accounts')).toBeInTheDocument();
     expect(
@@ -75,7 +99,7 @@ describe('ConnectAccountsSection', () => {
   });
 
   it('shows empty state when no accounts are connected', async () => {
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     // Wait for loading to complete
     await waitFor(() => {
@@ -84,7 +108,7 @@ describe('ConnectAccountsSection', () => {
   });
 
   it('shows Connect Account button', async () => {
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       const button = screen.getByRole('button', { name: /connect account/i });
@@ -94,7 +118,7 @@ describe('ConnectAccountsSection', () => {
   });
 
   it('handles Connect Account button click', async () => {
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
@@ -125,7 +149,7 @@ describe('ConnectAccountsSection', () => {
       }),
     });
 
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     // Wait for the account to be displayed
     await waitFor(() => {
@@ -151,7 +175,7 @@ describe('ConnectAccountsSection', () => {
       }),
     });
 
-    render(<ConnectAccountsSection />);
+    render(<ConnectAccountsSection />, { wrapper: createWrapper() });
 
     // Wait for the account to be displayed
     await waitFor(() => {
