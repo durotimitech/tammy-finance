@@ -1,0 +1,134 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { useUpdatePreferences, useUserPreferences } from '@/hooks/use-fire-data';
+
+export default function FIREForm() {
+  const { data: preferences, isLoading } = useUserPreferences();
+  const updatePreferences = useUpdatePreferences();
+
+  const [formData, setFormData] = useState({
+    monthly_expenses: 0,
+    monthly_savings: 0,
+    withdrawal_rate: 4.0,
+  });
+
+  // Update form when preferences load
+  useEffect(() => {
+    if (preferences) {
+      setFormData({
+        monthly_expenses: preferences.monthly_expenses,
+        monthly_savings: preferences.monthly_savings,
+        withdrawal_rate: preferences.withdrawal_rate,
+      });
+    }
+  }, [preferences]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updatePreferences.mutate(formData);
+  };
+
+  const handleChange = (field: keyof typeof formData, value: string) => {
+    const numValue = parseFloat(value) || 0;
+    setFormData((prev) => ({
+      ...prev,
+      [field]: numValue,
+    }));
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        className="animate-pulse bg-white rounded-xl p-6 h-64 border"
+        style={{ borderColor: '#e5e7eb' }}
+      />
+    );
+  }
+
+  return (
+    <motion.form
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      onSubmit={handleSubmit}
+      className="bg-white rounded-xl p-6 border"
+      style={{ borderColor: '#e5e7eb' }}
+    >
+      <h2 className="text-xl font-semibold mb-6">FIRE Settings</h2>
+
+      <div className="space-y-4">
+        <div>
+          <label
+            htmlFor="monthly_expenses"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Monthly Expenses
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+            <input
+              type="number"
+              id="monthly_expenses"
+              value={formData.monthly_expenses}
+              onChange={(e) => handleChange('monthly_expenses', e.target.value)}
+              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              step="0.01"
+              min="0"
+              required
+            />
+          </div>
+          <p className="text-sm text-gray-500 mt-1">Your average monthly spending</p>
+        </div>
+
+        <div>
+          <label htmlFor="monthly_savings" className="block text-sm font-medium text-gray-700 mb-1">
+            Monthly Savings
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+            <input
+              type="number"
+              id="monthly_savings"
+              value={formData.monthly_savings}
+              onChange={(e) => handleChange('monthly_savings', e.target.value)}
+              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              step="0.01"
+              min="0"
+              required
+            />
+          </div>
+          <p className="text-sm text-gray-500 mt-1">Amount you save each month</p>
+        </div>
+
+        <div>
+          <label htmlFor="withdrawal_rate" className="block text-sm font-medium text-gray-700 mb-1">
+            Withdrawal Rate (%)
+          </label>
+          <input
+            type="number"
+            id="withdrawal_rate"
+            value={formData.withdrawal_rate}
+            onChange={(e) => handleChange('withdrawal_rate', e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            step="0.1"
+            min="1"
+            max="10"
+            required
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Annual withdrawal rate in retirement (typically 4%)
+          </p>
+        </div>
+      </div>
+
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-6">
+        <Button type="submit" className="w-full" disabled={updatePreferences.isPending}>
+          {updatePreferences.isPending ? 'Saving...' : 'Update Calculations'}
+        </Button>
+      </motion.div>
+    </motion.form>
+  );
+}

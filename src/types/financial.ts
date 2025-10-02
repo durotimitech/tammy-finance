@@ -84,3 +84,34 @@ export interface HistoricalTrend {
   changePercentage: number;
   trend: 'up' | 'down' | 'stable';
 }
+
+// FIRE (Financial Independence, Retire Early) types
+export interface UserPreferences {
+  id: string;
+  user_id: string;
+  monthly_expenses: number;
+  monthly_savings: number;
+  withdrawal_rate: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FIRECalculation {
+  fireNumber: number; // Total needed for retirement (annual expenses * 25)
+  currentNetWorth: number; // Current net worth
+  monthlyExpenses: number; // Monthly expenses
+  monthlySavings: number; // Monthly savings
+  annualExpenses: number; // Monthly expenses * 12
+  annualSavings: number; // Monthly savings * 12
+  yearsToFIRE: number; // Years until reaching FIRE number
+  monthsToFIRE: number; // Months until reaching FIRE number
+  fireDate: Date; // Projected retirement date
+  progressPercentage: number; // Current progress towards FIRE (0-100)
+  withdrawalRate: number; // Annual withdrawal rate percentage
+}
+
+export interface UserPreferencesFormData {
+  monthly_expenses: number;
+  monthly_savings: number;
+  withdrawal_rate?: number;
+}

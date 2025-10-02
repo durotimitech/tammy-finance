@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Menu, X, TrendingUp, TrendingDown } from 'lucide-react';
 import { useState } from 'react';
 import AssetDistributionChart from '@/components/Dashboard/Assets/AssetDistributionChart';
+import FIRESummary from '@/components/Dashboard/FIRESummary';
 import LiabilitiesDistributionChart from '@/components/Dashboard/Liabilities/LiabilitiesDistributionChart';
 import NetWorthChart from '@/components/Dashboard/NetWorthChart';
 import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
@@ -78,8 +79,11 @@ export default function DashboardPage() {
               <Header />
             </div>
 
-            {/* Net Worth Summary */}
-            <NetWorthSummary />
+            {/* Net Worth and FIRE Summary */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              <NetWorthSummary />
+              <FIRESummary />
+            </div>
 
             {/* Historical Chart */}
             <div className="w-full overflow-x-auto">

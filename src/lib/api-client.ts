@@ -1,4 +1,10 @@
-import { Asset, Liability } from '@/types/financial';
+import {
+  Asset,
+  Liability,
+  UserPreferences,
+  UserPreferencesFormData,
+  FIRECalculation,
+} from '@/types/financial';
 
 export class ApiError extends Error {
   constructor(
@@ -75,5 +81,18 @@ export const apiClient = {
         netWorth: number;
         updatedAt: string;
       }>('/api/networth'),
+  },
+
+  preferences: {
+    get: () => fetchWithAuth<UserPreferences>('/api/preferences'),
+    update: (data: UserPreferencesFormData) =>
+      fetchWithAuth<UserPreferences>('/api/preferences', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+  },
+
+  fire: {
+    getCalculation: () => fetchWithAuth<FIRECalculation>('/api/fire'),
   },
 };

@@ -1,9 +1,3 @@
-- Connect checking accounts (BOI, AIB, Revolut)
-- Connect retirement account (NetBenefits)
-- expense tracking
-- investment portfolio analysis
-- financial goal setting
-
 # **Pain Point Analysis Summary**
 
 The Reddit data reveals significant frustrations with existing net worth tracking solutions, particularly around geographic limitations, security concerns, complexity/usability issues, and the gap between simple tracking and advanced financial analysis. Users consistently express dissatisfaction with available tools and resort to manual spreadsheet solutions despite their limitations.
