@@ -2,7 +2,18 @@
 
 import type { Session } from '@supabase/supabase-js';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Target, Sparkles, Star, Check, ArrowRight, Menu, X } from 'lucide-react';
+import {
+  TrendingUp,
+  PiggyBank,
+  Target,
+  Star,
+  Check,
+  ArrowRight,
+  Menu,
+  X,
+  Shield,
+  Wallet,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -34,7 +45,7 @@ export default function Home() {
       <nav className="w-full px-6 lg:px-12 py-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[#2D2D2D]">Ellie</span>
+            <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">tammy</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -151,7 +162,7 @@ export default function Home() {
                         Login
                       </Button>
                     </Link>
-                    <Link href="/signup">
+                    <Link href="/auth/signup">
                       <Button className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full">
                         Get started
                       </Button>
@@ -175,29 +186,33 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl lg:text-7xl font-bold text-[#2D2D2D] mb-6 leading-tight">
-                A better day
+                Track your
                 <br />
-                planner
+                net worth
               </h1>
 
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Ellie is your AI-powered daily planner that helps you get organized and stay
-                productive.
+                A modern financial tracking app that helps you manage assets, liabilities, and reach
+                your financial independence goals.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-12">
-                <Button
-                  size="lg"
-                  className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
-                >
-                  Get started for free
-                </Button>
-                <Button
-                  size="lg"
-                  className="bg-transparent border border-[#E5E5E3] text-[#2D2D2D] hover:bg-[#F5F5F3] rounded-full px-8 py-6 text-base font-medium"
-                >
-                  Watch demo
-                </Button>
+                <Link href="/auth/signup">
+                  <Button
+                    size="lg"
+                    className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
+                  >
+                    Get started for free
+                  </Button>
+                </Link>
+                <Link href="/dashboard">
+                  <Button
+                    size="lg"
+                    className="bg-transparent border border-[#E5E5E3] text-[#2D2D2D] hover:bg-[#F5F5F3] rounded-full px-8 py-6 text-base font-medium"
+                  >
+                    View demo dashboard
+                  </Button>
+                </Link>
               </div>
 
               <div className="flex items-center gap-6">
@@ -205,7 +220,7 @@ export default function Home() {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white"
+                      className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-blue-400 border-2 border-white"
                     />
                   ))}
                 </div>
@@ -215,7 +230,7 @@ export default function Home() {
                       <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-sm text-[#6B6B6B]">Loved by 50,000+ users</p>
+                  <p className="text-sm text-[#6B6B6B]">Trusted by investors worldwide</p>
                 </div>
               </div>
             </div>
@@ -228,8 +243,8 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-[#2D2D2D] mb-2">Today&apos;s Plan</h3>
-                  <p className="text-[#6B6B6B]">Tuesday, January 21</p>
+                  <h3 className="text-2xl font-bold text-[#2D2D2D] mb-2">Net Worth Summary</h3>
+                  <p className="text-[#6B6B6B]">As of January 2025</p>
                 </div>
 
                 <div className="space-y-4">
@@ -239,25 +254,10 @@ export default function Home() {
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-purple-400 mt-0.5" />
+                      <TrendingUp className="w-5 h-5 text-green-500 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-[#2D2D2D]">Morning routine</h4>
-                        <p className="text-sm text-[#6B6B6B]">8:00 - 9:00 AM</p>
-                      </div>
-                      <Check className="w-5 h-5 text-green-500" />
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    className="bg-[#F5F5F3] rounded-2xl p-4"
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-blue-400 mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-[#2D2D2D]">Team standup</h4>
-                        <p className="text-sm text-[#6B6B6B]">9:30 - 10:00 AM</p>
+                        <h4 className="font-semibold text-[#2D2D2D]">Total Assets</h4>
+                        <p className="text-lg font-bold text-green-600">$125,430</p>
                       </div>
                     </div>
                   </motion.div>
@@ -268,24 +268,24 @@ export default function Home() {
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-green-400 mt-0.5" />
+                      <TrendingUp className="w-5 h-5 text-red-500 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-[#2D2D2D]">Deep work session</h4>
-                        <p className="text-sm text-[#6B6B6B]">10:00 AM - 12:00 PM</p>
+                        <h4 className="font-semibold text-[#2D2D2D]">Total Liabilities</h4>
+                        <p className="text-lg font-bold text-red-600">$42,100</p>
                       </div>
                     </div>
                   </motion.div>
 
                   <motion.div
-                    className="bg-[#F5F5F3] rounded-2xl p-4 opacity-60"
+                    className="bg-gradient-to-r from-green-100 to-blue-100 rounded-2xl p-4"
                     whileHover={{ scale: 1.02 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-orange-400 mt-0.5" />
+                      <Wallet className="w-5 h-5 text-blue-600 mt-0.5" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-[#2D2D2D]">Lunch break</h4>
-                        <p className="text-sm text-[#6B6B6B]">12:00 - 1:00 PM</p>
+                        <h4 className="font-semibold text-[#2D2D2D]">Net Worth</h4>
+                        <p className="text-xl font-bold text-blue-600">$83,330</p>
                       </div>
                     </div>
                   </motion.div>
@@ -293,11 +293,11 @@ export default function Home() {
 
                 <div className="mt-6 flex items-center justify-between p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl">
                   <div>
-                    <p className="text-sm font-medium text-[#2D2D2D]">You&apos;re on track!</p>
-                    <p className="text-xs text-[#6B6B6B]">3 of 7 tasks completed</p>
+                    <p className="text-sm font-medium text-[#2D2D2D]">FIRE Progress</p>
+                    <p className="text-xs text-[#6B6B6B]">33% to your goal</p>
                   </div>
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-purple-500" />
+                    <Target className="w-6 h-6 text-purple-500" />
                   </div>
                 </div>
               </motion.div>
@@ -317,10 +317,10 @@ export default function Home() {
         >
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">
-              Everything you need to plan your day
+              Everything you need to track your wealth
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Powerful features to help you organize, prioritize, and achieve your daily goals
+              Comprehensive tools to manage your finances and achieve financial independence
             </p>
           </div>
 
@@ -330,13 +330,13 @@ export default function Home() {
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
-                <Calendar className="w-7 h-7 text-purple-600" />
+              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
+                <Wallet className="w-7 h-7 text-green-600" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Smart scheduling</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Asset Management</h3>
               <p className="text-[#6B6B6B]">
-                AI-powered scheduling that learns your habits and optimizes your daily routine for
-                maximum productivity.
+                Track all your assets in one place. Connect to Trading 212 for automatic portfolio
+                updates.
               </p>
             </motion.div>
 
@@ -348,10 +348,9 @@ export default function Home() {
               <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
                 <Target className="w-7 h-7 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Goal tracking</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">FIRE Calculator</h3>
               <p className="text-[#6B6B6B]">
-                Set daily, weekly, and monthly goals. Track your progress and celebrate your
-                achievements.
+                Plan your path to financial independence with our comprehensive FIRE tracking tools.
               </p>
             </motion.div>
 
@@ -360,13 +359,13 @@ export default function Home() {
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
-                <Clock className="w-7 h-7 text-green-600" />
+              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
+                <PiggyBank className="w-7 h-7 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Time blocking</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Budget Tracking</h3>
               <p className="text-[#6B6B6B]">
-                Visualize your day with time blocks. Focus on what matters most without
-                distractions.
+                Set and monitor budgets across categories. Visualize spending patterns and save
+                more.
               </p>
             </motion.div>
           </div>
@@ -383,9 +382,9 @@ export default function Home() {
           viewport={{ once: true }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">How Ellie works</h2>
+            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">How tammy works</h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Get started in minutes and transform the way you plan your days
+              Get started in minutes and take control of your financial future
             </p>
           </div>
 
@@ -397,12 +396,12 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-purple-600">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-green-600">
                 1
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Sign up for free</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Create your account</h3>
               <p className="text-[#6B6B6B]">
-                Create your account in seconds. No credit card required.
+                Sign up for free and secure your data with end-to-end encryption.
               </p>
             </motion.div>
 
@@ -416,9 +415,9 @@ export default function Home() {
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-blue-600">
                 2
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Add your tasks</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Add your finances</h3>
               <p className="text-[#6B6B6B]">
-                Brain dump everything you need to do. Ellie will help you organize and prioritize.
+                Input your assets and liabilities. Connect Trading 212 for automatic updates.
               </p>
             </motion.div>
 
@@ -429,12 +428,12 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-green-600">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-purple-600">
                 3
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Plan your perfect day</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Track your progress</h3>
               <p className="text-[#6B6B6B]">
-                Let AI optimize your schedule and start achieving more every day.
+                Monitor net worth growth, set budgets, and reach financial independence faster.
               </p>
             </motion.div>
           </div>
@@ -452,10 +451,10 @@ export default function Home() {
         >
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">
-              Loved by productive people
+              Loved by smart investors
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Join thousands who have transformed their daily productivity with Ellie
+              Join thousands tracking their journey to financial independence
             </p>
           </div>
 
@@ -463,23 +462,23 @@ export default function Home() {
             {[
               {
                 name: 'Sarah Chen',
-                role: 'Product Manager',
+                role: 'Real Estate Investor',
                 content:
-                  'Ellie has completely transformed how I plan my days. The AI suggestions are spot-on and help me stay focused on what matters most.',
+                  'tammy helped me visualize my entire portfolio. The Trading 212 integration saves hours of manual updates every month.',
                 rating: 5,
               },
               {
                 name: 'Michael Rodriguez',
-                role: 'Entrepreneur',
+                role: 'FIRE Enthusiast',
                 content:
-                  'As someone juggling multiple projects, Ellie keeps me organized and on track. The time blocking feature is a game-changer.',
+                  'The FIRE calculator is incredible. I can see exactly when I&apos;ll reach financial independence based on my current trajectory.',
                 rating: 5,
               },
               {
                 name: 'Emma Thompson',
                 role: 'Software Engineer',
                 content:
-                  'I love how intuitive Ellie is. It learns my patterns and helps me maintain a healthy work-life balance. Highly recommend!',
+                  'Finally, a net worth tracker that respects privacy. The encrypted API storage gives me peace of mind with my financial data.',
                 rating: 5,
               },
             ].map((testimonial, index) => (
@@ -521,7 +520,7 @@ export default function Home() {
               Simple, transparent pricing
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Start free and upgrade when you need more features
+              Start free and upgrade for advanced features
             </p>
           </div>
 
@@ -540,15 +539,15 @@ export default function Home() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                  <span className="text-[#6B6B6B]">Up to 10 tasks per day</span>
+                  <span className="text-[#6B6B6B]">Track unlimited assets</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                  <span className="text-[#6B6B6B]">Basic scheduling</span>
+                  <span className="text-[#6B6B6B]">Net worth calculation</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                  <span className="text-[#6B6B6B]">Mobile app access</span>
+                  <span className="text-[#6B6B6B]">Basic charts & analytics</span>
                 </li>
               </ul>
 
@@ -562,35 +561,35 @@ export default function Home() {
               whileHover={{ y: -5 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-pink-400 text-white text-sm font-medium px-4 py-1 rounded-full">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-400 to-blue-400 text-white text-sm font-medium px-4 py-1 rounded-full">
                 Most popular
               </div>
               <h3 className="text-2xl font-semibold mb-2">Pro</h3>
-              <p className="text-gray-300 mb-6">For power users</p>
+              <p className="text-gray-300 mb-6">For serious investors</p>
               <div className="text-4xl font-bold mb-6">
-                $9<span className="text-lg font-normal text-gray-300">/month</span>
+                $12<span className="text-lg font-normal text-gray-300">/month</span>
               </div>
 
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-gray-300">Unlimited tasks</span>
+                  <span className="text-gray-300">Everything in Free</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-gray-300">AI-powered scheduling</span>
+                  <span className="text-gray-300">Trading 212 integration</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-gray-300">Advanced analytics</span>
+                  <span className="text-gray-300">Advanced FIRE calculator</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-gray-300">Calendar integrations</span>
+                  <span className="text-gray-300">Budget tracking & alerts</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 mt-0.5" />
-                  <span className="text-gray-300">Priority support</span>
+                  <span className="text-gray-300">Export reports</span>
                 </li>
               </ul>
 
@@ -603,7 +602,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 lg:px-12 bg-gradient-to-br from-purple-100 to-pink-100">
+      <section className="py-24 px-6 lg:px-12 bg-gradient-to-br from-green-100 to-blue-100">
         <motion.div
           className="max-w-4xl mx-auto text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -612,25 +611,25 @@ export default function Home() {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-6">
-            Ready to plan your best day?
+            Ready to take control of your finances?
           </h2>
           <p className="text-xl text-[#6B6B6B] mb-8">
-            Join thousands of productive people using Ellie to achieve more every day.
+            Join thousands tracking their journey to financial independence with tammy.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
-            >
-              Get started for free
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+            <Link href="/auth/signup">
+              <Button
+                size="lg"
+                className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] rounded-full px-8 py-6 text-base font-medium"
+              >
+                Get started for free
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
           </div>
 
-          <p className="text-sm text-[#6B6B6B] mt-6">
-            No credit card required • Free forever for basic use
-          </p>
+          <p className="text-sm text-[#6B6B6B] mt-6">No credit card required • Free forever</p>
         </motion.div>
       </section>
 
@@ -640,22 +639,14 @@ export default function Home() {
           <div className="grid md:grid-cols-5 gap-8 mb-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl font-bold text-[#2D2D2D]">Ellie</span>
+                <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">tammy</span>
               </div>
               <p className="text-[#6B6B6B] mb-6">
-                Your AI-powered daily planner for a more productive life.
+                Your modern net worth tracker for achieving financial independence.
               </p>
               <div className="flex gap-4">
-                <Link href="/download" className="text-[#6B6B6B] hover:text-[#2D2D2D]">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                  </svg>
-                </Link>
-                <Link href="/download" className="text-[#6B6B6B] hover:text-[#2D2D2D]">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 20.5v-17c0-.83.67-1.5 1.5-1.5h14c.83 0 1.5.67 1.5 1.5v17c0 .83-.67 1.5-1.5 1.5h-14c-.83 0-1.5-.67-1.5-1.5zM18.5 3.5h-13c-.28 0-.5.22-.5.5v16c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-16c0-.28-.22-.5-.5-.5zM12 17.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-                  </svg>
-                </Link>
+                <Shield className="w-6 h-6 text-[#6B6B6B]" />
+                <span className="text-sm text-[#6B6B6B]">Bank-level security</span>
               </div>
             </div>
 
@@ -663,23 +654,26 @@ export default function Home() {
               <h4 className="font-semibold text-[#2D2D2D] mb-4">Product</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/features" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                  <Link href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                  <Link href="#pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link href="/updates" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Updates
+                  <Link href="/dashboard" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link href="/roadmap" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Roadmap
+                  <Link
+                    href="/dashboard/fire"
+                    className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm"
+                  >
+                    FIRE Calculator
                   </Link>
                 </li>
               </ul>
@@ -689,23 +683,26 @@ export default function Home() {
               <h4 className="font-semibold text-[#2D2D2D] mb-4">Resources</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/blog" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Blog
+                  <Link href="/docs" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Documentation
                   </Link>
                 </li>
                 <li>
-                  <Link href="/help" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Help Center
+                  <Link href="/support" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Support
                   </Link>
                 </li>
                 <li>
-                  <Link href="/api" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    API
+                  <Link href="/security" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Security
                   </Link>
                 </li>
                 <li>
-                  <Link href="/community" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Community
+                  <Link
+                    href="/integrations"
+                    className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm"
+                  >
+                    Integrations
                   </Link>
                 </li>
               </ul>
@@ -720,8 +717,8 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Careers
+                  <Link href="/contact" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
+                    Contact
                   </Link>
                 </li>
                 <li>
@@ -739,7 +736,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-[#E5E5E3] pt-8 text-center">
-            <p className="text-sm text-[#6B6B6B]">© 2024 Ellie. All rights reserved.</p>
+            <p className="text-sm text-[#6B6B6B]">© 2025 tammy. All rights reserved.</p>
           </div>
         </div>
       </footer>

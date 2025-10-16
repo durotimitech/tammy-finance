@@ -1,6 +1,15 @@
 'use client';
 
-import { LayoutDashboard, Wallet, LogOut, CreditCard, Settings, X, Flame } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Wallet,
+  LogOut,
+  CreditCard,
+  Settings,
+  X,
+  Flame,
+  Calculator,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -8,6 +17,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
   { name: 'Liabilities', href: '/dashboard/liabilities', icon: CreditCard },
+  { name: 'Budgets', href: '/dashboard/budgets', icon: Calculator },
   { name: 'FIRE', href: '/dashboard/fire', icon: Flame },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
