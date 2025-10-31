@@ -40,6 +40,8 @@ export async function GET() {
         monthly_expenses: 0,
         monthly_savings: 0,
         withdrawal_rate: 4.0,
+        investment_return: 7.0,
+        inflation: 3.0,
         created_at: null,
         updated_at: null,
       });
@@ -52,6 +54,8 @@ export async function GET() {
       monthly_expenses: profile.monthly_expenses,
       monthly_savings: profile.monthly_savings,
       withdrawal_rate: profile.safe_withdrawal_rate,
+      investment_return: profile.investment_return ?? 7.0,
+      inflation: profile.inflation ?? 3.0,
       created_at: profile.created_at,
       updated_at: profile.updated_at,
     });
@@ -84,7 +88,13 @@ export async function PUT(request: NextRequest) {
       monthly_expenses,
       monthly_savings,
       withdrawal_rate,
-    }: ProfileFormData & { withdrawal_rate?: number } = body;
+      investment_return,
+      inflation,
+    }: ProfileFormData & {
+      withdrawal_rate?: number;
+      investment_return?: number;
+      inflation?: number;
+    } = body;
 
     // Validate input
     if (monthly_expenses !== undefined && monthly_expenses < 0) {
@@ -111,6 +121,23 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    if (
+      investment_return !== undefined &&
+      (investment_return < 0 || investment_return > 100)
+    ) {
+      return NextResponse.json(
+        { error: "Investment return must be between 0 and 100" },
+        { status: 400 },
+      );
+    }
+
+    if (inflation !== undefined && (inflation < 0 || inflation > 100)) {
+      return NextResponse.json(
+        { error: "Inflation must be between 0 and 100" },
+        { status: 400 },
+      );
+    }
+
     // Prepare update data
     const updateData: ProfileFormData = {};
     if (monthly_expenses !== undefined)
@@ -119,6 +146,9 @@ export async function PUT(request: NextRequest) {
       updateData.monthly_savings = monthly_savings;
     if (withdrawal_rate !== undefined)
       updateData.safe_withdrawal_rate = withdrawal_rate;
+    if (investment_return !== undefined)
+      updateData.investment_return = investment_return;
+    if (inflation !== undefined) updateData.inflation = inflation;
 
     // First, check if profile already exists
     const { data: existingProfile } = await supabase
@@ -175,6 +205,8 @@ export async function PUT(request: NextRequest) {
       monthly_expenses: data.monthly_expenses,
       monthly_savings: data.monthly_savings,
       withdrawal_rate: data.safe_withdrawal_rate,
+      investment_return: data.investment_return ?? 7.0,
+      inflation: data.inflation ?? 3.0,
       created_at: data.created_at,
       updated_at: data.updated_at,
     });

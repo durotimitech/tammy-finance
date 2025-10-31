@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import NetWorthSummary from "@/components/Dashboard/NetWorthSummary";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
@@ -8,11 +8,15 @@ import { useNetWorth } from "@/hooks/use-financial-data";
 // Mock the hooks
 jest.mock("@/hooks/use-financial-data");
 jest.mock("@/hooks/use-profile");
+
+const mockGetProfile = jest.fn().mockResolvedValue({ currency: "EUR" });
+const mockUpdateProfile = jest.fn().mockResolvedValue({});
+
 jest.mock("@/lib/api-client", () => ({
   apiClient: {
     profiles: {
-      get: jest.fn().mockResolvedValue({ currency: "EUR" }),
-      update: jest.fn().mockResolvedValue({}),
+      get: () => mockGetProfile(),
+      update: () => mockUpdateProfile(),
     },
   },
 }));
@@ -41,9 +45,10 @@ describe("NetWorthSummary", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetProfile.mockResolvedValue({ currency: "EUR" });
   });
 
-  it("should display loading skeleton initially", () => {
+  it("should display loading skeleton initially", async () => {
     // Mock loading state
     mockUseNetWorth.mockReturnValue({
       data: null,
@@ -51,13 +56,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     // Check for skeleton loader
     expect(screen.getByTestId("net-worth-loading")).toBeInTheDocument();
@@ -71,13 +83,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     // Wait for the component to finish loading
     await waitFor(() => {
@@ -104,13 +123,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -136,13 +162,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -163,13 +196,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -187,13 +227,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -211,13 +258,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -237,13 +291,20 @@ describe("NetWorthSummary", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();

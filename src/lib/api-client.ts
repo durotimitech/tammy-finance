@@ -104,16 +104,22 @@ export const apiClient = {
         monthly_expenses: number;
         monthly_savings: number;
         withdrawal_rate: number;
+        investment_return: number;
+        inflation: number;
       }>("/api/preferences"),
     update: (data: {
       monthly_expenses?: number;
       monthly_savings?: number;
       withdrawal_rate?: number;
+      investment_return?: number;
+      inflation?: number;
     }) =>
       fetchWithAuth<{
         monthly_expenses: number;
         monthly_savings: number;
         withdrawal_rate: number;
+        investment_return: number;
+        inflation: number;
       }>("/api/preferences", {
         method: "PUT",
         body: JSON.stringify(data),

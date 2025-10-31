@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import NetWorthSummary from "./NetWorthSummary";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
@@ -9,11 +9,15 @@ jest.mock("@/hooks/use-financial-data");
 // Mock the useAnimatedNumber hook - it already has a mock file
 jest.mock("@/hooks/useAnimatedNumber");
 jest.mock("@/hooks/use-profile");
+
+const mockGetProfile = jest.fn().mockResolvedValue({ currency: "EUR" });
+const mockUpdateProfile = jest.fn().mockResolvedValue({});
+
 jest.mock("@/lib/api-client", () => ({
   apiClient: {
     profiles: {
-      get: jest.fn().mockResolvedValue({ currency: "EUR" }),
-      update: jest.fn().mockResolvedValue({}),
+      get: () => mockGetProfile(),
+      update: () => mockUpdateProfile(),
     },
   },
 }));
@@ -42,6 +46,7 @@ const mockUseNetWorth = useNetWorth as jest.MockedFunction<typeof useNetWorth>;
 describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetProfile.mockResolvedValue({ currency: "EUR" });
   });
 
   it("should handle floating point precision correctly", async () => {
@@ -53,13 +58,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -77,13 +89,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -100,13 +119,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -125,13 +151,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -155,13 +188,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -178,13 +218,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();
@@ -203,13 +250,20 @@ describe("NetWorthSummary - Edge Cases and Calculation Accuracy", () => {
     } as any);
 
     const queryClient = createTestQueryClient();
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrencyProvider>
-          <NetWorthSummary />
-        </CurrencyProvider>
-      </QueryClientProvider>,
-    );
+    await act(async () => {
+      render(
+        <QueryClientProvider client={queryClient}>
+          <CurrencyProvider>
+            <NetWorthSummary />
+          </CurrencyProvider>
+        </QueryClientProvider>,
+      );
+    });
+
+    // Wait for CurrencyProvider to finish loading
+    await waitFor(() => {
+      expect(mockGetProfile).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("net-worth-value")).toBeInTheDocument();

@@ -1,10 +1,38 @@
-[] Redo the landing page
-[] Add google auth
+# PRD Implementation Tracking
 
+## Epic 1: Core App & Onboarding
+[✅] Email/password authentication
+[✅] 3-step onboarding wizard (collects DOB, target retirement age, monthly expenses, monthly savings)
+[ ] Google OAuth integration
+[ ] Multi-Factor Authentication (MFA/TOTP) - Marked as "Implement later"
 
-1. Start with Epic 1
-2. Focus on free-tier features first
-3. Yes the wizard should also collect age and target retirement age. Save it on a profiles table
-4. Yes add it to profiles table
-5. Implement it later
-6. Implement later 
+## Epic 2: FIRE Dashboard (Free Tier)
+[✅] Manual input of core vitals (via FIREForm)
+[✅] FIRE Number calculation (Annual Expenses * 25)
+[✅] FI Percentage calculation
+[✅] Savings Rate calculation
+[ ] "Path to FI" line chart - Project net worth growth over time to FIRE Number
+[ ] Settings panel for global assumptions:
+  [ ] Expected Investment Return % (currently not editable, default used)
+  [ ] Inflation % (currently not editable, default used)
+  [✅] Safe Withdrawal Rate % (editable in FIREForm)
+
+## Epic 3: Net Worth (Free Tier)
+[✅] Manual asset account creation (unlimited)
+[✅] Manual liability account creation (unlimited)
+[✅] Manual balance updates
+[ ] Monthly update reminder (prompt on 1st of month to update balances)
+[✅] Historical net worth line chart (NetWorthChart)
+[✅] Asset/Liability pie charts (AssetDistributionChart, LiabilitiesDistributionChart)
+
+## Epic 4: Budget (Free Tier) - TRANSACTION SYSTEM NEEDED
+[ ] Transactions table and schema (does not exist)
+[ ] Manual transaction entry form (Income or Expense with categories)
+[ ] Monthly summary view showing Income vs Expenses
+[ ] Calculate Net Savings from transactions
+[ ] Auto-populate "Avg. Monthly Savings" on FIRE Dashboard from Net Savings
+[✅] Budget tracking system (separate from transactions - already exists)
+
+## Premium Tier Features (Future)
+[ ] All premium features marked as future work per PRD
+

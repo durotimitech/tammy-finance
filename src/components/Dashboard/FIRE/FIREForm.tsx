@@ -16,6 +16,8 @@ export default function FIREForm() {
     monthly_expenses: 0,
     monthly_savings: 0,
     withdrawal_rate: 4.0,
+    investment_return: 7.0,
+    inflation: 3.0,
   });
 
   // Update form when preferences load
@@ -25,6 +27,8 @@ export default function FIREForm() {
         monthly_expenses: preferences.monthly_expenses,
         monthly_savings: preferences.monthly_savings,
         withdrawal_rate: preferences.withdrawal_rate,
+        investment_return: preferences.investment_return ?? 7.0,
+        inflation: preferences.inflation ?? 3.0,
       });
     }
   }, [preferences]);
@@ -137,6 +141,52 @@ export default function FIREForm() {
           />
           <p className="text-sm text-gray-500 mt-1">
             Annual withdrawal rate in retirement (typically 4%)
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="investment_return"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Expected Investment Return (%)
+          </label>
+          <input
+            type="number"
+            id="investment_return"
+            value={formData.investment_return}
+            onChange={(e) => handleChange("investment_return", e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            step="0.1"
+            min="0"
+            max="100"
+            required
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Expected annual return on investments (default 7%)
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="inflation"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Inflation Rate (%)
+          </label>
+          <input
+            type="number"
+            id="inflation"
+            value={formData.inflation}
+            onChange={(e) => handleChange("inflation", e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            step="0.1"
+            min="0"
+            max="100"
+            required
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Expected annual inflation rate (default 3%)
           </p>
         </div>
       </div>

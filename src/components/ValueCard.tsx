@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import { Skeleton } from "@/components/Skeleton";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
-import { formatCurrency } from "@/lib/utils";
 
 interface ValueCardProps {
   title: string;
@@ -27,6 +27,7 @@ export default function ValueCard({
   testId,
 }: ValueCardProps) {
   const router = useRouter();
+  const { formatCurrency } = useCurrencyFormat();
   const animatedValue = useAnimatedNumber(value, 1.2);
 
   const handleClick = () => {

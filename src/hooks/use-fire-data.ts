@@ -26,6 +26,8 @@ export function useUpdatePreferences() {
       monthly_expenses?: number;
       monthly_savings?: number;
       withdrawal_rate?: number;
+      investment_return?: number;
+      inflation?: number;
     }) => apiClient.preferences.update(data),
     onSuccess: (updatedPreferences) => {
       // Update cache with new preferences

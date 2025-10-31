@@ -170,6 +170,11 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
     return null;
   };
 
+  // Don't render the component if there's no data and we're not loading
+  if (!loading && data.length === 0) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -229,10 +234,6 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
         {loading ? (
           <div className="h-80 flex items-center justify-center">
             <Skeleton className="w-full h-full" />
-          </div>
-        ) : data.length === 0 ? (
-          <div className="h-80 flex items-center justify-center">
-            <p className="text-gray-500">No historical data available yet.</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
