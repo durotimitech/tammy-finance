@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -21,8 +21,8 @@ export default function ConfirmationModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
   isDestructive = false,
 }: ConfirmationModalProps) {
   if (!isOpen) return null;
@@ -36,7 +36,11 @@ export default function ConfirmationModal({
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
           className="bg-white rounded-lg p-6 w-full max-w-md"
-          style={{ borderColor: '#e5e7eb', borderWidth: '1px', borderStyle: 'solid' }}
+          style={{
+            borderColor: "#e5e7eb",
+            borderWidth: "1px",
+            borderStyle: "solid",
+          }}
         >
           <div className="flex items-start gap-4">
             {isDestructive && (
@@ -68,8 +72,8 @@ export default function ConfirmationModal({
               variant="default"
               className={`flex-1 ${
                 isDestructive
-                  ? 'bg-red-600 text-white hover:bg-red-700'
-                  : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
               }`}
             >
               {confirmText}

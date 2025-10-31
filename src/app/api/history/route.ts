@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,36 +11,41 @@ export async function GET(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get query parameters for date filtering
     const searchParams = request.nextUrl.searchParams;
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 365;
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : 365;
 
     // Build query
     let query = supabase
-      .from('net_worth_history')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('snapshot_date', { ascending: false })
+      .from("net_worth_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("snapshot_date", { ascending: false })
       .limit(limit);
 
     // Apply date filters if provided
     if (startDate) {
-      query = query.gte('snapshot_date', startDate);
+      query = query.gte("snapshot_date", startDate);
     }
     if (endDate) {
-      query = query.lte('snapshot_date', endDate);
+      query = query.lte("snapshot_date", endDate);
     }
 
     const { data: history, error } = await query;
 
     if (error) {
-      console.error('Error fetching net worth history:', error);
-      return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 });
+      console.error("Error fetching net worth history:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch history" },
+        { status: 500 },
+      );
     }
 
     // Calculate trends if we have data
@@ -55,14 +60,16 @@ export async function GET(request: NextRequest) {
         change: latest.net_worth - previous.net_worth,
         changePercentage:
           previous.net_worth !== 0
-            ? ((latest.net_worth - previous.net_worth) / Math.abs(previous.net_worth)) * 100
+            ? ((latest.net_worth - previous.net_worth) /
+                Math.abs(previous.net_worth)) *
+              100
             : 0,
         trend:
           latest.net_worth > previous.net_worth
-            ? 'up'
+            ? "up"
             : latest.net_worth < previous.net_worth
-              ? 'down'
-              : 'stable',
+              ? "down"
+              : "stable",
       };
     }
 
@@ -71,8 +78,11 @@ export async function GET(request: NextRequest) {
       trend,
     });
   } catch (error) {
-    console.error('Error in GET /api/history:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/history:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -87,25 +97,31 @@ export async function POST() {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Call the PostgreSQL function to capture a snapshot
-    const { error } = await supabase.rpc('capture_user_net_worth_snapshot', {
+    const { error } = await supabase.rpc("capture_user_net_worth_snapshot", {
       p_user_id: user.id,
     });
 
     if (error) {
-      console.error('Error capturing snapshot:', error);
-      return NextResponse.json({ error: 'Failed to capture snapshot' }, { status: 500 });
+      console.error("Error capturing snapshot:", error);
+      return NextResponse.json(
+        { error: "Failed to capture snapshot" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json({
-      message: 'Snapshot captured successfully',
-      date: new Date().toISOString().split('T')[0],
+      message: "Snapshot captured successfully",
+      date: new Date().toISOString().split("T")[0],
     });
   } catch (error) {
-    console.error('Error in POST /api/history:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in POST /api/history:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

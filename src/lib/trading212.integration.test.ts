@@ -1,19 +1,19 @@
-import { fetchPortfolio, validateApiKey } from './trading212';
+import { fetchPortfolio, validateApiKey } from "./trading212";
 
 // Mock fetch is needed in Node.js environment
 global.fetch = jest.fn();
 
-describe('Trading 212 Integration Tests', () => {
+describe("Trading 212 Integration Tests", () => {
   // Mock responses
   const mockPositions = [
     {
-      ticker: 'AAPL',
+      ticker: "AAPL",
       quantity: 10,
       averagePrice: 150,
       currentPrice: 175,
       ppl: 250,
-      initialFillDate: '2023-01-01',
-      frontend: 'ISA',
+      initialFillDate: "2023-01-01",
+      frontend: "ISA",
       maxBuy: 1000,
       maxSell: 10,
     },
@@ -32,14 +32,14 @@ describe('Trading 212 Integration Tests', () => {
     jest.clearAllMocks();
   });
 
-  describe('fetchPortfolio integration', () => {
-    it('successfully fetches portfolio with valid API key', async () => {
+  describe("fetchPortfolio integration", () => {
+    it("successfully fetches portfolio with valid API key", async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockCash,
       });
 
-      const result = await fetchPortfolio('valid-api-key');
+      const result = await fetchPortfolio("valid-api-key");
 
       expect(result.error).toBeUndefined();
       expect(result.data).toBeDefined();
@@ -48,78 +48,78 @@ describe('Trading 212 Integration Tests', () => {
 
       // Verify API calls were made with correct headers
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v0/equity/account/cash'),
+        expect.stringContaining("/api/v0/equity/account/cash"),
         expect.objectContaining({
           headers: {
-            Authorization: 'valid-api-key',
-            'Content-Type': 'application/json',
+            Authorization: "valid-api-key",
+            "Content-Type": "application/json",
           },
         }),
       );
     });
 
-    it('fails with invalid API key', async () => {
+    it("fails with invalid API key", async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 401,
-        json: async () => ({ error: 'Unauthorized' }),
+        json: async () => ({ error: "Unauthorized" }),
       });
 
-      const result = await fetchPortfolio('invalid-api-key');
+      const result = await fetchPortfolio("invalid-api-key");
 
-      expect(result.error).toBe('Invalid API key');
+      expect(result.error).toBe("Invalid API key");
       expect(result.data).toBeUndefined();
     });
 
-    it('handles server errors gracefully', async () => {
+    it("handles server errors gracefully", async () => {
       // Cash fails with server error
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 500,
-        json: async () => ({ message: 'Internal server error' }),
+        json: async () => ({ message: "Internal server error" }),
       });
 
-      const result = await fetchPortfolio('valid-api-key');
+      const result = await fetchPortfolio("valid-api-key");
 
-      expect(result.error).toBe('Internal server error');
+      expect(result.error).toBe("Internal server error");
       expect(result.data).toBeUndefined();
     });
   });
 
-  describe('validateApiKey integration', () => {
-    it('validates correct API key', async () => {
+  describe("validateApiKey integration", () => {
+    it("validates correct API key", async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ currencyCode: 'GBP' }),
+        json: async () => ({ currencyCode: "GBP" }),
       });
 
-      const isValid = await validateApiKey('valid-api-key');
+      const isValid = await validateApiKey("valid-api-key");
       expect(isValid).toBe(true);
 
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v0/equity/account/info'),
+        expect.stringContaining("/api/v0/equity/account/info"),
         expect.objectContaining({
           headers: {
-            Authorization: 'valid-api-key',
-            'Content-Type': 'application/json',
+            Authorization: "valid-api-key",
+            "Content-Type": "application/json",
           },
         }),
       );
     });
 
-    it('rejects invalid API key', async () => {
+    it("rejects invalid API key", async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 401,
       });
 
-      const isValid = await validateApiKey('invalid-api-key');
+      const isValid = await validateApiKey("invalid-api-key");
       expect(isValid).toBe(false);
     });
   });
 
-  describe('Rate limiting behavior', () => {
-    it('enforces rate limiting between requests', async () => {
+  describe("Rate limiting behavior", () => {
+    it("enforces rate limiting between requests", async () => {
       // Mock successful response
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
@@ -127,14 +127,14 @@ describe('Trading 212 Integration Tests', () => {
       });
 
       const start = Date.now();
-      await fetchPortfolio('valid-api-key');
+      await fetchPortfolio("valid-api-key");
       const duration = Date.now() - start;
 
       // Should take at least 950ms due to rate limiting (allowing for timing variations)
       expect(duration).toBeGreaterThanOrEqual(950);
     });
 
-    it('maintains rate limit across multiple API calls', async () => {
+    it("maintains rate limit across multiple API calls", async () => {
       // Mock responses for two complete portfolio fetches
       (fetch as jest.Mock)
         .mockResolvedValueOnce({ ok: true, json: async () => mockCash })
@@ -143,10 +143,10 @@ describe('Trading 212 Integration Tests', () => {
       const start = Date.now();
 
       // First portfolio fetch
-      await fetchPortfolio('valid-api-key');
+      await fetchPortfolio("valid-api-key");
 
       // Second portfolio fetch
-      await fetchPortfolio('valid-api-key');
+      await fetchPortfolio("valid-api-key");
 
       const duration = Date.now() - start;
 

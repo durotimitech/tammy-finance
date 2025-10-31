@@ -1,35 +1,45 @@
 /**
  * @jest-environment node
  */
-import { NextRequest } from 'next/server';
-import { GET, POST, PUT, DELETE } from './route';
-import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
-import { createClient } from '@/lib/supabase/server';
-import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
+import { NextRequest } from "next/server";
+import { GET, POST, PUT, DELETE } from "./route";
+import { decryptApiKey, generateUserSecret } from "@/lib/crypto";
+import { createClient } from "@/lib/supabase/server";
+import { fetchPortfolio, formatPortfolioData } from "@/lib/trading212";
 
 // Mock dependencies
-jest.mock('@/lib/supabase/server');
-jest.mock('@/lib/trading212');
-jest.mock('@/lib/crypto');
+jest.mock("@/lib/supabase/server");
+jest.mock("@/lib/trading212");
+jest.mock("@/lib/crypto");
 
 // Mock NextRequest
 global.Request = jest.fn().mockImplementation(() => ({})) as any;
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
-const mockFetchPortfolio = fetchPortfolio as jest.MockedFunction<typeof fetchPortfolio>;
-const mockFormatPortfolioData = formatPortfolioData as jest.MockedFunction<typeof formatPortfolioData>;
-const mockDecryptApiKey = decryptApiKey as jest.MockedFunction<typeof decryptApiKey>;
-const mockGenerateUserSecret = generateUserSecret as jest.MockedFunction<typeof generateUserSecret>;
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>;
+const mockFetchPortfolio = fetchPortfolio as jest.MockedFunction<
+  typeof fetchPortfolio
+>;
+const mockFormatPortfolioData = formatPortfolioData as jest.MockedFunction<
+  typeof formatPortfolioData
+>;
+const mockDecryptApiKey = decryptApiKey as jest.MockedFunction<
+  typeof decryptApiKey
+>;
+const mockGenerateUserSecret = generateUserSecret as jest.MockedFunction<
+  typeof generateUserSecret
+>;
 
-describe('GET /api/assets', () => {
-  const mockUser = { id: 'test-user-id' };
+describe("GET /api/assets", () => {
+  const mockUser = { id: "test-user-id" };
   const mockAssets = [
     {
-      id: '1',
-      name: 'Savings Account',
-      category: 'Cash',
+      id: "1",
+      name: "Savings Account",
+      category: "Cash",
       value: 10000,
-      user_id: 'test-user-id',
+      user_id: "test-user-id",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -37,10 +47,10 @@ describe('GET /api/assets', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.ENCRYPTION_SECRET = 'test-secret';
+    process.env.ENCRYPTION_SECRET = "test-secret";
   });
 
-  it('should return assets for authenticated user', async () => {
+  it("should return assets for authenticated user", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -49,7 +59,7 @@ describe('GET /api/assets', () => {
         }),
       },
       from: jest.fn((table) => {
-        if (table === 'assets') {
+        if (table === "assets") {
           return {
             select: jest.fn(() => ({
               eq: jest.fn(() => ({
@@ -60,14 +70,14 @@ describe('GET /api/assets', () => {
               })),
             })),
           };
-        } else if (table === 'encrypted_credentials') {
+        } else if (table === "encrypted_credentials") {
           return {
             select: jest.fn(() => ({
               eq: jest.fn(() => ({
                 eq: jest.fn(() => ({
                   single: jest.fn().mockResolvedValue({
                     data: null,
-                    error: { code: 'PGRST116' },
+                    error: { code: "PGRST116" },
                   }),
                 })),
               })),
@@ -83,15 +93,15 @@ describe('GET /api/assets', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual(mockAssets);
-    expect(mockSupabase.from).toHaveBeenCalledWith('assets');
+    expect(mockSupabase.from).toHaveBeenCalledWith("assets");
   });
 
-  it('should return 401 if user is not authenticated', async () => {
+  it("should return 401 if user is not authenticated", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
           data: { user: null },
-          error: { message: 'Not authenticated' },
+          error: { message: "Not authenticated" },
         }),
       },
     };
@@ -101,19 +111,18 @@ describe('GET /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe('Unauthorized');
+    expect(data.error).toBe("Unauthorized");
   });
-
 });
 
-describe('POST /api/assets', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("POST /api/assets", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should create a new asset', async () => {
+  it("should create a new asset", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -125,7 +134,7 @@ describe('POST /api/assets', () => {
         insert: jest.fn(() => ({
           select: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
-              data: { id: 'new-asset-id' },
+              data: { id: "new-asset-id" },
               error: null,
             }),
           })),
@@ -134,11 +143,11 @@ describe('POST /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "POST",
       body: JSON.stringify({
-        name: 'New Asset',
-        category: 'Investments',
+        name: "New Asset",
+        category: "Investments",
         value: 5000,
       }),
     });
@@ -147,26 +156,26 @@ describe('POST /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(201);
-    expect(data.asset).toEqual({ id: 'new-asset-id' });
-    expect(mockSupabase.from).toHaveBeenCalledWith('assets');
+    expect(data.asset).toEqual({ id: "new-asset-id" });
+    expect(mockSupabase.from).toHaveBeenCalledWith("assets");
   });
 
-  it('should return 401 if user is not authenticated', async () => {
+  it("should return 401 if user is not authenticated", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
           data: { user: null },
-          error: { message: 'Not authenticated' },
+          error: { message: "Not authenticated" },
         }),
       },
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "POST",
       body: JSON.stringify({
-        name: 'New Asset',
-        category: 'Investments',
+        name: "New Asset",
+        category: "Investments",
         value: 5000,
       }),
     });
@@ -175,10 +184,10 @@ describe('POST /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe('Unauthorized');
+    expect(data.error).toBe("Unauthorized");
   });
 
-  it('should return 400 for invalid input', async () => {
+  it("should return 400 for invalid input", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -189,11 +198,11 @@ describe('POST /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "POST",
       body: JSON.stringify({
         // Missing required fields
-        name: 'New Asset',
+        name: "New Asset",
       }),
     });
 
@@ -201,18 +210,18 @@ describe('POST /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Invalid input data');
+    expect(data.error).toBe("Invalid input data");
   });
 });
 
-describe('PUT /api/assets', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("PUT /api/assets", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should update an existing asset', async () => {
+  it("should update an existing asset", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -226,7 +235,7 @@ describe('PUT /api/assets', () => {
             eq: jest.fn(() => ({
               select: jest.fn(() => ({
                 single: jest.fn().mockResolvedValue({
-                  data: { id: 'asset-id', value: 7000 },
+                  data: { id: "asset-id", value: 7000 },
                   error: null,
                 }),
               })),
@@ -237,12 +246,12 @@ describe('PUT /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'PUT',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "PUT",
       body: JSON.stringify({
-        id: 'asset-id',
-        name: 'Updated Asset',
-        category: 'Investments',
+        id: "asset-id",
+        name: "Updated Asset",
+        category: "Investments",
         value: 7000,
       }),
     });
@@ -251,10 +260,10 @@ describe('PUT /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.asset).toEqual({ id: 'asset-id', value: 7000 });
+    expect(data.asset).toEqual({ id: "asset-id", value: 7000 });
   });
 
-  it('should return 400 if id is missing', async () => {
+  it("should return 400 if id is missing", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -265,11 +274,11 @@ describe('PUT /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'PUT',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "PUT",
       body: JSON.stringify({
-        name: 'Test',
-        category: 'Cash',
+        name: "Test",
+        category: "Cash",
         value: 7000,
       }),
     });
@@ -278,18 +287,18 @@ describe('PUT /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Invalid input data');
+    expect(data.error).toBe("Invalid input data");
   });
 });
 
-describe('DELETE /api/assets', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("DELETE /api/assets", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should delete an asset', async () => {
+  it("should delete an asset", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -309,9 +318,9 @@ describe('DELETE /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'DELETE',
-      body: JSON.stringify({ id: 'asset-id' }),
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "DELETE",
+      body: JSON.stringify({ id: "asset-id" }),
     });
 
     const response = await DELETE(request);
@@ -321,7 +330,7 @@ describe('DELETE /api/assets', () => {
     expect(data.success).toBe(true);
   });
 
-  it('should return 400 if id is missing', async () => {
+  it("should return 400 if id is missing", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -332,8 +341,8 @@ describe('DELETE /api/assets', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/assets', {
-      method: 'DELETE',
+    const request = new NextRequest("http://localhost:3000/api/assets", {
+      method: "DELETE",
       body: JSON.stringify({}),
     });
 
@@ -341,6 +350,6 @@ describe('DELETE /api/assets', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Asset ID is required');
+    expect(data.error).toBe("Asset ID is required");
   });
 });

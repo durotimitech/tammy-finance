@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
-import { Skeleton } from '@/components/Skeleton';
-import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
-import { formatCurrency } from '@/lib/utils';
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { ReactNode } from "react";
+import { Skeleton } from "@/components/Skeleton";
+import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
+import { formatCurrency } from "@/lib/utils";
 
 interface ValueCardProps {
   title: string;
@@ -40,8 +40,8 @@ export default function ValueCard({
       whileHover={href ? { scale: 1.02 } : undefined}
       whileTap={href ? { scale: 0.98 } : undefined}
       onClick={handleClick}
-      className={`bg-white rounded-xl p-6 border ${href ? 'cursor-pointer' : ''}`}
-      style={{ borderColor: '#e5e7eb' }}
+      className={`bg-white rounded-xl p-6 border ${href ? "cursor-pointer" : ""}`}
+      style={{ borderColor: "#e5e7eb" }}
       data-testid={testId}
     >
       <div className="flex justify-between items-start">

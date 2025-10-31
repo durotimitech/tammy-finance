@@ -82,20 +82,10 @@ export interface HistoricalTrend {
   previous: number;
   change: number;
   changePercentage: number;
-  trend: 'up' | 'down' | 'stable';
+  trend: "up" | "down" | "stable";
 }
 
 // FIRE (Financial Independence, Retire Early) types
-export interface UserPreferences {
-  id: string;
-  user_id: string;
-  monthly_expenses: number;
-  monthly_savings: number;
-  withdrawal_rate: number;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface FIRECalculation {
   fireNumber: number; // Total needed for retirement (annual expenses * 25)
   currentNetWorth: number; // Current net worth
@@ -110,8 +100,30 @@ export interface FIRECalculation {
   withdrawalRate: number; // Annual withdrawal rate percentage
 }
 
-export interface UserPreferencesFormData {
+// Profile types for user profile information and FIRE assumptions
+export interface Profile {
+  id: string;
+  user_id: string;
+  date_of_birth: string | null; // ISO date string (YYYY-MM-DD)
+  target_retirement_age: number | null;
   monthly_expenses: number;
   monthly_savings: number;
-  withdrawal_rate?: number;
+  currency: string; // ISO 4217 currency code (e.g., EUR, USD, GBP)
+  investment_return: number;
+  inflation: number;
+  safe_withdrawal_rate: number;
+  onboarding_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProfileFormData {
+  date_of_birth?: string; // ISO date string (YYYY-MM-DD)
+  target_retirement_age?: number;
+  monthly_expenses?: number;
+  monthly_savings?: number;
+  currency?: string; // ISO 4217 currency code
+  investment_return?: number;
+  inflation?: number;
+  safe_withdrawal_rate?: number;
 }

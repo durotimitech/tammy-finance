@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import { Skeleton } from '@/components/Skeleton';
-import { useNetWorth } from '@/hooks/use-financial-data';
-import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
-import { formatCurrency } from '@/lib/utils';
+import { motion } from "framer-motion";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Skeleton } from "@/components/Skeleton";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { useNetWorth } from "@/hooks/use-financial-data";
+import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
 
 export default function NetWorthSummary() {
   const { data, isLoading: loading } = useNetWorth();
   const netWorth = data?.netWorth || 0;
   const animatedNetWorth = useAnimatedNumber(netWorth, 1.5);
+  const { formatCurrency } = useCurrencyFormat();
 
   const isPositive = netWorth >= 0;
 
@@ -20,7 +21,7 @@ export default function NetWorthSummary() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="bg-white rounded-xl p-6 border"
-      style={{ borderColor: '#e5e7eb' }}
+      style={{ borderColor: "#e5e7eb" }}
     >
       <div className="flex justify-between items-start">
         <div className="flex-1">
@@ -33,7 +34,7 @@ export default function NetWorthSummary() {
           ) : (
             <>
               <motion.p
-                className={`text-2xl sm:text-3xl mb-2 font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}
+                className={`text-2xl sm:text-3xl mb-2 font-bold ${isPositive ? "text-green-600" : "text-red-600"}`}
                 data-testid="net-worth-value"
               >
                 {formatCurrency(animatedNetWorth)}
@@ -43,9 +44,15 @@ export default function NetWorthSummary() {
         </div>
         {!loading &&
           (isPositive ? (
-            <TrendingUp className="w-8 h-8 text-green-500" data-testid="trending-up-icon" />
+            <TrendingUp
+              className="w-8 h-8 text-green-500"
+              data-testid="trending-up-icon"
+            />
           ) : (
-            <TrendingDown className="w-8 h-8 text-red-500" data-testid="trending-down-icon" />
+            <TrendingDown
+              className="w-8 h-8 text-red-500"
+              data-testid="trending-down-icon"
+            />
           ))}
       </div>
     </motion.div>

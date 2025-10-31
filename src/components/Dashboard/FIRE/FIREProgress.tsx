@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { FIRECalculation } from '@/types/financial';
+import { motion } from "framer-motion";
+import { FIRECalculation } from "@/types/financial";
 
 interface FIREProgressProps {
   calculation: FIRECalculation;
@@ -9,9 +9,9 @@ interface FIREProgressProps {
 
 export default function FIREProgress({ calculation }: FIREProgressProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IE', {
-      style: 'currency',
-      currency: 'EUR',
+    return new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: "EUR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -27,7 +27,7 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
       className="bg-white rounded-xl p-6 border"
-      style={{ borderColor: '#e5e7eb' }}
+      style={{ borderColor: "#e5e7eb" }}
     >
       <h2 className="text-xl font-semibold mb-6">Progress to FIRE</h2>
 
@@ -43,7 +43,7 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              transition={{ duration: 1, ease: "easeOut" }}
               className="h-full bg-green-500"
             />
           </div>
@@ -80,7 +80,9 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
           <div className="text-center p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600">Remaining</p>
             <p className="text-xl font-semibold text-gray-900">
-              {isAchieved ? 'Achieved!' : formatCurrency(Math.max(0, remaining))}
+              {isAchieved
+                ? "Achieved!"
+                : formatCurrency(Math.max(0, remaining))}
             </p>
           </div>
         </div>
@@ -96,16 +98,17 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
               🎉 Congratulations! You&apos;ve reached Financial Independence!
             </p>
             <p className="text-green-700 text-sm text-center mt-1">
-              You can now sustain your lifestyle with a {calculation.withdrawalRate}% annual
-              withdrawal rate.
+              You can now sustain your lifestyle with a{" "}
+              {calculation.withdrawalRate}% annual withdrawal rate.
             </p>
           </motion.div>
         ) : (
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-blue-800 text-sm">
-              At your current savings rate of {formatCurrency(calculation.monthlySavings)}/month,
-              you&apos;ll reach financial independence in approximately {calculation.yearsToFIRE}{' '}
-              years.
+              At your current savings rate of{" "}
+              {formatCurrency(calculation.monthlySavings)}/month, you&apos;ll
+              reach financial independence in approximately{" "}
+              {calculation.yearsToFIRE} years.
             </p>
           </div>
         )}

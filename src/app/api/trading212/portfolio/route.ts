@@ -1,28 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
-import { isSameDay } from '@/lib/date-utils';
-import { createClient } from '@/lib/supabase/server';
-import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
+import { NextRequest, NextResponse } from "next/server";
+import { decryptApiKey, generateUserSecret } from "@/lib/crypto";
+import { isSameDay } from "@/lib/date-utils";
+import { createClient } from "@/lib/supabase/server";
+import { fetchPortfolio, formatPortfolioData } from "@/lib/trading212";
 
 export async function GET(request: NextRequest) {
   try {
     // Check if API key is provided in header for validation
-    const headerApiKey = request.headers.get('X-Trading212-ApiKey');
+    const headerApiKey = request.headers.get("X-Trading212-ApiKey");
 
     if (headerApiKey) {
       // This is a validation request
       try {
         const portfolioData = await fetchPortfolio(headerApiKey);
         if (!portfolioData) {
-          return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
+          return NextResponse.json(
+            { error: "Invalid API key" },
+            { status: 401 },
+          );
         }
         return NextResponse.json({
           valid: true,
           portfolio: formatPortfolioData(portfolioData.data!),
         });
       } catch (error) {
-        console.error('API key validation error:', error);
-        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
+        console.error("API key validation error:", error);
+        return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
       }
     }
 
@@ -36,25 +39,31 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Fetch Trading 212 credentials
     const { data: credential, error: fetchError } = await supabase
-      .from('encrypted_credentials')
-      .select('encrypted_value, salt, iv, auth_tag')
-      .eq('user_id', user.id)
-      .eq('name', 'trading212')
+      .from("encrypted_credentials")
+      .select("encrypted_value, salt, iv, auth_tag")
+      .eq("user_id", user.id)
+      .eq("name", "trading212")
       .single();
 
     if (fetchError || !credential) {
-      return NextResponse.json({ error: 'Trading 212 account not connected' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Trading 212 account not connected" },
+        { status: 404 },
+      );
     }
 
     // Generate user-specific secret
     const encryptionSecret = process.env.ENCRYPTION_SECRET;
     if (!encryptionSecret) {
-      return NextResponse.json({ error: 'ENCRYPTION_SECRET is not configured' }, { status: 500 });
+      return NextResponse.json(
+        { error: "ENCRYPTION_SECRET is not configured" },
+        { status: 500 },
+      );
     }
     const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
 
@@ -71,29 +80,36 @@ export async function GET(request: NextRequest) {
         userSecret,
       );
     } catch (decryptError) {
-      console.error('Decryption failed:', decryptError);
+      console.error("Decryption failed:", decryptError);
       return NextResponse.json(
-        { error: 'Failed to decrypt API key. Please reconnect your Trading 212 account.' },
+        {
+          error:
+            "Failed to decrypt API key. Please reconnect your Trading 212 account.",
+        },
         { status: 500 },
       );
     }
 
     if (!apiKey) {
-      return NextResponse.json({ error: 'Failed to decrypt API key' }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to decrypt API key" },
+        { status: 500 },
+      );
     }
 
     // Check if we already have Trading 212 data from today in the assets table
     const { data: existingAsset } = await supabase
-      .from('assets')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('name', 'Trading 212')
-      .eq('category', 'External Connections')
+      .from("assets")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("name", "Trading 212")
+      .eq("category", "External Connections")
       .single();
 
     // Check if we need to fetch new data or can use cached data
     const shouldFetchNewData =
-      !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
+      !existingAsset ||
+      !isSameDay(new Date(existingAsset.updated_at), new Date());
 
     let portfolio = null;
     let portfolioError = null;
@@ -111,19 +127,19 @@ export async function GET(request: NextRequest) {
         if (existingAsset) {
           // Update existing asset
           await supabase
-            .from('assets')
+            .from("assets")
             .update({
               value: formattedPortfolio.totalValue,
               updated_at: new Date().toISOString(),
             })
-            .eq('id', existingAsset.id)
-            .eq('user_id', user.id);
+            .eq("id", existingAsset.id)
+            .eq("user_id", user.id);
         } else {
           // Create new asset entry
-          await supabase.from('assets').insert({
+          await supabase.from("assets").insert({
             user_id: user.id,
-            name: 'Trading 212',
-            category: 'External Connections',
+            name: "Trading 212",
+            category: "External Connections",
             value: formattedPortfolio.totalValue,
           });
         }
@@ -145,7 +161,7 @@ export async function GET(request: NextRequest) {
 
     if (portfolioError || !portfolio) {
       return NextResponse.json(
-        { error: portfolioError || 'Failed to fetch portfolio' },
+        { error: portfolioError || "Failed to fetch portfolio" },
         { status: 502 },
       );
     }
@@ -158,7 +174,10 @@ export async function GET(request: NextRequest) {
       lastUpdated: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Error in GET /api/trading212/portfolio:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/trading212/portfolio:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

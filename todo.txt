@@ -1,0 +1,10 @@
+[] Redo the landing page
+[] Add google auth
+
+
+1. Start with Epic 1
+2. Focus on free-tier features first
+3. Yes the wizard should also collect age and target retirement age. Save it on a profiles table
+4. Yes add it to profiles table
+5. Implement it later
+6. Implement later 

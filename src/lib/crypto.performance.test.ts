@@ -1,11 +1,16 @@
-import { encryptApiKey, decryptApiKey, generateUserSecret } from './crypto';
+import { encryptApiKey, decryptApiKey, generateUserSecret } from "./crypto";
 
-describe('Crypto Service Performance', () => {
-  const testApiKey = 'test-api-key-12345-with-some-extra-length-for-realistic-testing';
-  const testUserSecret = generateUserSecret('user-123', 'session-456', 'app-secret');
+describe("Crypto Service Performance", () => {
+  const testApiKey =
+    "test-api-key-12345-with-some-extra-length-for-realistic-testing";
+  const testUserSecret = generateUserSecret(
+    "user-123",
+    "session-456",
+    "app-secret",
+  );
 
-  describe('Encryption performance', () => {
-    it('should encrypt within reasonable time (< 50ms)', () => {
+  describe("Encryption performance", () => {
+    it("should encrypt within reasonable time (< 50ms)", () => {
       const iterations = 100;
       const start = performance.now();
 
@@ -20,9 +25,9 @@ describe('Crypto Service Performance', () => {
       expect(avgTime).toBeLessThan(50); // Should be fast enough for API use
     });
 
-    it('should handle large API keys efficiently', () => {
+    it("should handle large API keys efficiently", () => {
       // Simulate a large JWT token or similar
-      const largeApiKey = 'x'.repeat(4096);
+      const largeApiKey = "x".repeat(4096);
       const start = performance.now();
 
       const result = encryptApiKey(largeApiKey, testUserSecret);
@@ -36,8 +41,8 @@ describe('Crypto Service Performance', () => {
     });
   });
 
-  describe('Decryption performance', () => {
-    it('should decrypt within reasonable time (< 50ms)', () => {
+  describe("Decryption performance", () => {
+    it("should decrypt within reasonable time (< 50ms)", () => {
       const encrypted = encryptApiKey(testApiKey, testUserSecret);
       const iterations = 100;
       const start = performance.now();
@@ -54,13 +59,13 @@ describe('Crypto Service Performance', () => {
     });
   });
 
-  describe('Key derivation performance', () => {
-    it('should generate user secrets quickly (< 10ms)', () => {
+  describe("Key derivation performance", () => {
+    it("should generate user secrets quickly (< 10ms)", () => {
       const iterations = 100;
       const start = performance.now();
 
       for (let i = 0; i < iterations; i++) {
-        generateUserSecret(`user-${i}`, `session-${i}`, 'app-secret');
+        generateUserSecret(`user-${i}`, `session-${i}`, "app-secret");
       }
 
       const end = performance.now();
@@ -71,8 +76,8 @@ describe('Crypto Service Performance', () => {
     });
   });
 
-  describe('Round-trip performance', () => {
-    it('should complete encrypt-decrypt cycle efficiently', () => {
+  describe("Round-trip performance", () => {
+    it("should complete encrypt-decrypt cycle efficiently", () => {
       const iterations = 50;
       const start = performance.now();
 
@@ -89,8 +94,8 @@ describe('Crypto Service Performance', () => {
     });
   });
 
-  describe('Memory efficiency', () => {
-    it('should not leak memory during repeated operations', () => {
+  describe("Memory efficiency", () => {
+    it("should not leak memory during repeated operations", () => {
       const initialMemory = process.memoryUsage().heapUsed;
       const iterations = 1000;
 
@@ -108,7 +113,9 @@ describe('Crypto Service Performance', () => {
       const memoryIncrease = finalMemory - initialMemory;
       const memoryPerOperation = memoryIncrease / iterations;
 
-      console.log(`Memory per operation: ${memoryPerOperation.toFixed(0)} bytes`);
+      console.log(
+        `Memory per operation: ${memoryPerOperation.toFixed(0)} bytes`,
+      );
 
       // Should not increase by more than 10KB per operation on average
       // Node.js crypto operations can allocate temporary buffers

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { FeatureFlagMap } from '@/types/feature-flags';
+import { useQuery } from "@tanstack/react-query";
+import { FeatureFlagMap } from "@/types/feature-flags";
 
 async function fetchFeatureFlags(): Promise<FeatureFlagMap> {
-  const response = await fetch('/api/feature-flags', {
-    credentials: 'include',
+  const response = await fetch("/api/feature-flags", {
+    credentials: "include",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch feature flags');
+    throw new Error("Failed to fetch feature flags");
   }
 
   return response.json();
@@ -17,7 +17,7 @@ async function fetchFeatureFlags(): Promise<FeatureFlagMap> {
 
 export function useFeatureFlags() {
   const { data: flags = {}, isLoading } = useQuery({
-    queryKey: ['feature-flags'],
+    queryKey: ["feature-flags"],
     queryFn: fetchFeatureFlags,
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes

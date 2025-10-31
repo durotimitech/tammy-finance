@@ -1,26 +1,30 @@
-'use client';
+"use client";
 
-import DistributionChart, { ChartDataItem } from '@/components/Dashboard/DistributionChart';
-import { Asset } from '@/types/financial';
+import DistributionChart, {
+  ChartDataItem,
+} from "@/components/Dashboard/DistributionChart";
+import { Asset } from "@/types/financial";
 
 interface AssetDistributionChartProps {
   assets: Asset[];
 }
 
 const ASSET_COLORS = [
-  '#8b5cf6', // Purple
-  '#3b82f6', // Blue
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ef4444', // Red
-  '#ec4899', // Pink
-  '#14b8a6', // Teal
-  '#6366f1', // Indigo
-  '#84cc16', // Lime
-  '#f97316', // Orange
+  "#8b5cf6", // Purple
+  "#3b82f6", // Blue
+  "#10b981", // Emerald
+  "#f59e0b", // Amber
+  "#ef4444", // Red
+  "#ec4899", // Pink
+  "#14b8a6", // Teal
+  "#6366f1", // Indigo
+  "#84cc16", // Lime
+  "#f97316", // Orange
 ];
 
-export default function AssetDistributionChart({ assets }: AssetDistributionChartProps) {
+export default function AssetDistributionChart({
+  assets,
+}: AssetDistributionChartProps) {
   // Create individual asset entries
   const assetEntries: ChartDataItem[] = assets.map((asset) => ({
     name: asset.name,

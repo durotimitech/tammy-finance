@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { formatCurrency } from '@/lib/utils';
+import { motion } from "framer-motion";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
+import { formatCurrency } from "@/lib/utils";
 
 export interface ChartDataItem {
   name: string;
@@ -39,7 +46,7 @@ export default function DistributionChart({
         x={x}
         y={y}
         fill="white"
-        textAnchor={x > cx ? 'start' : 'end'}
+        textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
         className="text-sm font-medium"
       >
@@ -73,7 +80,10 @@ export default function DistributionChart({
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {payload.map((entry: any, index: number) => (
           <li key={`item-${index}`} className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
             <span className="text-sm text-gray-700">{entry.value}</span>
           </li>
         ))}
@@ -91,7 +101,7 @@ export default function DistributionChart({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="bg-white rounded-xl p-6 border"
-      style={{ borderColor: '#e5e7eb' }}
+      style={{ borderColor: "#e5e7eb" }}
     >
       <h3 className="text-lg font-semibold text-gray-900 mb-6">{title}</h3>
 
@@ -111,7 +121,10 @@ export default function DistributionChart({
               animationDuration={800}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={colors[index % colors.length]}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -138,10 +151,14 @@ export default function DistributionChart({
                   className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: colors[index % colors.length] }}
                 />
-                <span className="text-sm text-gray-700 truncate">{item.name}</span>
+                <span className="text-sm text-gray-700 truncate">
+                  {item.name}
+                </span>
               </div>
               <div className="flex items-center gap-4 flex-shrink-0">
-                <p className="text-sm font-medium text-gray-900">{formatCurrency(item.value)}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {formatCurrency(item.value)}
+                </p>
                 <p className="text-xs text-gray-500 w-12 text-right">
                   {item.percentage.toFixed(1)}%
                 </p>

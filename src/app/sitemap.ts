@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
 // import { getAllPosts } from '@/lib/blog'; // You need to implement this function
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -13,21 +13,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: 'https://mejabidurotimi.com',
+      url: "https://mejabidurotimi.com",
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: "yearly",
       priority: 1,
     },
     {
-      url: 'https://mejabidurotimi.com/about',
+      url: "https://mejabidurotimi.com/about",
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.5,
     },
     {
-      url: 'https://mejabidurotimi.com/contact',
+      url: "https://mejabidurotimi.com/contact",
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.5,
     },
     // Add other static pages as needed

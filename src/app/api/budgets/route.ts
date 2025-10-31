@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { CreateBudgetDto } from '@/types/budget';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { CreateBudgetDto } from "@/types/budget";
 
 export async function GET() {
   try {
@@ -11,14 +11,14 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { data, error } = await supabase
-      .from('budgets')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .from("budgets")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
       throw error;
@@ -26,8 +26,11 @@ export async function GET() {
 
     return NextResponse.json(data || []);
   } catch (error) {
-    console.error('Error fetching budgets:', error);
-    return NextResponse.json({ error: 'Failed to fetch budgets' }, { status: 500 });
+    console.error("Error fetching budgets:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch budgets" },
+      { status: 500 },
+    );
   }
 }
 
@@ -40,13 +43,13 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body: CreateBudgetDto = await request.json();
 
     const { data, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .insert({
         ...body,
         user_id: user.id,
@@ -60,7 +63,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Error creating budget:', error);
-    return NextResponse.json({ error: 'Failed to create budget' }, { status: 500 });
+    console.error("Error creating budget:", error);
+    return NextResponse.json(
+      { error: "Failed to create budget" },
+      { status: 500 },
+    );
   }
 }

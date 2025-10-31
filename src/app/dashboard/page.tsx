@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Menu, X, TrendingUp, TrendingDown } from 'lucide-react';
-import { useState } from 'react';
-import AssetDistributionChart from '@/components/Dashboard/Assets/AssetDistributionChart';
-import FIRESummary from '@/components/Dashboard/FIRESummary';
-import LiabilitiesDistributionChart from '@/components/Dashboard/Liabilities/LiabilitiesDistributionChart';
-import NetWorthChart from '@/components/Dashboard/NetWorthChart';
-import NetWorthSummary from '@/components/Dashboard/NetWorthSummary';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
-import ValueCard from '@/components/ValueCard';
-import { useAssets, useLiabilities } from '@/hooks/use-financial-data';
+import { motion } from "framer-motion";
+import { Menu, X, TrendingUp, TrendingDown } from "lucide-react";
+import { useState } from "react";
+import AssetDistributionChart from "@/components/Dashboard/Assets/AssetDistributionChart";
+import FIRESummary from "@/components/Dashboard/FIRESummary";
+import LiabilitiesDistributionChart from "@/components/Dashboard/Liabilities/LiabilitiesDistributionChart";
+import NetWorthChart from "@/components/Dashboard/NetWorthChart";
+import NetWorthSummary from "@/components/Dashboard/NetWorthSummary";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import ValueCard from "@/components/ValueCard";
+import { useAssets, useLiabilities } from "@/hooks/use-financial-data";
 
 export default function DashboardPage() {
   const [refreshKey] = useState(0);
@@ -19,7 +19,8 @@ export default function DashboardPage() {
 
   // Use React Query hooks for data fetching
   const { data: assets = [], isLoading: isLoadingAssets } = useAssets();
-  const { data: liabilities = [], isLoading: isLoadingLiabilities } = useLiabilities();
+  const { data: liabilities = [], isLoading: isLoadingLiabilities } =
+    useLiabilities();
 
   return (
     <div className="relative flex h-screen bg-gray-50">
@@ -29,7 +30,7 @@ export default function DashboardPage() {
           className="fixed inset-0 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') setIsSidebarOpen(false);
+            if (e.key === "Escape") setIsSidebarOpen(false);
           }}
           role="button"
           tabIndex={0}
@@ -40,7 +41,7 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <div
         className={`${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } fixed lg:static inset-y-0 left-0 z-50 lg:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <Sidebar onClose={() => setIsSidebarOpen(false)} />
@@ -53,11 +54,19 @@ export default function DashboardPage() {
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-            aria-label={isSidebarOpen ? 'Close sidebar menu' : 'Open sidebar menu'}
+            aria-label={
+              isSidebarOpen ? "Close sidebar menu" : "Open sidebar menu"
+            }
           >
-            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isSidebarOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
-          <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
+          <span className="text-xl font-semibold font-pirata text-secondary">
+            tammy
+          </span>
           <div className="w-10" /> {/* Spacer for center alignment */}
         </div>
 
@@ -126,7 +135,10 @@ export default function DashboardPage() {
               {/* Assets Value Card */}
               <ValueCard
                 title="Total Assets"
-                value={assets.reduce((sum, asset) => sum + Number(asset.value), 0)}
+                value={assets.reduce(
+                  (sum, asset) => sum + Number(asset.value),
+                  0,
+                )}
                 description="Current value of all your assets"
                 icon={<TrendingUp className="w-5 h-5 text-green-500" />}
                 href="/dashboard/assets"

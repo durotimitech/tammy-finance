@@ -1,33 +1,30 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const nextJest = require('next/jest')
+const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: './',
-})
+  dir: "./",
+});
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.tsx'],
-  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.tsx"],
+  testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you soon)
-    '^@/(.*)$': '<rootDir>/src/$1',
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
-  testMatch: [
-    '**/__tests__/**/*.(ts|tsx|js)',
-    '**/*.(test|spec).(ts|tsx|js)'
-  ],
+  testMatch: ["**/__tests__/**/*.(ts|tsx|js)", "**/*.(test|spec).(ts|tsx|js)"],
   collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.stories.{js,jsx,ts,tsx}',
-    '!src/**/__tests__/**',
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.stories.{js,jsx,ts,tsx}",
+    "!src/**/__tests__/**",
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(isows|@supabase|superjson|jose|@panva)/)',
+    "node_modules/(?!(isows|@supabase|superjson|jose|@panva)/)",
   ],
-}
+};
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customJestConfig);

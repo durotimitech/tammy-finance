@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import AccountConnectionModal from './AccountConnectionModal';
-import Trading212ConnectionModal from './Trading212ConnectionModal';
-import { Skeleton } from '@/components/Skeleton';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import AccountConnectionModal from "./AccountConnectionModal";
+import Trading212ConnectionModal from "./Trading212ConnectionModal";
+import { Skeleton } from "@/components/Skeleton";
+import { Button } from "@/components/ui/Button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface ConnectedAccount {
   name: string;
@@ -18,7 +24,9 @@ interface ConnectedAccount {
 export default function ConnectAccountsSection() {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [isTrading212ModalOpen, setIsTrading212ModalOpen] = useState(false);
-  const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([]);
+  const [connectedAccounts, setConnectedAccounts] = useState<
+    ConnectedAccount[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -27,17 +35,17 @@ export default function ConnectAccountsSection() {
 
   const fetchConnectedAccounts = async () => {
     try {
-      const response = await fetch('/api/credentials');
+      const response = await fetch("/api/credentials");
 
       if (response.ok) {
         const data = await response.json();
         setConnectedAccounts(data.credentials || []);
       } else {
-        console.error('Failed to fetch connected accounts');
+        console.error("Failed to fetch connected accounts");
         setConnectedAccounts([]);
       }
     } catch (error) {
-      console.error('Error fetching connected accounts:', error);
+      console.error("Error fetching connected accounts:", error);
       setConnectedAccounts([]);
     } finally {
       setIsLoading(false);
@@ -57,16 +65,18 @@ export default function ConnectAccountsSection() {
   const handleDisconnect = async (accountName: string) => {
     try {
       const response = await fetch(`/api/credentials/${accountName}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
-        setConnectedAccounts(connectedAccounts.filter((a) => a.name !== accountName));
+        setConnectedAccounts(
+          connectedAccounts.filter((a) => a.name !== accountName),
+        );
       } else {
-        console.error('Failed to disconnect account');
+        console.error("Failed to disconnect account");
       }
     } catch (error) {
-      console.error('Error disconnecting account:', error);
+      console.error("Error disconnecting account:", error);
     }
   };
 
@@ -76,11 +86,15 @@ export default function ConnectAccountsSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
     >
-      <Card className="bg-white text-black border" style={{ borderColor: '#e5e7eb' }}>
+      <Card
+        className="bg-white text-black border"
+        style={{ borderColor: "#e5e7eb" }}
+      >
         <CardHeader>
           <CardTitle className="text-black">Connected Accounts</CardTitle>
           <CardDescription className="text-gray-600">
-            Connect your investment accounts to automatically track your portfolio value
+            Connect your investment accounts to automatically track your
+            portfolio value
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +114,9 @@ export default function ConnectAccountsSection() {
                     className="flex items-center justify-between p-3 rounded-lg bg-gray-100"
                   >
                     <div>
-                      <span className="font-medium text-black">{account.displayName}</span>
+                      <span className="font-medium text-black">
+                        {account.displayName}
+                      </span>
                     </div>
                     <Button
                       variant="secondary"
@@ -135,10 +151,12 @@ export default function ConnectAccountsSection() {
           setIsAccountModalOpen(false);
           // Check if we need to open Trading 212 modal
           setTimeout(() => {
-            const shouldOpenTrading212 = localStorage.getItem('openTrading212Modal');
-            if (shouldOpenTrading212 === 'true') {
+            const shouldOpenTrading212 = localStorage.getItem(
+              "openTrading212Modal",
+            );
+            if (shouldOpenTrading212 === "true") {
               setIsTrading212ModalOpen(true);
-              localStorage.removeItem('openTrading212Modal');
+              localStorage.removeItem("openTrading212Modal");
             }
           }, 100);
         }}

@@ -1,18 +1,18 @@
-import React, { forwardRef, ButtonHTMLAttributes } from 'react';
-import { LoadingIcon } from './LoadingIcon';
+import React, { forwardRef, ButtonHTMLAttributes } from "react";
+import { LoadingIcon } from "./LoadingIcon";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary';
-  size?: 'default' | 'sm' | 'lg';
+  variant?: "default" | "secondary";
+  size?: "default" | "sm" | "lg";
   loading?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      className = '',
-      variant = 'default',
-      size = 'default',
+      className = "",
+      variant = "default",
+      size = "default",
       loading = false,
       children,
       disabled,
@@ -21,19 +21,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseStyles =
-      'font-semibold transition-colors focus:ring-2 focus:outline-none disabled:opacity-60 hover:cursor-pointer inline-flex items-center justify-center gap-2';
+      "font-semibold transition-colors focus:ring-2 focus:outline-none disabled:opacity-60 hover:cursor-pointer inline-flex items-center justify-center gap-2";
 
     const variants = {
       default:
-        'bg-secondary text-white hover:bg-white hover:border hover:text-black focus:ring-gray-500 focus:border-gray-500 focus:border-2',
+        "bg-secondary text-white hover:bg-white hover:border hover:text-black focus:ring-gray-500 focus:border-gray-500 focus:border-2",
       secondary:
-        'bg-white text-black border hover:bg-gray-100 hover:text-black focus:ring-gray-500 focus:border-gray-500 focus:border-2',
+        "bg-white text-black border hover:bg-gray-100 hover:text-black focus:ring-gray-500 focus:border-gray-500 focus:border-2",
     };
 
     const sizes = {
-      default: 'px-5 py-2',
-      sm: 'px-3 py-1 text-sm',
-      lg: 'px-6 py-3 text-lg',
+      default: "px-5 py-2",
+      sm: "px-3 py-1 text-sm",
+      lg: "px-6 py-3 text-lg",
     };
 
     return (
@@ -49,6 +49,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export { Button };

@@ -1,30 +1,32 @@
 /**
  * @jest-environment node
  */
-import { NextRequest } from 'next/server';
-import { GET, POST, PUT, DELETE } from './route';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest } from "next/server";
+import { GET, POST, PUT, DELETE } from "./route";
+import { createClient } from "@/lib/supabase/server";
 
 // Mock dependencies
-jest.mock('@/lib/supabase/server');
+jest.mock("@/lib/supabase/server");
 
 // Mock NextRequest
 global.Request = jest.fn().mockImplementation(() => ({})) as any;
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>;
 
-describe('GET /api/liabilities', () => {
-  const mockUser = { id: 'test-user-id' };
+describe("GET /api/liabilities", () => {
+  const mockUser = { id: "test-user-id" };
   const mockLiabilities = [
     {
-      id: '1',
-      name: 'Credit Card',
-      category: 'Credit Card',
+      id: "1",
+      name: "Credit Card",
+      category: "Credit Card",
       amount_owed: 5000,
       minimum_payment: 150,
-      due_date: '2024-01-15',
+      due_date: "2024-01-15",
       interest_rate: 19.99,
-      user_id: 'test-user-id',
+      user_id: "test-user-id",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -34,7 +36,7 @@ describe('GET /api/liabilities', () => {
     jest.clearAllMocks();
   });
 
-  it('should return liabilities for authenticated user', async () => {
+  it("should return liabilities for authenticated user", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -60,15 +62,15 @@ describe('GET /api/liabilities', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual(mockLiabilities);
-    expect(mockSupabase.from).toHaveBeenCalledWith('liabilities');
+    expect(mockSupabase.from).toHaveBeenCalledWith("liabilities");
   });
 
-  it('should return 401 if user is not authenticated', async () => {
+  it("should return 401 if user is not authenticated", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
           data: { user: null },
-          error: { message: 'Not authenticated' },
+          error: { message: "Not authenticated" },
         }),
       },
     };
@@ -78,10 +80,10 @@ describe('GET /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe('Unauthorized');
+    expect(data.error).toBe("Unauthorized");
   });
 
-  it('should handle database errors', async () => {
+  it("should handle database errors", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -94,7 +96,7 @@ describe('GET /api/liabilities', () => {
           eq: jest.fn(() => ({
             order: jest.fn().mockResolvedValue({
               data: null,
-              error: { message: 'Database error' },
+              error: { message: "Database error" },
             }),
           })),
         })),
@@ -106,18 +108,18 @@ describe('GET /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe('Failed to fetch liabilities');
+    expect(data.error).toBe("Failed to fetch liabilities");
   });
 });
 
-describe('POST /api/liabilities', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("POST /api/liabilities", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should create a new liability', async () => {
+  it("should create a new liability", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -129,7 +131,7 @@ describe('POST /api/liabilities', () => {
         insert: jest.fn(() => ({
           select: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
-              data: { id: 'new-liability-id' },
+              data: { id: "new-liability-id" },
               error: null,
             }),
           })),
@@ -138,14 +140,14 @@ describe('POST /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "POST",
       body: JSON.stringify({
-        name: 'New Loan',
-        category: 'Personal Loan',
+        name: "New Loan",
+        category: "Personal Loan",
         amount_owed: 10000,
         minimum_payment: 500,
-        due_date: '2024-02-01',
+        due_date: "2024-02-01",
         interest_rate: 7.5,
       }),
     });
@@ -154,26 +156,26 @@ describe('POST /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.liability).toEqual({ id: 'new-liability-id' });
-    expect(mockSupabase.from).toHaveBeenCalledWith('liabilities');
+    expect(data.liability).toEqual({ id: "new-liability-id" });
+    expect(mockSupabase.from).toHaveBeenCalledWith("liabilities");
   });
 
-  it('should return 401 if user is not authenticated', async () => {
+  it("should return 401 if user is not authenticated", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
           data: { user: null },
-          error: { message: 'Not authenticated' },
+          error: { message: "Not authenticated" },
         }),
       },
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "POST",
       body: JSON.stringify({
-        name: 'New Loan',
-        category: 'Personal Loan',
+        name: "New Loan",
+        category: "Personal Loan",
         amount_owed: 10000,
       }),
     });
@@ -182,10 +184,10 @@ describe('POST /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe('Unauthorized');
+    expect(data.error).toBe("Unauthorized");
   });
 
-  it('should return 400 for invalid input', async () => {
+  it("should return 400 for invalid input", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -196,11 +198,11 @@ describe('POST /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "POST",
       body: JSON.stringify({
         // Missing required fields
-        name: 'New Loan',
+        name: "New Loan",
       }),
     });
 
@@ -208,10 +210,10 @@ describe('POST /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Missing required fields');
+    expect(data.error).toBe("Missing required fields");
   });
 
-  it('should handle optional fields correctly', async () => {
+  it("should handle optional fields correctly", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -223,7 +225,7 @@ describe('POST /api/liabilities', () => {
         insert: jest.fn(() => ({
           select: jest.fn(() => ({
             single: jest.fn().mockResolvedValue({
-              data: { id: 'new-liability-id' },
+              data: { id: "new-liability-id" },
               error: null,
             }),
           })),
@@ -232,11 +234,11 @@ describe('POST /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'POST',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "POST",
       body: JSON.stringify({
-        name: 'Simple Debt',
-        category: 'Other',
+        name: "Simple Debt",
+        category: "Other",
         amount_owed: 1000,
         // Optional fields not provided
       }),
@@ -246,26 +248,27 @@ describe('POST /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(mockSupabase.from).toHaveBeenCalledWith('liabilities');
-    const insertCall = (mockSupabase.from as jest.Mock).mock.results[0].value.insert;
+    expect(mockSupabase.from).toHaveBeenCalledWith("liabilities");
+    const insertCall = (mockSupabase.from as jest.Mock).mock.results[0].value
+      .insert;
     const insertArgs = insertCall.mock.calls[0][0];
     expect(insertArgs).toEqual({
-      name: 'Simple Debt',
-      category: 'Other',
+      name: "Simple Debt",
+      category: "Other",
       amount_owed: 1000,
-      user_id: 'test-user-id',
+      user_id: "test-user-id",
     });
   });
 });
 
-describe('PUT /api/liabilities', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("PUT /api/liabilities", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should update an existing liability', async () => {
+  it("should update an existing liability", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -279,7 +282,12 @@ describe('PUT /api/liabilities', () => {
             eq: jest.fn(() => ({
               select: jest.fn(() => ({
                 single: jest.fn().mockResolvedValue({
-                  data: { id: 'liability-id', name: 'Updated Liability', category: 'Credit Card', amount_owed: 8000 },
+                  data: {
+                    id: "liability-id",
+                    name: "Updated Liability",
+                    category: "Credit Card",
+                    amount_owed: 8000,
+                  },
                   error: null,
                 }),
               })),
@@ -290,12 +298,12 @@ describe('PUT /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'PUT',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "PUT",
       body: JSON.stringify({
-        id: 'liability-id',
-        name: 'Updated Liability',
-        category: 'Credit Card',
+        id: "liability-id",
+        name: "Updated Liability",
+        category: "Credit Card",
         amount_owed: 8000,
       }),
     });
@@ -304,10 +312,15 @@ describe('PUT /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.liability).toEqual({ id: 'liability-id', name: 'Updated Liability', category: 'Credit Card', amount_owed: 8000 });
+    expect(data.liability).toEqual({
+      id: "liability-id",
+      name: "Updated Liability",
+      category: "Credit Card",
+      amount_owed: 8000,
+    });
   });
 
-  it('should return 400 if id is missing', async () => {
+  it("should return 400 if id is missing", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -318,8 +331,8 @@ describe('PUT /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'PUT',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "PUT",
       body: JSON.stringify({
         amount_owed: 8000,
       }),
@@ -329,18 +342,18 @@ describe('PUT /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Missing required fields');
+    expect(data.error).toBe("Missing required fields");
   });
 });
 
-describe('DELETE /api/liabilities', () => {
-  const mockUser = { id: 'test-user-id' };
-  
+describe("DELETE /api/liabilities", () => {
+  const mockUser = { id: "test-user-id" };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should delete a liability', async () => {
+  it("should delete a liability", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -360,9 +373,9 @@ describe('DELETE /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'DELETE',
-      body: JSON.stringify({ id: 'liability-id' }),
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "DELETE",
+      body: JSON.stringify({ id: "liability-id" }),
     });
 
     const response = await DELETE(request);
@@ -372,7 +385,7 @@ describe('DELETE /api/liabilities', () => {
     expect(data.success).toBe(true);
   });
 
-  it('should return 400 if id is missing', async () => {
+  it("should return 400 if id is missing", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -383,8 +396,8 @@ describe('DELETE /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'DELETE',
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "DELETE",
       body: JSON.stringify({}),
     });
 
@@ -392,10 +405,10 @@ describe('DELETE /api/liabilities', () => {
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toBe('Missing liability ID');
+    expect(data.error).toBe("Missing liability ID");
   });
 
-  it('should handle database errors during deletion', async () => {
+  it("should handle database errors during deletion", async () => {
     const mockSupabase = {
       auth: {
         getUser: jest.fn().mockResolvedValue({
@@ -407,7 +420,7 @@ describe('DELETE /api/liabilities', () => {
         delete: jest.fn(() => ({
           eq: jest.fn(() => ({
             eq: jest.fn().mockResolvedValue({
-              error: { message: 'Database error' },
+              error: { message: "Database error" },
             }),
           })),
         })),
@@ -415,15 +428,15 @@ describe('DELETE /api/liabilities', () => {
     };
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
-    const request = new NextRequest('http://localhost:3000/api/liabilities', {
-      method: 'DELETE',
-      body: JSON.stringify({ id: 'liability-id' }),
+    const request = new NextRequest("http://localhost:3000/api/liabilities", {
+      method: "DELETE",
+      body: JSON.stringify({ id: "liability-id" }),
     });
 
     const response = await DELETE(request);
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe('Failed to delete liability');
+    expect(data.error).toBe("Failed to delete liability");
   });
 });

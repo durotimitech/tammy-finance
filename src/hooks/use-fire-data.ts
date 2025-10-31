@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import { UserPreferencesFormData } from '@/types/financial';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
 
 // Query keys
 export const fireQueryKeys = {
-  preferences: ['user-preferences'] as const,
-  fireCalculation: ['fire-calculation'] as const,
+  preferences: ["user-preferences"] as const,
+  fireCalculation: ["fire-calculation"] as const,
 };
 
 // User preferences hook
@@ -23,12 +22,18 @@ export function useUpdatePreferences() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UserPreferencesFormData) => apiClient.preferences.update(data),
+    mutationFn: (data: {
+      monthly_expenses?: number;
+      monthly_savings?: number;
+      withdrawal_rate?: number;
+    }) => apiClient.preferences.update(data),
     onSuccess: (updatedPreferences) => {
       // Update cache with new preferences
       queryClient.setQueryData(fireQueryKeys.preferences, updatedPreferences);
       // Invalidate FIRE calculation to trigger recalculation
-      queryClient.invalidateQueries({ queryKey: fireQueryKeys.fireCalculation });
+      queryClient.invalidateQueries({
+        queryKey: fireQueryKeys.fireCalculation,
+      });
     },
   });
 }
