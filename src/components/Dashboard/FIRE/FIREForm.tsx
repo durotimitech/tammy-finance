@@ -3,14 +3,18 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import {
   useUpdatePreferences,
   useUserPreferences,
 } from "@/hooks/use-fire-data";
+import { getCurrencySymbol } from "@/lib/currency";
 
 export default function FIREForm() {
   const { data: preferences, isLoading } = useUserPreferences();
   const updatePreferences = useUpdatePreferences();
+  const { currency } = useCurrencyFormat();
+  const currencySymbol = getCurrencySymbol(currency);
 
   const [formData, setFormData] = useState({
     monthly_expenses: 0,
@@ -61,10 +65,12 @@ export default function FIREForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       onSubmit={handleSubmit}
-      className="bg-white rounded-xl p-6 border"
+      className="bg-white rounded-xl p-4 sm:p-6 border"
       style={{ borderColor: "#e5e7eb" }}
     >
-      <h2 className="text-xl font-semibold mb-6">FIRE Settings</h2>
+      <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
+        FIRE Settings
+      </h2>
 
       <div className="space-y-4">
         <div>
@@ -76,7 +82,7 @@ export default function FIREForm() {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-              €
+              {currencySymbol}
             </span>
             <input
               type="number"
@@ -103,7 +109,7 @@ export default function FIREForm() {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-              €
+              {currencySymbol}
             </span>
             <input
               type="number"
@@ -194,12 +200,13 @@ export default function FIREForm() {
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="mt-6"
+        className="mt-4 sm:mt-6"
       >
         <Button
           type="submit"
           className="w-full"
           disabled={updatePreferences.isPending}
+          loading={updatePreferences.isPending}
         >
           {updatePreferences.isPending ? "Saving..." : "Update Calculations"}
         </Button>

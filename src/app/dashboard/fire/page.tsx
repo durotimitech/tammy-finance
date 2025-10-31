@@ -70,7 +70,7 @@ export default function FIREPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <div>
               <DashboardHeaderText title="FIRE Calculator" />
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                 Track your journey to Financial Independence
               </p>
             </div>
@@ -79,15 +79,15 @@ export default function FIREPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6"
+              className="mt-8 flex flex-col xl:flex-row gap-6"
             >
               {/* Settings Form */}
-              <div className="lg:col-span-1">
+              <div className="w-full xl:w-1/3 xl:flex-shrink-0">
                 <FIREForm />
               </div>
 
               {/* Calculator Display */}
-              <div className="lg:col-span-2">
+              <div className="w-full xl:flex-1 min-w-0">
                 <FIRECalculatorDisplay />
               </div>
             </motion.div>

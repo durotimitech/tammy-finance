@@ -240,7 +240,7 @@ export default function AddLiabilityModal({
               className="flex-1"
               loading={isLoading}
             >
-              {isEditing ? "Update Liability" : "Add Liability"}
+              {isEditing ? "Update" : "Add Liability"}
             </Button>
           </div>
         </form>

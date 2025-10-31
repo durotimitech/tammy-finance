@@ -188,6 +188,7 @@ export default function LiabilitiesSection() {
               }
             : undefined
         }
+        isEditing={!!editingLiability}
         isLoading={
           createLiabilityMutation.isPending || updateLiabilityMutation.isPending
         }

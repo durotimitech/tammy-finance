@@ -1,50 +1,159 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
 import { useState } from "react";
-import BudgetForm from "./BudgetForm";
-import BudgetList from "./BudgetList";
-import BudgetSummary from "./BudgetSummary";
-import { Button } from "@/components/ui/Button";
+import BudgetGoalsDisplay from "./BudgetGoalsDisplay";
+import BudgetHistory from "./BudgetHistory";
+import ExpenseDistributionChart from "./ExpenseDistributionChart";
+import ExpensesSection from "./ExpensesSection";
+import GoalsSection from "./GoalsSection";
+import IncomeSection from "./IncomeSection";
 import DashboardHeaderText from "@/components/ui/DashboardHeaderText";
-import { useBudgets } from "@/hooks/useBudgets";
+import { useCurrentBudget } from "@/hooks/use-budget-new";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 
 export default function BudgetTracker() {
-  const [showForm, setShowForm] = useState(false);
-  const { data: budgets = [], isLoading } = useBudgets();
+  const { data: budget, isLoading } = useCurrentBudget();
+  const { formatCurrency } = useCurrencyFormat();
+  const [activeTab, setActiveTab] = useState<"current" | "history">("current");
+
+  const totalIncome = budget?.total_income || 0;
+  const totalExpenses = budget?.total_expenses || 0;
+  const netSavings = totalIncome - totalExpenses;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8 max-w-7xl">
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8">
         <DashboardHeaderText title="Budget Tracker" />
-        <Button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Budget
-        </Button>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">
+          Track your income, expenses, and budget goals
+        </p>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="mb-8"
-      >
-        <BudgetSummary budgets={budgets} />
-      </motion.div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl p-4 sm:p-6 border"
+          style={{ borderColor: "#e5e7eb" }}
+        >
+          <p className="text-sm text-gray-500 mb-1">Total Income</p>
+          <p className="text-2xl font-bold text-green-600">
+            {isLoading ? "..." : formatCurrency(totalIncome)}
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-xl p-4 sm:p-6 border"
+          style={{ borderColor: "#e5e7eb" }}
+        >
+          <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
+          <p className="text-2xl font-bold text-red-600">
+            {isLoading ? "..." : formatCurrency(totalExpenses)}
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-xl p-4 sm:p-6 border"
+          style={{ borderColor: "#e5e7eb" }}
+        >
+          <p className="text-sm text-gray-500 mb-1">Net Savings</p>
+          <p
+            className={`text-2xl font-bold ${
+              netSavings >= 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {isLoading ? "..." : formatCurrency(netSavings)}
+          </p>
+        </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-      >
-        <BudgetList budgets={budgets} isLoading={isLoading} />
-      </motion.div>
+      {/* Tabs */}
+      <div className="mb-6 border-b border-gray-200">
+        <nav className="flex gap-4">
+          <button
+            onClick={() => setActiveTab("current")}
+            className={`px-4 py-2 font-medium text-sm transition-colors ${
+              activeTab === "current"
+                ? "text-secondary border-b-2 border-secondary"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Current Month
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`px-4 py-2 font-medium text-sm transition-colors ${
+              activeTab === "history"
+                ? "text-secondary border-b-2 border-secondary"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            History
+          </button>
+        </nav>
+      </div>
 
-      {showForm && <BudgetForm onClose={() => setShowForm(false)} />}
+      {activeTab === "current" ? (
+        <div className="space-y-6">
+          {/* Income and Goals Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <IncomeSection />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <GoalsSection />
+            </motion.div>
+          </div>
+
+          {/* Goals Display */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <BudgetGoalsDisplay />
+          </motion.div>
+
+          {/* Expenses and Chart Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <ExpensesSection />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <ExpenseDistributionChart />
+            </motion.div>
+          </div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <BudgetHistory />
+        </motion.div>
+      )}
     </div>
   );
 }

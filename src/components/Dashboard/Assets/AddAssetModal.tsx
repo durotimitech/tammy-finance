@@ -255,7 +255,7 @@ export default function AddAssetModal({
               className="w-full sm:flex-1 order-1 sm:order-2"
               loading={isLoading}
             >
-              {isEditing ? "Update Asset" : "Add Asset"}
+              {isEditing ? "Update" : "Add Asset"}
             </Button>
           </div>
         </form>

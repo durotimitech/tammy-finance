@@ -221,6 +221,7 @@ export default function AssetsSection() {
               }
             : undefined
         }
+        isEditing={!!editingAsset}
         isLoading={
           createAssetMutation.isPending || updateAssetMutation.isPending
         }

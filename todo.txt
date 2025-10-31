@@ -13,28 +13,64 @@ Ensure to follow the rules in RULES.md for each iteration
 [✅] FIRE Number calculation (Annual Expenses * 25)
 [✅] FI Percentage calculation
 [✅] Savings Rate calculation
-[ ] "Path to FI" line chart - Project net worth growth over time to FIRE Number
-[ ] Settings panel for global assumptions:
-  [ ] Expected Investment Return % (currently not editable, default used)
-  [ ] Inflation % (currently not editable, default used)
+[✅] "Path to FI" line chart - Project net worth growth over time to FIRE Number (PathToFIChart on dashboard)
+[✅] Settings panel for global assumptions:
+  [✅] Expected Investment Return % (editable in FIREForm, default 7%)
+  [✅] Inflation % (editable in FIREForm, default 3%)
   [✅] Safe Withdrawal Rate % (editable in FIREForm)
 
 ## Epic 3: Net Worth (Free Tier)
 [✅] Manual asset account creation (unlimited)
 [✅] Manual liability account creation (unlimited)
 [✅] Manual balance updates
-[ ] Monthly update reminder (prompt on 1st of month to update balances)
+[✅] Monthly update reminder (prompt on 1st of month to update balances) - MonthlyUpdateReminder component
 [✅] Historical net worth line chart (NetWorthChart)
 [✅] Asset/Liability pie charts (AssetDistributionChart, LiabilitiesDistributionChart)
 
-## Epic 4: Budget (Free Tier) - TRANSACTION SYSTEM NEEDED
-[ ] Transactions table and schema (does not exist)
-[ ] Manual transaction entry form (Income or Expense with categories)
-[ ] Monthly summary view showing Income vs Expenses
-[ ] Calculate Net Savings from transactions
-[ ] Auto-populate "Avg. Monthly Savings" on FIRE Dashboard from Net Savings
+## Epic 4: Budget (Free Tier) - TRANSACTION SYSTEM
+[✅] Transactions table and schema (migration 007_create_transactions_table.sql)
+[✅] Manual transaction entry form (Income or Expense with categories) - TransactionForm component
+[✅] Monthly summary view showing Income vs Expenses - MonthlySummary and TransactionSummary components
+[✅] Calculate Net Savings from transactions - implemented in API routes
+[✅] Auto-populate "Avg. Monthly Savings" on FIRE Dashboard from Net Savings - updateMonthlySavingsFromTransactions helper
 [✅] Budget tracking system (separate from transactions - already exists)
+[ ] NEW: Redesign Budget Tracker with Income, Expenses, and Goals system:
+  [ ] Income section - Add multiple income sources (name, category, amount)
+  [ ] Goals section - User-defined budget categories (needs, wants, savings, etc.) with percentage allocation
+  [ ] Expenses section - Link expenses to goal categories
+  [ ] Display spending per goal category (amount and percentage)
+  [ ] Pie charts for expense distribution
+  [ ] Monthly reset functionality (auto-reset on 1st of month)
+  [ ] Budget history view (previous months)
 
 ## Premium Tier Features (Future)
-[ ] All premium features marked as future work per PRD
+### Epic 2: FIRE Dashboard (Premium Tier)
+[ ] Auto-populate dashboard vitals (Assets, Savings, Expenses) from synced accounts
+[ ] "What-If" scenario lab to model:
+  [ ] Impact of increasing savings by $X/month
+  [ ] Impact of 1-year sabbatical (0 savings)
+  [ ] Impact of one-time events (inheritance, home purchase, etc.)
+  [ ] Impact of market crash scenarios
+[ ] Multiple FIRE goals tracking (Lean FIRE, Standard FIRE, Fat FIRE)
+[ ] Coaching Insight cards on dashboard
+
+### Epic 3: Net Worth (Premium Tier)
+[ ] Secure account connections via 3rd-party aggregator (Plaid, Finicity, etc.)
+[ ] Auto-sync balances from banks, brokerages, credit cards, loans
+[ ] Real estate API integration (e.g., Zillow) for automatic home value tracking
+[ ] Employee stock tracking module (RSUs, ESPP) with vesting schedules
+[ ] Crypto wallet tracking
+
+### Epic 4: Budget (Premium Tier)
+[ ] Auto-import and categorize transactions from synced accounts
+[ ] "Subscription Hunter" tool to find and list recurring charges
+[ ] Cash flow analysis (Sankey diagram)
+[ ] Alerts for unusual spending
+[ ] Budget alerts when trending over budget in categories impacting FIRE goal
+
+## Future Enhancements (V2+)
+[ ] Google OAuth integration
+[ ] Multi-Factor Authentication (MFA/TOTP)
+[ ] Native iOS/Android applications
+[ ] Advanced DeFi/non-custodial crypto wallet tracking
 

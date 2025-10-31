@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { UpdateTransactionDto } from "@/types/transaction";
+import { UpdateBudgetExpenseDto } from "@/types/budget-new";
 
+// PUT update expense
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -19,52 +20,66 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const body: UpdateTransactionDto = await request.json();
+    const body: UpdateBudgetExpenseDto = await request.json();
 
-    // Validate type if provided
-    if (body.type && body.type !== "income" && body.type !== "expense") {
+    if (body.amount !== undefined && body.amount < 0) {
       return NextResponse.json(
-        { error: "Type must be 'income' or 'expense'" },
+        { error: "Amount must be non-negative" },
         { status: 400 },
       );
     }
 
-    // Validate amount if provided
-    if (body.amount !== undefined && body.amount <= 0) {
-      return NextResponse.json(
-        { error: "Amount must be greater than 0" },
-        { status: 400 },
-      );
+    // If goal_id is being updated, verify it exists
+    if (body.goal_id) {
+      const { data: expense } = await supabase
+        .from("budget_expenses")
+        .select("budget_month_id")
+        .eq("id", id)
+        .single();
+
+      if (expense) {
+        const { data: goal } = await supabase
+          .from("budget_goals")
+          .select("id")
+          .eq("id", body.goal_id)
+          .eq("budget_month_id", expense.budget_month_id)
+          .single();
+
+        if (!goal) {
+          return NextResponse.json(
+            { error: "Invalid goal_id or goal not found" },
+            { status: 400 },
+          );
+        }
+      }
     }
 
     const { data, error } = await supabase
-      .from("transactions")
+      .from("budget_expenses")
       .update({
         ...body,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
-      .eq("user_id", user.id)
       .select()
       .single();
 
     if (error) {
-      console.error("Error updating transaction:", error);
       if (error.code === "PGRST116") {
         return NextResponse.json(
-          { error: "Transaction not found" },
+          { error: "Expense not found" },
           { status: 404 },
         );
       }
       return NextResponse.json(
-        { error: "Failed to update transaction" },
+        { error: "Failed to update expense" },
         { status: 500 },
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Error in PUT /api/budgets/expenses/[id]:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -72,6 +87,7 @@ export async function PUT(
   }
 }
 
+// DELETE expense
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -91,22 +107,20 @@ export async function DELETE(
     const { id } = await params;
 
     const { error } = await supabase
-      .from("transactions")
+      .from("budget_expenses")
       .delete()
-      .eq("id", id)
-      .eq("user_id", user.id);
+      .eq("id", id);
 
     if (error) {
-      console.error("Error deleting transaction:", error);
       return NextResponse.json(
-        { error: "Failed to delete transaction" },
+        { error: "Failed to delete expense" },
         { status: 500 },
       );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Error in DELETE /api/budgets/expenses/[id]:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

@@ -13,8 +13,8 @@ import {
   ReferenceLine,
 } from "recharts";
 import { Skeleton } from "@/components/Skeleton";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { useFIRECalculation, useUserPreferences } from "@/hooks/use-fire-data";
-import { formatCurrency, formatCompactNumber } from "@/lib/utils";
 
 interface ChartDataPoint {
   month: number;
@@ -54,6 +54,7 @@ function calculateProjectedNetWorth(
 export default function PathToFIChart() {
   const { data: fireData, isLoading: isFireLoading } = useFIRECalculation();
   const { data: preferences, isLoading: isPrefsLoading } = useUserPreferences();
+  const { formatCurrency, formatCompactNumber } = useCurrencyFormat();
 
   const chartData = useMemo<ChartDataPoint[]>(() => {
     if (!fireData || !preferences) return [];

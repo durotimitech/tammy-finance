@@ -15,10 +15,10 @@ import { usePathname } from "next/navigation";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "FIRE", href: "/dashboard/fire", icon: Flame },
   { name: "Assets", href: "/dashboard/assets", icon: Wallet },
   { name: "Liabilities", href: "/dashboard/liabilities", icon: CreditCard },
-  { name: "Budgets", href: "/dashboard/budgets", icon: Calculator },
-  { name: "FIRE", href: "/dashboard/fire", icon: Flame },
+  { name: "Budget", href: "/dashboard/budgets", icon: Calculator },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 

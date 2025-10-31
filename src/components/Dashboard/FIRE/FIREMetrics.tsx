@@ -73,7 +73,7 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       {metrics.map((metric, index) => {
         const Icon = metric.icon;
         return (
@@ -83,7 +83,7 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-xl p-6 border"
+            className="bg-white rounded-xl p-4 sm:p-6 border"
             style={{ borderColor: "#e5e7eb" }}
           >
             <div className="flex items-start justify-between mb-2">
@@ -94,7 +94,9 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
             <h3 className="text-sm font-medium text-gray-600 mb-1">
               {metric.label}
             </h3>
-            <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
+              {metric.value}
+            </p>
             <p className="text-xs text-gray-500 mt-1">{metric.description}</p>
           </motion.div>
         );
