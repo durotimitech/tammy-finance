@@ -57,6 +57,11 @@ export function calculateSavingsRate(
  * Calculate years to FIRE using compound interest formula
  * FV = PV(1+r)^t + PMT[((1+r)^t - 1)/r]
  * Solving for t: t = ln((FV + PMT/r) / (PV + PMT/r)) / ln(1+r)
+ *
+ * This formula accounts for:
+ * - Current net worth (PV) growing at annual return rate
+ * - Annual savings (PMT) being invested and growing
+ * - Both contributing to reach FIRE number (FV)
  */
 export function calculateYearsToFIRE(
   currentNetWorth: number,
@@ -64,14 +69,29 @@ export function calculateYearsToFIRE(
   annualSavings: number,
   annualReturn: number, // as decimal (e.g., 0.07 for 7%)
 ): number {
-  if (annualSavings <= 0 || fireNumber <= currentNetWorth) {
+  // If already at or past FIRE number
+  if (fireNumber <= currentNetWorth) {
     return 0;
   }
 
-  const remainingAmount = fireNumber - currentNetWorth;
+  // If no savings, check if current net worth alone can reach FIRE through growth
+  if (annualSavings <= 0) {
+    if (annualReturn > 0 && currentNetWorth > 0) {
+      // Calculate years for current net worth to grow to FIRE number: FV = PV(1+r)^t
+      // Solving for t: t = ln(FV/PV) / ln(1+r)
+      const years =
+        Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
+      return Math.max(0, years); // Ensure non-negative
+    } else {
+      // No savings and no returns (or zero net worth) - impossible to reach FIRE
+      return 999;
+    }
+  }
 
+  // Use compound interest formula with both current net worth and annual savings
   if (annualReturn > 0) {
-    // Use compound interest formula
+    // Formula: FV = PV(1+r)^t + PMT[((1+r)^t - 1)/r]
+    // Solving for t: t = ln((FV + PMT/r) / (PV + PMT/r)) / ln(1+r)
     const numerator = Math.log(
       (fireNumber + annualSavings / annualReturn) /
         (currentNetWorth + annualSavings / annualReturn),
@@ -79,7 +99,8 @@ export function calculateYearsToFIRE(
     const denominator = Math.log(1 + annualReturn);
     return numerator / denominator;
   } else {
-    // Simple calculation without returns
+    // Simple calculation without returns: (FIRE Number - Current Net Worth) / Annual Savings
+    const remainingAmount = fireNumber - currentNetWorth;
     return remainingAmount / annualSavings;
   }
 }

@@ -1,8 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import AssetsSection from "./AssetsSection";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
@@ -133,6 +140,19 @@ jest.mock("@/hooks/use-financial-data", () => ({
   useDeleteAsset: jest.fn(),
 }));
 
+// Mock API client for profiles
+const mockGetProfile = jest.fn().mockResolvedValue({ currency: "EUR" });
+const mockUpdateProfile = jest.fn().mockResolvedValue({});
+
+jest.mock("@/lib/api-client", () => ({
+  apiClient: {
+    profiles: {
+      get: () => mockGetProfile(),
+      update: () => mockUpdateProfile(),
+    },
+  },
+}));
+
 import {
   useAssets,
   useCreateAsset,
@@ -151,7 +171,7 @@ const mockUseDeleteAsset = useDeleteAsset as jest.MockedFunction<
   typeof useDeleteAsset
 >;
 
-// Create a wrapper component with QueryClient
+// Create a wrapper component with QueryClient and CurrencyProvider
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -160,7 +180,9 @@ const createWrapper = () => {
     },
   });
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <CurrencyProvider>{children}</CurrencyProvider>
+    </QueryClientProvider>
   );
 };
 
@@ -191,6 +213,7 @@ describe("AssetsSection", () => {
     jest.clearAllMocks();
     (fetch as jest.Mock).mockReset();
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    mockGetProfile.mockResolvedValue({ currency: "EUR" });
 
     // Default mock implementations
     mockUseCreateAsset.mockReturnValue({
@@ -222,7 +245,9 @@ describe("AssetsSection", () => {
       isLoading: false,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     await waitFor(() => {
       // Check that the assets section header is displayed
@@ -244,7 +269,9 @@ describe("AssetsSection", () => {
       isLoading: true,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     // Should show Assets header even while loading
     expect(screen.getByText("Assets")).toBeInTheDocument();
@@ -260,7 +287,9 @@ describe("AssetsSection", () => {
       isLoading: false,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     await waitFor(() => {
       expect(screen.getByText("No assets added yet")).toBeInTheDocument();
@@ -276,7 +305,9 @@ describe("AssetsSection", () => {
       isLoading: false,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     const addButton = screen.getByText("Add Asset");
     fireEvent.click(addButton);
@@ -297,7 +328,9 @@ describe("AssetsSection", () => {
       json: async () => ({ credentials: [] }),
     });
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     await waitFor(() => {
       expect(
@@ -331,7 +364,9 @@ describe("AssetsSection", () => {
       }),
     });
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     await waitFor(() => {
       expect(
@@ -346,7 +381,9 @@ describe("AssetsSection", () => {
       isLoading: false,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     await waitFor(() => {
       const connectButton = screen.getByText("Connect Account");
@@ -368,7 +405,9 @@ describe("AssetsSection", () => {
       isLoading: false,
     } as any);
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     // Wait for assets to load
     await waitFor(() => {
@@ -402,7 +441,9 @@ describe("AssetsSection", () => {
       return Promise.reject(new Error(`Unexpected API call: ${url}`));
     });
 
-    render(<AssetsSection />, { wrapper: createWrapper() });
+    await act(async () => {
+      render(<AssetsSection />, { wrapper: createWrapper() });
+    });
 
     // Initially, a skeleton should be shown in place of the callout
     await waitFor(() => {

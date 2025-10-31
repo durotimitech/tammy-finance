@@ -1,9 +1,11 @@
 # PRD Implementation Tracking
 
+Ensure to follow the rules in RULES.md for each iteration
+
 ## Epic 1: Core App & Onboarding
 [✅] Email/password authentication
 [✅] 3-step onboarding wizard (collects DOB, target retirement age, monthly expenses, monthly savings)
-[ ] Google OAuth integration
+[ ] Google OAuth integration - Marked as "Implement later"
 [ ] Multi-Factor Authentication (MFA/TOTP) - Marked as "Implement later"
 
 ## Epic 2: FIRE Dashboard (Free Tier)

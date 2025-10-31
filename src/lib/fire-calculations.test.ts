@@ -151,9 +151,24 @@ describe("FIRE Calculations", () => {
       expect(years).toBe(0);
     });
 
-    it("should return 0 when annual savings is 0", () => {
+    it("should calculate years when annual savings is 0 but net worth can grow", () => {
+      // With no savings, current net worth will grow on its own
+      // $100k at 7% to reach $1M: t = ln(1000000/100000) / ln(1.07) ≈ 34 years
       const years = calculateYearsToFIRE(100000, 1000000, 0, 0.07);
-      expect(years).toBe(0);
+      expect(years).toBeGreaterThan(0);
+      expect(years).toBeCloseTo(34.0, 0);
+    });
+
+    it("should return 999 when no savings and no returns", () => {
+      // Without savings and without investment returns, FIRE is impossible
+      const years = calculateYearsToFIRE(100000, 1000000, 0, 0);
+      expect(years).toBe(999);
+    });
+
+    it("should return 999 when no savings and zero net worth", () => {
+      // With zero net worth and no savings, FIRE is impossible
+      const years = calculateYearsToFIRE(0, 1000000, 0, 0.07);
+      expect(years).toBe(999);
     });
 
     it("should calculate years correctly without investment returns", () => {

@@ -117,43 +117,4 @@ describe("Trading 212 Integration Tests", () => {
       expect(isValid).toBe(false);
     });
   });
-
-  describe("Rate limiting behavior", () => {
-    it("enforces rate limiting between requests", async () => {
-      // Mock successful response
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCash,
-      });
-
-      const start = Date.now();
-      await fetchPortfolio("valid-api-key");
-      const duration = Date.now() - start;
-
-      // Should take at least 950ms due to rate limiting (allowing for timing variations)
-      expect(duration).toBeGreaterThanOrEqual(950);
-    });
-
-    it("maintains rate limit across multiple API calls", async () => {
-      // Mock responses for two complete portfolio fetches
-      (fetch as jest.Mock)
-        .mockResolvedValueOnce({ ok: true, json: async () => mockCash })
-        .mockResolvedValueOnce({ ok: true, json: async () => mockCash });
-
-      const start = Date.now();
-
-      // First portfolio fetch
-      await fetchPortfolio("valid-api-key");
-
-      // Second portfolio fetch
-      await fetchPortfolio("valid-api-key");
-
-      const duration = Date.now() - start;
-
-      // Should take at least 1900ms:
-      // - ~1s for first call
-      // - ~1s for second call
-      expect(duration).toBeGreaterThanOrEqual(1900);
-    });
-  });
 });

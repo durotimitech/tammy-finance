@@ -4,19 +4,12 @@ import { motion } from "framer-motion";
 import { Flame, Calendar, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/Skeleton";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { useFIRECalculation } from "@/hooks/use-fire-data";
 
 export default function FIRESummary() {
   const { data: calculation, isLoading: loading } = useFIRECalculation();
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IE", {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+  const { formatCurrency } = useCurrencyFormat();
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -73,7 +66,9 @@ export default function FIRESummary() {
             ) : (
               <>
                 <motion.p className="text-2xl font-bold text-gray-900 mb-1">
-                  {calculation.yearsToFIRE} years
+                  {calculation.yearsToFIRE >= 999
+                    ? "∞ years"
+                    : `${calculation.yearsToFIRE} years`}
                 </motion.p>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500 flex items-center gap-1">

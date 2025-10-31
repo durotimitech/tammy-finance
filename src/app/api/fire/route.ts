@@ -106,7 +106,8 @@ export async function GET() {
     // If user has set a target retirement age, check if calculated FIRE date exceeds it
     if (targetRetirementAge && currentAge) {
       const yearsUntilTargetAge = targetRetirementAge - currentAge;
-      if (yearsToFIRE > yearsUntilTargetAge) {
+      // Only adjust if target age is in the future and calculated FIRE exceeds it
+      if (yearsUntilTargetAge > 0 && yearsToFIRE > yearsUntilTargetAge) {
         // FIRE date exceeds target retirement age - use target age instead
         yearsToFIRE = yearsUntilTargetAge;
         monthsToFIRE = yearsToFIRE * 12;

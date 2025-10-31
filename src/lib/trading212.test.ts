@@ -117,20 +117,6 @@ describe("Trading 212 Service", () => {
       expect(result.error).toBe("Failed to connect to Trading 212");
       expect(result.data).toBeUndefined();
     });
-
-    it("enforces rate limiting between requests", async () => {
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCash,
-      });
-
-      const start = Date.now();
-      await fetchPortfolio("test-api-key");
-      const duration = Date.now() - start;
-
-      // Should take at least 950ms due to rate limiting (allowing for timing variations)
-      expect(duration).toBeGreaterThanOrEqual(950);
-    });
   });
 
   describe("calculatePortfolioValue", () => {

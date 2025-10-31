@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import FinancialAccordion from "@/components/ui/FinancialAccordion";
 import { Callout } from "@/components/ui/callout";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import {
   useAssets,
   useCreateAsset,
   useUpdateAsset,
   useDeleteAsset,
 } from "@/hooks/use-financial-data";
-import { formatCurrency, groupBy, calculateSubtotals } from "@/lib/utils";
+import { groupBy, calculateSubtotals } from "@/lib/utils";
 import { Asset, AssetFormData } from "@/types/financial";
 
 export default function AssetsSection() {
@@ -31,6 +32,7 @@ export default function AssetsSection() {
 
   // Use React Query hooks
   const { data: assets = [], isLoading } = useAssets();
+  const { formatCurrency } = useCurrencyFormat();
   const createAssetMutation = useCreateAsset();
   const updateAssetMutation = useUpdateAsset();
   const deleteAssetMutation = useDeleteAsset();

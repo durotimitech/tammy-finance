@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { getCurrencySymbol } from "@/lib/currency";
 import { UserLiabilityCategory } from "@/types/financial";
 
 interface AddLiabilityModalProps {
@@ -27,6 +29,8 @@ export default function AddLiabilityModal({
   isEditing = false,
   isLoading = false,
 }: AddLiabilityModalProps) {
+  const { currency } = useCurrencyFormat();
+  const currencySymbol = getCurrencySymbol(currency);
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     category: initialData?.category || "",
@@ -202,7 +206,7 @@ export default function AddLiabilityModal({
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                €
+                {currencySymbol}
               </span>
               <Input
                 id="amount_owed"

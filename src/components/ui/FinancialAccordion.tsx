@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { Asset, Liability } from "@/types/financial";
 
 type FinancialItem = Asset | Liability;
@@ -38,6 +38,7 @@ export default function FinancialAccordion<T extends FinancialItem>({
   type,
   defaultOpenCategories,
 }: FinancialAccordionProps<T>) {
+  const { formatCurrency } = useCurrencyFormat();
   const allCategories = defaultOpenCategories || Object.keys(items);
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
