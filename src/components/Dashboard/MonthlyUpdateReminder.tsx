@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, X } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { AlertCircle, X } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = "monthly-update-reminder-dismissed";
+const STORAGE_KEY = 'monthly-update-reminder-dismissed';
 
 /**
  * Check if we should show the monthly update reminder
@@ -61,29 +61,28 @@ export default function MonthlyUpdateReminder() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6"
+        className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6"
       >
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-blue-900 mb-1">
+            <h3 className="text-sm font-semibold text-green-900 mb-1">
               Monthly Balance Update Reminder
             </h3>
-            <p className="text-sm text-blue-700 mb-3">
-              It&apos;s the beginning of the month! Take a moment to update your
-              asset and liability balances to keep your net worth tracking
-              accurate.
+            <p className="text-sm text-green-700 mb-3">
+              It&apos;s the beginning of the month! Take a moment to update your asset and liability
+              balances to keep your net worth tracking accurate.
             </p>
             <div className="flex gap-3">
               <Link
                 href="/dashboard/assets"
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 transition-colors"
               >
                 Update Assets
               </Link>
               <Link
                 href="/dashboard/liabilities"
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 transition-colors"
               >
                 Update Liabilities
               </Link>
@@ -91,7 +90,7 @@ export default function MonthlyUpdateReminder() {
           </div>
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+            className="flex-shrink-0 p-1 text-green-600 hover:text-green-800 hover:bg-green-100 rounded transition-colors"
             aria-label="Dismiss reminder"
           >
             <X className="w-4 h-4" />

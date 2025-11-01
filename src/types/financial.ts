@@ -82,7 +82,7 @@ export interface HistoricalTrend {
   previous: number;
   change: number;
   changePercentage: number;
-  trend: "up" | "down" | "stable";
+  trend: 'up' | 'down' | 'stable';
 }
 
 // FIRE (Financial Independence, Retire Early) types

@@ -1,26 +1,24 @@
-"use client";
+'use client';
 
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import AddLiabilityModal from "./AddLiabilityModal";
-import { Skeleton } from "@/components/Skeleton";
-import { Button } from "@/components/ui/Button";
-import ConfirmationModal from "@/components/ui/ConfirmationModal";
-import FinancialAccordion from "@/components/ui/FinancialAccordion";
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import AddLiabilityModal from './AddLiabilityModal';
+import { Skeleton } from '@/components/Skeleton';
+import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import FinancialAccordion from '@/components/ui/FinancialAccordion';
 import {
   useLiabilities,
   useCreateLiability,
   useUpdateLiability,
   useDeleteLiability,
-} from "@/hooks/use-financial-data";
-import { formatCurrency, groupBy, calculateSubtotals } from "@/lib/utils";
-import { Liability } from "@/types/financial";
+} from '@/hooks/use-financial-data';
+import { formatCurrency, groupBy, calculateSubtotals } from '@/lib/utils';
+import { Liability } from '@/types/financial';
 
 export default function LiabilitiesSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingLiability, setEditingLiability] = useState<Liability | null>(
-    null,
-  );
+  const [editingLiability, setEditingLiability] = useState<Liability | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     liabilityId: string | null;
@@ -41,7 +39,7 @@ export default function LiabilitiesSection() {
       await createLiabilityMutation.mutateAsync(liabilityData);
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Error adding liability:", error);
+      console.error('Error adding liability:', error);
     }
   };
 
@@ -60,7 +58,7 @@ export default function LiabilitiesSection() {
       setIsModalOpen(false);
       setEditingLiability(null);
     } catch (error) {
-      console.error("Error updating liability:", error);
+      console.error('Error updating liability:', error);
     }
   };
 
@@ -93,7 +91,7 @@ export default function LiabilitiesSection() {
       await deleteLiabilityMutation.mutateAsync(deleteConfirmation.liabilityId);
       setDeleteConfirmation({ isOpen: false, liabilityId: null });
     } catch (error) {
-      console.error("Error deleting liability:", error);
+      console.error('Error deleting liability:', error);
     }
   };
 
@@ -101,29 +99,20 @@ export default function LiabilitiesSection() {
     setDeleteConfirmation({ isOpen: true, liabilityId });
   };
 
-  const totalOwed = liabilities.reduce(
-    (sum, liability) => sum + Number(liability.amount_owed),
-    0,
-  );
+  const totalOwed = liabilities.reduce((sum, liability) => sum + Number(liability.amount_owed), 0);
 
   // Group liabilities by category
-  const liabilitiesByCategory = groupBy(liabilities, "category");
+  const liabilitiesByCategory = groupBy(liabilities, 'category');
 
   // Calculate subtotals for each category
-  const categorySubtotals = calculateSubtotals(
-    liabilitiesByCategory,
-    "amount_owed",
-  );
+  const categorySubtotals = calculateSubtotals(liabilitiesByCategory, 'amount_owed');
 
   // Get all category names for default open state
   const allCategories = Object.keys(liabilitiesByCategory);
 
   return (
     <>
-      <div
-        className="bg-white rounded-xl p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
+      <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Liabilities</h2>
           <Button
@@ -140,9 +129,7 @@ export default function LiabilitiesSection() {
         <div className="mb-4 p-4 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Total Owed</span>
-            <span className="text-xl font-semibold text-red-600">
-              {formatCurrency(totalOwed)}
-            </span>
+            <span className="text-xl font-semibold text-red-600">{formatCurrency(totalOwed)}</span>
           </div>
         </div>
 
@@ -189,16 +176,12 @@ export default function LiabilitiesSection() {
             : undefined
         }
         isEditing={!!editingLiability}
-        isLoading={
-          createLiabilityMutation.isPending || updateLiabilityMutation.isPending
-        }
+        isLoading={createLiabilityMutation.isPending || updateLiabilityMutation.isPending}
       />
 
       <ConfirmationModal
         isOpen={deleteConfirmation.isOpen}
-        onClose={() =>
-          setDeleteConfirmation({ isOpen: false, liabilityId: null })
-        }
+        onClose={() => setDeleteConfirmation({ isOpen: false, liabilityId: null })}
         onConfirm={handleDeleteLiability}
         title="Delete Liability"
         message="Are you sure you want to delete this liability? This action cannot be undone."

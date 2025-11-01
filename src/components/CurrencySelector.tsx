@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Globe } from "lucide-react";
-import { useState } from "react";
-import { useCurrency } from "@/contexts/CurrencyContext";
-import { CURRENCIES, getCurrencySymbol } from "@/lib/currency";
+import { Globe } from 'lucide-react';
+import { useState } from 'react';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { CURRENCIES, getCurrencySymbol } from '@/lib/currency';
 
 export default function CurrencySelector() {
   const { currency, setCurrency, isLoading } = useCurrency();
@@ -23,7 +23,7 @@ export default function CurrencySelector() {
       await setCurrency(newCurrency);
       setIsOpen(false);
     } catch (error) {
-      console.error("Failed to update currency:", error);
+      console.error('Failed to update currency:', error);
       // Error is already handled in context (reverts state)
     } finally {
       setIsUpdating(false);
@@ -78,7 +78,7 @@ export default function CurrencySelector() {
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
             onKeyDown={(e) => {
-              if (e.key === "Escape") {
+              if (e.key === 'Escape') {
                 setIsOpen(false);
               }
             }}
@@ -94,8 +94,8 @@ export default function CurrencySelector() {
                   onClick={() => handleCurrencyChange(curr.code)}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center justify-between ${
                     curr.code === currency
-                      ? "bg-secondary/10 text-secondary font-medium"
-                      : "text-gray-700"
+                      ? 'bg-secondary/10 text-secondary font-medium'
+                      : 'text-gray-700'
                   }`}
                 >
                   <span>{curr.name}</span>

@@ -1,21 +1,17 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { getCurrencySymbol } from "@/lib/currency";
-import { UserLiabilityCategory } from "@/types/financial";
+import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { getCurrencySymbol } from '@/lib/currency';
+import { UserLiabilityCategory } from '@/types/financial';
 
 interface AddLiabilityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (liability: {
-    name: string;
-    category: string;
-    amount_owed: number;
-  }) => void;
+  onSubmit: (liability: { name: string; category: string; amount_owed: number }) => void;
   initialData?: { name: string; category: string; amount_owed: number };
   isEditing?: boolean;
   isLoading?: boolean;
@@ -32,12 +28,12 @@ export default function AddLiabilityModal({
   const { currency } = useCurrencyFormat();
   const currencySymbol = getCurrencySymbol(currency);
   const [formData, setFormData] = useState({
-    name: initialData?.name || "",
-    category: initialData?.category || "",
-    amount_owed: initialData?.amount_owed?.toString() || "",
+    name: initialData?.name || '',
+    category: initialData?.category || '',
+    amount_owed: initialData?.amount_owed?.toString() || '',
   });
   const [categories, setCategories] = useState<UserLiabilityCategory[]>([]);
-  const [newCategory, setNewCategory] = useState("");
+  const [newCategory, setNewCategory] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   useEffect(() => {
@@ -49,9 +45,9 @@ export default function AddLiabilityModal({
       });
     } else {
       setFormData({
-        name: "",
-        category: "",
-        amount_owed: "",
+        name: '',
+        category: '',
+        amount_owed: '',
       });
     }
   }, [initialData]);
@@ -64,13 +60,13 @@ export default function AddLiabilityModal({
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("/api/liabilities/categories");
+      const response = await fetch('/api/liabilities/categories');
       if (response.ok) {
         const data = await response.json();
         setCategories(data.categories || []);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error('Error fetching categories:', error);
     }
   };
 
@@ -79,8 +75,7 @@ export default function AddLiabilityModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Use new category if user is adding one
-    const categoryToSubmit =
-      isAddingCategory && newCategory ? newCategory : formData.category;
+    const categoryToSubmit = isAddingCategory && newCategory ? newCategory : formData.category;
     onSubmit({
       name: formData.name,
       category: categoryToSubmit,
@@ -88,23 +83,23 @@ export default function AddLiabilityModal({
     });
     if (!isEditing) {
       setFormData({
-        name: "",
-        category: "",
-        amount_owed: "",
+        name: '',
+        category: '',
+        amount_owed: '',
       });
-      setNewCategory("");
+      setNewCategory('');
       setIsAddingCategory(false);
     }
   };
 
   const handleCategoryChange = (value: string) => {
-    if (value === "add_new") {
+    if (value === 'add_new') {
       setIsAddingCategory(true);
-      setFormData({ ...formData, category: "" });
+      setFormData({ ...formData, category: '' });
     } else {
       setIsAddingCategory(false);
       setFormData({ ...formData, category: value });
-      setNewCategory("");
+      setNewCategory('');
     }
   };
 
@@ -113,7 +108,7 @@ export default function AddLiabilityModal({
       <div className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">
-            {isEditing ? "Edit Liability" : "Add New Liability"}
+            {isEditing ? 'Edit Liability' : 'Add New Liability'}
           </h2>
           <button
             onClick={onClose}
@@ -127,29 +122,21 @@ export default function AddLiabilityModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Liability Name
             </label>
             <Input
               id="name"
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Chase Credit Card"
               required
             />
           </div>
 
           <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
             {!isAddingCategory ? (
@@ -183,10 +170,10 @@ export default function AddLiabilityModal({
                   type="button"
                   onClick={() => {
                     setIsAddingCategory(false);
-                    setNewCategory("");
+                    setNewCategory('');
                     setFormData({
                       ...formData,
-                      category: categories[0]?.category_name || "",
+                      category: categories[0]?.category_name || '',
                     });
                   }}
                   className="text-sm text-gray-500 hover:text-gray-700"
@@ -198,10 +185,7 @@ export default function AddLiabilityModal({
           </div>
 
           <div>
-            <label
-              htmlFor="amount_owed"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="amount_owed" className="block text-sm font-medium text-gray-700 mb-2">
               Amount Owed
             </label>
             <div className="relative">
@@ -213,9 +197,7 @@ export default function AddLiabilityModal({
                 type="number"
                 step="0.01"
                 value={formData.amount_owed}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount_owed: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount_owed: e.target.value })}
                 className="pl-8"
                 placeholder="0.00"
                 min="0"
@@ -234,13 +216,8 @@ export default function AddLiabilityModal({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="default"
-              className="flex-1"
-              loading={isLoading}
-            >
-              {isEditing ? "Update" : "Add Liability"}
+            <Button type="submit" variant="default" className="flex-1" loading={isLoading}>
+              {isEditing ? 'Update' : 'Add Liability'}
             </Button>
           </div>
         </form>

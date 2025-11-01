@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, TrendingDown } from "lucide-react";
-import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/Button";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Edit2, Trash2, TrendingDown } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import {
   useCurrentBudget,
   useCreateBudgetExpense,
   useUpdateBudgetExpense,
   useDeleteBudgetExpense,
-} from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { getCurrencySymbol } from "@/lib/currency";
-import { BudgetExpense, CreateBudgetExpenseDto } from "@/types/budget-new";
+} from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { getCurrencySymbol } from '@/lib/currency';
+import { BudgetExpense, CreateBudgetExpenseDto } from '@/types/budget-new';
 
 export default function ExpensesSection() {
   const { data: budget, isLoading } = useCurrentBudget();
@@ -22,15 +23,14 @@ export default function ExpensesSection() {
   const { formatCurrency } = useCurrencyFormat();
 
   const [showForm, setShowForm] = useState(false);
-  const [editingExpense, setEditingExpense] = useState<BudgetExpense | null>(
-    null,
-  );
+  const [editingExpense, setEditingExpense] = useState<BudgetExpense | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
 
   const totalExpenses = useMemo(
     () =>
       budget?.goals.reduce(
-        (sum, goal) =>
-          sum + goal.expenses.reduce((s, exp) => s + Number(exp.amount), 0),
+        (sum, goal) => sum + goal.expenses.reduce((s, exp) => s + Number(exp.amount), 0),
         0,
       ) || 0,
     [budget],
@@ -49,7 +49,7 @@ export default function ExpensesSection() {
       }
       setShowForm(false);
     } catch (error) {
-      console.error("Error saving expense:", error);
+      console.error('Error saving expense:', error);
     }
   };
 
@@ -58,26 +58,29 @@ export default function ExpensesSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this expense?")) {
-      await deleteExpense.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setExpenseToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (expenseToDelete) {
+      await deleteExpense.mutateAsync(expenseToDelete);
+      setExpenseToDelete(null);
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
     });
   };
 
   if (isLoading) {
     return (
-      <div
-        className="bg-white rounded-xl p-4 sm:p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
+      <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <div className="text-center py-8 text-gray-500">Loading...</div>
       </div>
     );
@@ -92,16 +95,11 @@ export default function ExpensesSection() {
     ) || [];
 
   return (
-    <div
-      className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
-    >
+    <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
       <div className="flex justify-between items-center mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Expenses</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Total: {formatCurrency(totalExpenses)}
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Total: {formatCurrency(totalExpenses)}</p>
         </div>
         <Button
           onClick={() => {
@@ -119,9 +117,7 @@ export default function ExpensesSection() {
 
       {(!budget || budget.goals.length === 0) && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            Create budget goals first before adding expenses
-          </p>
+          <p className="text-sm text-blue-800">Create budget goals first before adding expenses</p>
         </div>
       )}
 
@@ -149,9 +145,7 @@ export default function ExpensesSection() {
                       <TrendingDown className="w-4 h-4 text-red-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">
-                        {expense.name}
-                      </p>
+                      <p className="font-medium text-gray-900">{expense.name}</p>
                       <p className="text-sm text-gray-500">
                         {expense.goal_name} • {formatDate(expense.expense_date)}
                       </p>
@@ -197,6 +191,20 @@ export default function ExpensesSection() {
           isLoading={createExpense.isPending || updateExpense.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setExpenseToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Expense"
+        message="Are you sure you want to delete this expense? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }
@@ -209,21 +217,14 @@ interface ExpenseFormProps {
   isLoading: boolean;
 }
 
-function ExpenseForm({
-  expense,
-  goals,
-  onClose,
-  onSubmit,
-  isLoading,
-}: ExpenseFormProps) {
+function ExpenseForm({ expense, goals, onClose, onSubmit, isLoading }: ExpenseFormProps) {
   const { currency } = useCurrencyFormat();
   const currencySymbol = getCurrencySymbol(currency);
   const [formData, setFormData] = useState({
-    goal_id: expense?.goal_id || goals[0]?.id || "",
-    name: expense?.name || "",
-    amount: expense?.amount?.toString() || "",
-    expense_date:
-      expense?.expense_date || new Date().toISOString().split("T")[0],
+    goal_id: expense?.goal_id || goals[0]?.id || '',
+    name: expense?.name || '',
+    amount: expense?.amount?.toString() || '',
+    expense_date: expense?.expense_date || new Date().toISOString().split('T')[0],
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -244,23 +245,16 @@ function ExpenseForm({
         className="bg-white rounded-xl p-6 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
-        <h4 className="text-lg font-semibold mb-4">
-          {expense ? "Edit Expense" : "Add Expense"}
-        </h4>
+        <h4 className="text-lg font-semibold mb-4">{expense ? 'Edit Expense' : 'Add Expense'}</h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="expense-goal"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="expense-goal" className="block text-sm font-medium text-gray-700 mb-1">
               Category
             </label>
             <select
               id="expense-goal"
               value={formData.goal_id}
-              onChange={(e) =>
-                setFormData({ ...formData, goal_id: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, goal_id: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             >
@@ -272,19 +266,14 @@ function ExpenseForm({
             </select>
           </div>
           <div>
-            <label
-              htmlFor="expense-name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="expense-name" className="block text-sm font-medium text-gray-700 mb-1">
               Name
             </label>
             <input
               id="expense-name"
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Groceries, Rent, Coffee"
               required
@@ -305,9 +294,7 @@ function ExpenseForm({
                 id="expense-amount"
                 type="number"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="0.00"
                 step="0.01"
@@ -317,31 +304,21 @@ function ExpenseForm({
             </div>
           </div>
           <div>
-            <label
-              htmlFor="expense-date"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 mb-1">
               Date
             </label>
             <input
               id="expense-date"
               type="date"
               value={formData.expense_date}
-              onChange={(e) =>
-                setFormData({ ...formData, expense_date: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, expense_date: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {expense ? "Update" : "Add Expense"}
+            <Button type="submit" className="flex-1" disabled={isLoading} loading={isLoading}>
+              {expense ? 'Update' : 'Add Expense'}
             </Button>
             <Button
               type="button"

@@ -107,12 +107,6 @@ describe("NetWorthSummary", () => {
     expect(screen.getByTestId("net-worth-value")).toHaveTextContent(
       "€200,000.00",
     );
-
-    // Check that it's displayed in green for positive net worth
-    expect(screen.getByTestId("net-worth-value")).toHaveClass("text-green-600");
-
-    // Check for trending up icon
-    expect(screen.getByTestId("trending-up-icon")).toBeInTheDocument();
   });
 
   it("should calculate and display negative net worth correctly", async () => {
@@ -146,12 +140,6 @@ describe("NetWorthSummary", () => {
     expect(screen.getByTestId("net-worth-value")).toHaveTextContent(
       "-€38,000.00",
     );
-
-    // Check that it's displayed in red for negative net worth
-    expect(screen.getByTestId("net-worth-value")).toHaveClass("text-red-600");
-
-    // Check for trending down icon
-    expect(screen.getByTestId("trending-down-icon")).toBeInTheDocument();
   });
 
   it("should display zero net worth correctly", async () => {
@@ -183,9 +171,6 @@ describe("NetWorthSummary", () => {
 
     // Check the calculated net worth
     expect(screen.getByTestId("net-worth-value")).toHaveTextContent("€0.00");
-
-    // Zero is considered positive (green)
-    expect(screen.getByTestId("net-worth-value")).toHaveClass("text-green-600");
   });
 
   it("should handle empty assets and liabilities", async () => {

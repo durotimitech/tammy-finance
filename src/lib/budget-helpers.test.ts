@@ -195,6 +195,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           const chain: any = {};
           chain.select = jest.fn().mockReturnValue(chain);
           chain.eq = jest.fn().mockReturnValue(chain);
+          chain.limit = jest.fn().mockResolvedValue({ data: [], error: null });
           chain.single = jest.fn().mockImplementation(() => {
             callCount++;
             if (callCount === 1) {
@@ -340,64 +341,57 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           if (table === "income_sources") {
             incomeCallCount++;
             const chain: any = {};
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockReturnValue(chain);
-            chain.limit = jest.fn().mockImplementation(() => {
-              // Check if current month has income (returns empty)
+            
+            const incomeChain: any = {};
+            incomeChain.select = jest.fn().mockReturnValue(incomeChain);
+            incomeChain.eq = jest.fn((field: string, value: any) => {
+              // Support both chained .limit() and direct resolution
+              if (field === "budget_month_id" && value === "existing-budget-id") {
+                // Checking if existing budget has income - return chain for .limit()
+                return incomeChain;
+              }
+              // Getting previous month income or new income - return data
               return Promise.resolve({
-                data: [],
+                data: previousMonthIncome,
                 error: null,
               });
             });
-            chain.insert = jest.fn().mockResolvedValue({
+            incomeChain.limit = jest.fn().mockResolvedValue({
+              data: [],
+              error: null,
+            });
+            incomeChain.insert = jest.fn().mockResolvedValue({
               data: null,
               error: null,
             });
-
-            if (incomeCallCount === 2) {
-              // Get previous month's income
-              chain.select = jest.fn().mockReturnValue(chain);
-              chain.eq = jest.fn().mockResolvedValue({
-                data: previousMonthIncome,
-                error: null,
-              });
-            } else if (incomeCallCount === 3) {
-              // Get new income for goal calculation
-              chain.select = jest.fn().mockReturnValue(chain);
-              chain.eq = jest.fn().mockResolvedValue({
-                data: previousMonthIncome,
-                error: null,
-              });
-            }
-            return chain;
+            return incomeChain;
           }
 
           if (table === "budget_goals") {
             goalsCallCount++;
-            const chain: any = {};
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockReturnValue(chain);
-            chain.limit = jest.fn().mockImplementation(() => {
-              // Check if current month has goals (returns empty)
+            const goalsChain: any = {};
+            goalsChain.select = jest.fn().mockReturnValue(goalsChain);
+            goalsChain.eq = jest.fn((field: string, value: any) => {
+              // Support both chained .limit() and direct resolution
+              if (field === "budget_month_id" && value === "existing-budget-id") {
+                // Checking if existing budget has goals - return chain for .limit()
+                return goalsChain;
+              }
+              // Getting previous month goals - return data
               return Promise.resolve({
-                data: [],
-                error: null,
-              });
-            });
-            chain.insert = jest.fn().mockResolvedValue({
-              data: null,
-              error: null,
-            });
-
-            if (goalsCallCount === 2) {
-              // Get previous month's goals
-              chain.select = jest.fn().mockReturnValue(chain);
-              chain.eq = jest.fn().mockResolvedValue({
                 data: previousMonthGoals,
                 error: null,
               });
-            }
-            return chain;
+            });
+            goalsChain.limit = jest.fn().mockResolvedValue({
+              data: [],
+              error: null,
+            });
+            goalsChain.insert = jest.fn().mockResolvedValue({
+              data: null,
+              error: null,
+            });
+            return goalsChain;
           }
 
           return {};
@@ -533,53 +527,85 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.update = jest.fn().mockReturnValue(chain);
           chain.limit = jest.fn().mockResolvedValue({
             data: [],
             error: null,
           });
 
           if (table === "income_sources") {
-            // Get previous month's income
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockResolvedValue({
-              data: previousMonthIncome,
+            // Create chain that supports both patterns
+            const incomeChain: any = {};
+            let selectedFields: string = "";
+            incomeChain.select = jest.fn((fields: string) => {
+              selectedFields = fields;
+              return incomeChain;
+            });
+            incomeChain.eq = jest.fn((field: string, value: any) => {
+              // If selecting "id" and budget_month_id is new-budget-id, return chain for .limit()
+              // This is the check for existing income
+              if (field === "budget_month_id" && value === "new-budget-id" && selectedFields === "id") {
+                return incomeChain;
+              }
+              // If selecting "amount" and budget_month_id is new-budget-id, return the data
+              // This is for calculating goal allocations
+              if (field === "budget_month_id" && value === "new-budget-id" && selectedFields === "amount") {
+                return Promise.resolve({
+                  data: previousMonthIncome,
+                  error: null,
+                });
+              }
+              // Otherwise, return previous month income data
+              return Promise.resolve({
+                data: previousMonthIncome,
+                error: null,
+              });
+            });
+            incomeChain.limit = jest.fn().mockResolvedValue({
+              data: [],
               error: null,
             });
-            chain.insert = jest.fn().mockResolvedValue({
+            incomeChain.insert = jest.fn().mockResolvedValue({
               data: null,
               error: null,
             });
-
-            // When getting income for goal calculation
-            return {
-              select: jest.fn().mockReturnValue(chain),
-              eq: jest.fn().mockResolvedValue({
-                data: previousMonthIncome,
-                error: null,
-              }),
-              insert: jest.fn().mockResolvedValue({
-                data: null,
-                error: null,
-              }),
-            };
+            
+            return incomeChain;
           }
 
           if (table === "budget_goals") {
-            // Get previous month's goals
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockResolvedValue({
-              data: previousMonthGoals,
+            // Create chain that supports both patterns
+            const goalsChain: any = {};
+            goalsChain.select = jest.fn().mockReturnValue(goalsChain);
+            goalsChain.eq = jest.fn().mockReturnValue(goalsChain);
+            goalsChain.limit = jest.fn().mockResolvedValue({
+              data: [],
               error: null,
             });
+            
+            // Override eq to be smart about returning the chain or resolving
+            goalsChain.eq = jest.fn((field: string, value: any) => {
+              // If it's checking for existing goals on new budget, return chain for .limit()
+              if (field === "budget_month_id" && value === "new-budget-id") {
+                return goalsChain;
+              }
+              // If it's getting previous month goals, resolve with data
+              return Promise.resolve({
+                data: previousMonthGoals,
+                error: null,
+              });
+            });
+            
             // Insert new goals
-            chain.insert = jest.fn().mockImplementation((data) => {
+            goalsChain.insert = jest.fn().mockImplementation((data) => {
               insertedGoals = data;
               return Promise.resolve({
                 data: null,
                 error: null,
               });
             });
-            return chain;
+            
+            return goalsChain;
           }
 
           return chain;
@@ -616,6 +642,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           const chain: any = {};
           chain.select = jest.fn().mockReturnValue(chain);
           chain.eq = jest.fn().mockReturnValue(chain);
+          chain.limit = jest.fn().mockResolvedValue({ data: [], error: null });
           chain.single = jest.fn().mockImplementation(() => {
             callCount++;
             if (callCount === 1) {
@@ -644,21 +671,43 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           chain.insert = jest.fn().mockReturnValue(chain);
 
           if (table === "income_sources") {
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockResolvedValue({
-              data: [], // Empty
+            const incomeChain: any = {};
+            incomeChain.select = jest.fn().mockReturnValue(incomeChain);
+            incomeChain.eq = jest.fn((field: string, value: any) => {
+              // Support both chained .limit() and direct resolution
+              if (field === "budget_month_id" && value === "new-budget-id") {
+                return incomeChain;
+              }
+              return Promise.resolve({
+                data: [], // Empty
+                error: null,
+              });
+            });
+            incomeChain.limit = jest.fn().mockResolvedValue({
+              data: [],
               error: null,
             });
-            return chain;
+            return incomeChain;
           }
 
           if (table === "budget_goals") {
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockResolvedValue({
-              data: [], // Empty
+            const goalsChain: any = {};
+            goalsChain.select = jest.fn().mockReturnValue(goalsChain);
+            goalsChain.eq = jest.fn((field: string, value: any) => {
+              // Support both chained .limit() and direct resolution
+              if (field === "budget_month_id" && value === "new-budget-id") {
+                return goalsChain;
+              }
+              return Promise.resolve({
+                data: [], // Empty
+                error: null,
+              });
+            });
+            goalsChain.limit = jest.fn().mockResolvedValue({
+              data: [],
               error: null,
             });
-            return chain;
+            return goalsChain;
           }
 
           return chain;
@@ -688,6 +737,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           const chain: any = {};
           chain.select = jest.fn().mockReturnValue(chain);
           chain.eq = jest.fn().mockReturnValue(chain);
+          chain.limit = jest.fn().mockResolvedValue({ data: [], error: null });
           chain.single = jest.fn().mockImplementation(() => {
             callCount++;
             if (callCount === 1) {
@@ -716,16 +766,27 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
           chain.insert = jest.fn().mockReturnValue(chain);
 
           if (table === "income_sources") {
-            chain.select = jest.fn().mockReturnValue(chain);
-            chain.eq = jest.fn().mockResolvedValue({
-              data: [{ name: "Salary", category: "9-to-5", amount: 4000 }],
+            const incomeChain: any = {};
+            incomeChain.select = jest.fn().mockReturnValue(incomeChain);
+            incomeChain.eq = jest.fn((field: string, value: any) => {
+              // Support both chained .limit() and direct resolution
+              if (field === "budget_month_id" && value === "new-budget-id") {
+                return incomeChain;
+              }
+              return Promise.resolve({
+                data: [{ name: "Salary", category: "9-to-5", amount: 4000 }],
+                error: null,
+              });
+            });
+            incomeChain.limit = jest.fn().mockResolvedValue({
+              data: [],
               error: null,
             });
-            chain.insert = jest.fn().mockResolvedValue({
+            incomeChain.insert = jest.fn().mockResolvedValue({
               data: null,
               error: { message: "Insert failed" }, // Simulate error
             });
-            return chain;
+            return incomeChain;
           }
 
           return chain;

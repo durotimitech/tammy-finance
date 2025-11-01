@@ -1,16 +1,16 @@
-export type BudgetPeriod = "weekly" | "monthly" | "yearly";
+export type BudgetPeriod = 'weekly' | 'monthly' | 'yearly';
 
 export type BudgetCategory =
-  | "housing"
-  | "transportation"
-  | "food"
-  | "utilities"
-  | "healthcare"
-  | "entertainment"
-  | "shopping"
-  | "education"
-  | "savings"
-  | "other";
+  | 'housing'
+  | 'transportation'
+  | 'food'
+  | 'utilities'
+  | 'healthcare'
+  | 'entertainment'
+  | 'shopping'
+  | 'education'
+  | 'savings'
+  | 'other';
 
 export interface Budget {
   id: string;

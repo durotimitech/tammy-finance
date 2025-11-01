@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import Header from "@/components/Header";
-import ConnectAccountsSection from "@/components/Settings/ConnectAccountsSection";
-import Sidebar from "@/components/Sidebar";
-import DashboardHeaderText from "@/components/ui/DashboardHeaderText";
+import { motion } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import Header from '@/components/Header';
+import ConnectAccountsSection from '@/components/Settings/ConnectAccountsSection';
+import Sidebar from '@/components/Sidebar';
+import DashboardHeaderText from '@/components/ui/DashboardHeaderText';
 
 export default function SettingsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function SettingsPage() {
           className="fixed inset-0 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
           onKeyDown={(e) => {
-            if (e.key === "Escape") setIsSidebarOpen(false);
+            if (e.key === 'Escape') setIsSidebarOpen(false);
           }}
           role="button"
           tabIndex={0}
@@ -30,7 +30,7 @@ export default function SettingsPage() {
       {/* Sidebar */}
       <div
         className={`${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } fixed lg:static inset-y-0 left-0 z-50 lg:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <Sidebar onClose={() => setIsSidebarOpen(false)} />
@@ -44,15 +44,9 @@ export default function SettingsPage() {
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
           >
-            {isSidebarOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-          <span className="text-xl font-semibold font-pirata text-secondary">
-            tammy
-          </span>
+          <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
           <div className="w-10" /> {/* Spacer for center alignment */}
         </div>
 

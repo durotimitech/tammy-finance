@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, DollarSign } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Edit2, Trash2, DollarSign } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import {
   useIncomeSources,
   useCreateIncomeSource,
   useUpdateIncomeSource,
   useDeleteIncomeSource,
-} from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { getCurrencySymbol } from "@/lib/currency";
-import { IncomeSource, CreateIncomeSourceDto } from "@/types/budget-new";
+} from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { getCurrencySymbol } from '@/lib/currency';
+import { IncomeSource, CreateIncomeSourceDto } from '@/types/budget-new';
 
 export default function IncomeSection() {
   const { data: incomeSources = [], isLoading } = useIncomeSources();
@@ -23,11 +24,10 @@ export default function IncomeSection() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingIncome, setEditingIncome] = useState<IncomeSource | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [incomeToDelete, setIncomeToDelete] = useState<string | null>(null);
 
-  const totalIncome = incomeSources.reduce(
-    (sum, income) => sum + Number(income.amount),
-    0,
-  );
+  const totalIncome = incomeSources.reduce((sum, income) => sum + Number(income.amount), 0);
 
   const handleSubmit = async (data: CreateIncomeSourceDto) => {
     try {
@@ -42,7 +42,7 @@ export default function IncomeSection() {
       }
       setShowForm(false);
     } catch (error) {
-      console.error("Error saving income source:", error);
+      console.error('Error saving income source:', error);
     }
   };
 
@@ -51,23 +51,24 @@ export default function IncomeSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this income source?")) {
-      await deleteIncome.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setIncomeToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (incomeToDelete) {
+      await deleteIncome.mutateAsync(incomeToDelete);
+      setIncomeToDelete(null);
     }
   };
 
   return (
-    <div
-      className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
-    >
+    <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
       <div className="flex justify-between items-center mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Income</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Total: {formatCurrency(totalIncome)}
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Total: {formatCurrency(totalIncome)}</p>
         </div>
         <Button
           onClick={() => {
@@ -151,6 +152,20 @@ export default function IncomeSection() {
           isLoading={createIncome.isPending || updateIncome.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setIncomeToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Income Source"
+        message="Are you sure you want to delete this income source? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }
@@ -166,9 +181,9 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
   const { currency } = useCurrencyFormat();
   const currencySymbol = getCurrencySymbol(currency);
   const [formData, setFormData] = useState({
-    name: income?.name || "",
-    category: income?.category || "",
-    amount: income?.amount?.toString() || "",
+    name: income?.name || '',
+    category: income?.category || '',
+    amount: income?.amount?.toString() || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -189,23 +204,18 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <h4 className="text-lg font-semibold mb-4">
-          {income ? "Edit Income Source" : "Add Income Source"}
+          {income ? 'Edit Income Source' : 'Add Income Source'}
         </h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="income-name"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="income-name" className="block text-sm font-medium text-gray-700 mb-1">
               Name
             </label>
             <input
               id="income-name"
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Salary, Freelance, Dividends"
               required
@@ -222,19 +232,14 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
               id="income-category"
               type="text"
               value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., 9-to-5, Side Hustle, Investment"
               required
             />
           </div>
           <div>
-            <label
-              htmlFor="income-amount"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="income-amount" className="block text-sm font-medium text-gray-700 mb-1">
               Amount
             </label>
             <div className="relative">
@@ -245,9 +250,7 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
                 id="income-amount"
                 type="number"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="0.00"
                 step="0.01"
@@ -257,13 +260,8 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
             </div>
           </div>
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {income ? "Update" : "Add Income"}
+            <Button type="submit" className="flex-1" disabled={isLoading} loading={isLoading}>
+              {income ? 'Update' : 'Add Income'}
             </Button>
             <Button
               type="button"

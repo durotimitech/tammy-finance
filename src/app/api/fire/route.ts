@@ -1,11 +1,7 @@
-import { NextResponse } from "next/server";
-import {
-  calculateAge,
-  calculateYearsToFIRE,
-  calculateFIRENumber,
-} from "@/lib/fire-calculations";
-import { createClient } from "@/lib/supabase/server";
-import { FIRECalculation } from "@/types/financial";
+import { NextResponse } from 'next/server';
+import { calculateAge, calculateYearsToFIRE, calculateFIRENumber } from '@/lib/fire-calculations';
+import { createClient } from '@/lib/supabase/server';
+import { FIRECalculation } from '@/types/financial';
 
 export async function GET() {
   try {
@@ -18,22 +14,19 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Fetch user profile for all FIRE calculation data
     const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", user.id)
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
       .single();
 
-    if (profileError && profileError.code !== "PGRST116") {
-      console.error("Error fetching profile:", profileError);
-      return NextResponse.json(
-        { error: "Failed to fetch profile" },
-        { status: 500 },
-      );
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('Error fetching profile:', profileError);
+      return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
     }
 
     // Use profile data with defaults if profile doesn't exist
@@ -43,46 +36,34 @@ export async function GET() {
     const investmentReturn = profile?.investment_return || 7.0;
 
     // Get age and target retirement age from profile
-    const currentAge = profile?.date_of_birth
-      ? calculateAge(profile.date_of_birth)
-      : null;
+    const currentAge = profile?.date_of_birth ? calculateAge(profile.date_of_birth) : null;
     const targetRetirementAge = profile?.target_retirement_age || null;
 
     // Fetch current net worth
     const { data: assets, error: assetsError } = await supabase
-      .from("assets")
-      .select("value")
-      .eq("user_id", user.id);
+      .from('assets')
+      .select('value')
+      .eq('user_id', user.id);
 
     if (assetsError) {
-      console.error("Error fetching assets:", assetsError);
-      return NextResponse.json(
-        { error: "Failed to fetch assets" },
-        { status: 500 },
-      );
+      console.error('Error fetching assets:', assetsError);
+      return NextResponse.json({ error: 'Failed to fetch assets' }, { status: 500 });
     }
 
     const { data: liabilities, error: liabilitiesError } = await supabase
-      .from("liabilities")
-      .select("amount_owed")
-      .eq("user_id", user.id);
+      .from('liabilities')
+      .select('amount_owed')
+      .eq('user_id', user.id);
 
     if (liabilitiesError) {
-      console.error("Error fetching liabilities:", liabilitiesError);
-      return NextResponse.json(
-        { error: "Failed to fetch liabilities" },
-        { status: 500 },
-      );
+      console.error('Error fetching liabilities:', liabilitiesError);
+      return NextResponse.json({ error: 'Failed to fetch liabilities' }, { status: 500 });
     }
 
     // Calculate net worth
-    const totalAssets =
-      assets?.reduce((sum, asset) => sum + Number(asset.value), 0) || 0;
+    const totalAssets = assets?.reduce((sum, asset) => sum + Number(asset.value), 0) || 0;
     const totalLiabilities =
-      liabilities?.reduce(
-        (sum, liability) => sum + Number(liability.amount_owed),
-        0,
-      ) || 0;
+      liabilities?.reduce((sum, liability) => sum + Number(liability.amount_owed), 0) || 0;
     const currentNetWorth = totalAssets - totalLiabilities;
 
     // Calculate FIRE metrics
@@ -139,10 +120,7 @@ export async function GET() {
 
     return NextResponse.json(fireCalculation);
   } catch (error) {
-    console.error("Unexpected error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    console.error('Unexpected error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

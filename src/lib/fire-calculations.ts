@@ -11,10 +11,7 @@ export function calculateAge(dateOfBirth: string): number {
   const birthDate = new Date(dateOfBirth);
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
   return age;
@@ -24,20 +21,14 @@ export function calculateAge(dateOfBirth: string): number {
  * Calculate FIRE Number: Annual Expenses * (100 / Withdrawal Rate)
  * For 4% withdrawal rate, this equals Annual Expenses * 25
  */
-export function calculateFIRENumber(
-  annualExpenses: number,
-  withdrawalRate: number,
-): number {
+export function calculateFIRENumber(annualExpenses: number, withdrawalRate: number): number {
   return annualExpenses * (100 / withdrawalRate);
 }
 
 /**
  * Calculate FI Percentage: (Current Net Worth / FIRE Number) * 100
  */
-export function calculateFIPercentage(
-  currentNetWorth: number,
-  fireNumber: number,
-): number {
+export function calculateFIPercentage(currentNetWorth: number, fireNumber: number): number {
   if (fireNumber === 0) return 0;
   return Math.min((currentNetWorth / fireNumber) * 100, 100);
 }
@@ -45,10 +36,7 @@ export function calculateFIPercentage(
 /**
  * Calculate Savings Rate: (Monthly Savings / Monthly Income) * 100
  */
-export function calculateSavingsRate(
-  monthlySavings: number,
-  monthlyIncome: number,
-): number {
+export function calculateSavingsRate(monthlySavings: number, monthlyIncome: number): number {
   if (monthlyIncome === 0) return 0;
   return (monthlySavings / monthlyIncome) * 100;
 }
@@ -79,8 +67,7 @@ export function calculateYearsToFIRE(
     if (annualReturn > 0 && currentNetWorth > 0) {
       // Calculate years for current net worth to grow to FIRE number: FV = PV(1+r)^t
       // Solving for t: t = ln(FV/PV) / ln(1+r)
-      const years =
-        Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
+      const years = Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
       return Math.max(0, years); // Ensure non-negative
     } else {
       // No savings and no returns (or zero net worth) - impossible to reach FIRE

@@ -1,25 +1,22 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Target } from "lucide-react";
-import React, { useState, useMemo, useEffect } from "react";
-import { Button } from "@/components/ui/Button";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Edit2, Trash2, Target } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import {
   useBudgetGoals,
   useIncomeSources,
   useCreateBudgetGoal,
   useUpdateBudgetGoal,
   useDeleteBudgetGoal,
-} from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { BudgetGoal, CreateBudgetGoalDto } from "@/types/budget-new";
+} from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { BudgetGoal, CreateBudgetGoalDto } from '@/types/budget-new';
 
 export default function GoalsSection() {
-  const {
-    data: goals = [],
-    isLoading: goalsLoading,
-    refetch: refetchGoals,
-  } = useBudgetGoals();
+  const { data: goals = [], isLoading: goalsLoading, refetch: refetchGoals } = useBudgetGoals();
   const { data: incomeSources = [] } = useIncomeSources();
 
   // Refetch goals when income sources change (in case goals were copied from previous month)
@@ -40,11 +37,10 @@ export default function GoalsSection() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<BudgetGoal | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 
-  const totalIncome = incomeSources.reduce(
-    (sum, income) => sum + Number(income.amount),
-    0,
-  );
+  const totalIncome = incomeSources.reduce((sum, income) => sum + Number(income.amount), 0);
 
   const totalPercentage = useMemo(
     () => goals.reduce((sum, goal) => sum + Number(goal.percentage), 0),
@@ -64,7 +60,7 @@ export default function GoalsSection() {
       }
       setShowForm(false);
     } catch (error) {
-      console.error("Error saving budget goal:", error);
+      console.error('Error saving budget goal:', error);
     }
   };
 
@@ -73,17 +69,20 @@ export default function GoalsSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this budget goal?")) {
-      await deleteGoal.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setGoalToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (goalToDelete) {
+      await deleteGoal.mutateAsync(goalToDelete);
+      setGoalToDelete(null);
     }
   };
 
   return (
-    <div
-      className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
-    >
+    <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
       <div className="flex justify-between items-center mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Budget Goals</h3>
@@ -91,7 +90,7 @@ export default function GoalsSection() {
             Total: {totalPercentage.toFixed(1)}%
             {totalPercentage !== 100 && (
               <span className="ml-2 text-orange-600">
-                ({totalPercentage > 100 ? "Over" : "Under"} 100%)
+                ({totalPercentage > 100 ? 'Over' : 'Under'} 100%)
               </span>
             )}
           </p>
@@ -146,12 +145,9 @@ export default function GoalsSection() {
                         <Target className="w-4 h-4 text-purple-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
-                          {goal.category_name}
-                        </p>
+                        <p className="font-medium text-gray-900">{goal.category_name}</p>
                         <p className="text-sm text-gray-500">
-                          {Number(goal.percentage).toFixed(1)}% •{" "}
-                          {formatCurrency(allocatedAmount)}
+                          {Number(goal.percentage).toFixed(1)}% • {formatCurrency(allocatedAmount)}
                         </p>
                       </div>
                     </div>
@@ -191,6 +187,20 @@ export default function GoalsSection() {
           isLoading={createGoal.isPending || updateGoal.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setGoalToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Budget Goal"
+        message="Are you sure you want to delete this budget goal? All expenses linked to this goal will also be deleted. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }
@@ -203,24 +213,16 @@ interface GoalFormProps {
   isLoading: boolean;
 }
 
-function GoalForm({
-  goal,
-  currentTotalPercentage,
-  onClose,
-  onSubmit,
-  isLoading,
-}: GoalFormProps) {
+function GoalForm({ goal, currentTotalPercentage, onClose, onSubmit, isLoading }: GoalFormProps) {
   const [formData, setFormData] = useState({
-    category_name: goal?.category_name || "",
-    percentage: goal?.percentage?.toString() || "",
+    category_name: goal?.category_name || '',
+    percentage: goal?.percentage?.toString() || '',
   });
 
   const currentGoalPercentage = goal ? Number(goal.percentage) : 0;
   const maxPercentage = 100 - currentTotalPercentage + currentGoalPercentage;
   const newTotalPercentage =
-    currentTotalPercentage -
-    currentGoalPercentage +
-    (parseFloat(formData.percentage) || 0);
+    currentTotalPercentage - currentGoalPercentage + (parseFloat(formData.percentage) || 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,23 +241,18 @@ function GoalForm({
         onClick={(e) => e.stopPropagation()}
       >
         <h4 className="text-lg font-semibold mb-4">
-          {goal ? "Edit Budget Goal" : "Add Budget Goal"}
+          {goal ? 'Edit Budget Goal' : 'Add Budget Goal'}
         </h4>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="goal-category"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="goal-category" className="block text-sm font-medium text-gray-700 mb-1">
               Category Name
             </label>
             <input
               id="goal-category"
               type="text"
               value={formData.category_name}
-              onChange={(e) =>
-                setFormData({ ...formData, category_name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, category_name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Needs, Wants, Savings, Trip"
               required
@@ -272,9 +269,7 @@ function GoalForm({
               id="goal-percentage"
               type="number"
               value={formData.percentage}
-              onChange={(e) =>
-                setFormData({ ...formData, percentage: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0.0"
               step="0.1"
@@ -287,13 +282,8 @@ function GoalForm({
             </p>
           </div>
           <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {goal ? "Update" : "Add Goal"}
+            <Button type="submit" className="flex-1" disabled={isLoading} loading={isLoading}>
+              {goal ? 'Update' : 'Add Goal'}
             </Button>
             <Button
               type="button"

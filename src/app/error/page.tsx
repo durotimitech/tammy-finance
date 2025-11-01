@@ -1,23 +1,19 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { Button } from "@/components/ui/Button";
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { Button } from '@/components/ui/Button';
 
 function ErrorContent() {
   const searchParams = useSearchParams();
-  const message =
-    searchParams.get("message") ||
-    "An error occurred during email confirmation";
+  const message = searchParams.get('message') || 'An error occurred during email confirmation';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Oops! Something went wrong
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h1>
           <p className="text-gray-600">{message}</p>
         </div>
 

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import {
   XAxis,
   YAxis,
@@ -11,10 +11,10 @@ import {
   Line,
   LineChart,
   ReferenceLine,
-} from "recharts";
-import { Skeleton } from "@/components/Skeleton";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { useFIRECalculation, useUserPreferences } from "@/hooks/use-fire-data";
+} from 'recharts';
+import { Skeleton } from '@/components/Skeleton';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { useFIRECalculation, useUserPreferences } from '@/hooks/use-fire-data';
 
 interface ChartDataPoint {
   month: number;
@@ -42,8 +42,7 @@ function calculateProjectedNetWorth(
   if (monthlyReturn > 0) {
     const futureValue =
       currentNetWorth * Math.pow(1 + monthlyReturn, months) +
-      monthlySavings *
-        ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
+      monthlySavings * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
     return futureValue;
   } else {
     // Simple calculation without returns
@@ -59,8 +58,7 @@ export default function PathToFIChart() {
   const chartData = useMemo<ChartDataPoint[]>(() => {
     if (!fireData || !preferences) return [];
 
-    const { currentNetWorth, fireNumber, monthsToFIRE, annualSavings } =
-      fireData;
+    const { currentNetWorth, fireNumber, monthsToFIRE, annualSavings } = fireData;
     const investmentReturn = preferences.investment_return || 7.0;
     const monthlyReturn = investmentReturn / 100 / 12; // Convert annual to monthly
     const monthlySavings = annualSavings / 12;
@@ -72,7 +70,7 @@ export default function PathToFIChart() {
     // Add current point (month 0)
     dataPoints.push({
       month: 0,
-      monthLabel: "Now",
+      monthLabel: 'Now',
       netWorth: currentNetWorth,
       fireNumber,
     });
@@ -141,15 +139,15 @@ export default function PathToFIChart() {
   }) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
-      const netWorthPayload = payload.find((p) => p.dataKey === "netWorth");
-      const fireNumberPayload = payload.find((p) => p.dataKey === "fireNumber");
+      const netWorthPayload = payload.find((p) => p.dataKey === 'netWorth');
+      const fireNumberPayload = payload.find((p) => p.dataKey === 'fireNumber');
 
       return (
         <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3 min-w-[180px]">
           <p className="text-xs font-medium text-gray-600 mb-2">
             {dataPoint.month === 0
-              ? "Current"
-              : `${dataPoint.month} month${dataPoint.month !== 1 ? "s" : ""}`}
+              ? 'Current'
+              : `${dataPoint.month} month${dataPoint.month !== 1 ? 's' : ''}`}
           </p>
           <div className="space-y-1">
             {netWorthPayload && (
@@ -177,14 +175,10 @@ export default function PathToFIChart() {
             {dataPoint.month > 0 && (
               <div className="pt-1 mt-1 border-t border-gray-200">
                 <span className="text-xs text-gray-500">
-                  {((netWorthPayload?.value || 0) /
-                    (fireNumberPayload?.value || 1)) *
-                    100 >
-                  100
-                    ? "Goal Reached!"
+                  {((netWorthPayload?.value || 0) / (fireNumberPayload?.value || 1)) * 100 > 100
+                    ? 'Goal Reached!'
                     : `${(
-                        ((netWorthPayload?.value || 0) /
-                          (fireNumberPayload?.value || 1)) *
+                        ((netWorthPayload?.value || 0) / (fireNumberPayload?.value || 1)) *
                         100
                       ).toFixed(1)}% to FIRE`}
                 </span>
@@ -205,10 +199,7 @@ export default function PathToFIChart() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div
-        className="bg-white rounded-xl p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
+      <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <div className="mb-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">
             Path to Financial Independence
@@ -224,16 +215,11 @@ export default function PathToFIChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="h-80 flex items-center justify-center">
-            <p className="text-gray-500">
-              Insufficient data to show projection
-            </p>
+            <p className="text-gray-500">Insufficient data to show projection</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
-            <LineChart
-              data={chartData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
+            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="0" stroke="transparent" />
               <XAxis
                 dataKey="monthLabel"
@@ -256,9 +242,9 @@ export default function PathToFIChart() {
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 label={{
-                  value: "FIRE Goal",
-                  position: "right",
-                  fill: "#3B82F6",
+                  value: 'FIRE Goal',
+                  position: 'right',
+                  fill: '#3B82F6',
                   fontSize: 12,
                 }}
               />
@@ -300,8 +286,8 @@ export default function PathToFIChart() {
               <p className="text-sm text-gray-500">Time to FIRE</p>
               <p className="text-lg font-semibold text-emerald-600">
                 {fireData.yearsToFIRE > 0
-                  ? `${fireData.yearsToFIRE} year${fireData.yearsToFIRE !== 1 ? "s" : ""}`
-                  : "Already there!"}
+                  ? `${fireData.yearsToFIRE} year${fireData.yearsToFIRE !== 1 ? 's' : ''}`
+                  : 'Already there!'}
               </p>
             </div>
           </div>

@@ -1,28 +1,24 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import BudgetGoalsDisplay from "./BudgetGoalsDisplay";
-import BudgetHistory from "./BudgetHistory";
-import ExpenseDistributionChart from "./ExpenseDistributionChart";
-import ExpensesSection from "./ExpensesSection";
-import GoalsSection from "./GoalsSection";
-import IncomeSection from "./IncomeSection";
-import { Skeleton } from "@/components/Skeleton";
-import DashboardHeaderText from "@/components/ui/DashboardHeaderText";
-import {
-  useCurrentBudget,
-  useIncomeSources,
-  useBudgetGoals,
-} from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import BudgetGoalsDisplay from './BudgetGoalsDisplay';
+import BudgetHistory from './BudgetHistory';
+import ExpenseDistributionChart from './ExpenseDistributionChart';
+import ExpensesSection from './ExpensesSection';
+import GoalsSection from './GoalsSection';
+import IncomeSection from './IncomeSection';
+import { Skeleton } from '@/components/Skeleton';
+import DashboardHeaderText from '@/components/ui/DashboardHeaderText';
+import { useCurrentBudget, useIncomeSources, useBudgetGoals } from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
 
 export default function BudgetTracker() {
   const { data: budget, isLoading: budgetLoading } = useCurrentBudget();
   const { isLoading: incomeLoading } = useIncomeSources();
   const { isLoading: goalsLoading } = useBudgetGoals();
   const { formatCurrency } = useCurrencyFormat();
-  const [activeTab, setActiveTab] = useState<"current" | "history">("current");
+  const [activeTab, setActiveTab] = useState<'current' | 'history'>('current');
 
   // Show full page skeleton only while data is actively loading
   // This prevents jitter when data is being copied for a new month
@@ -50,7 +46,7 @@ export default function BudgetTracker() {
             <div
               key={i}
               className="bg-white rounded-xl p-4 sm:p-6 border"
-              style={{ borderColor: "#e5e7eb" }}
+              style={{ borderColor: '#e5e7eb' }}
             >
               <Skeleton className="h-4 w-24 mb-2" />
               <Skeleton className="h-8 w-32" />
@@ -72,7 +68,7 @@ export default function BudgetTracker() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div
               className="bg-white rounded-xl p-4 sm:p-6 border"
-              style={{ borderColor: "#e5e7eb" }}
+              style={{ borderColor: '#e5e7eb' }}
             >
               <Skeleton className="h-6 w-24 mb-4" />
               <Skeleton className="h-4 w-32 mb-4" />
@@ -84,7 +80,7 @@ export default function BudgetTracker() {
             </div>
             <div
               className="bg-white rounded-xl p-4 sm:p-6 border"
-              style={{ borderColor: "#e5e7eb" }}
+              style={{ borderColor: '#e5e7eb' }}
             >
               <Skeleton className="h-6 w-32 mb-4" />
               <Skeleton className="h-4 w-40 mb-4" />
@@ -97,10 +93,7 @@ export default function BudgetTracker() {
           </div>
 
           {/* Goals Display Skeleton */}
-          <div
-            className="bg-white rounded-xl p-4 sm:p-6 border"
-            style={{ borderColor: "#e5e7eb" }}
-          >
+          <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
             <Skeleton className="h-6 w-48 mb-4" />
             <div className="space-y-4">
               {[1, 2].map((i) => (
@@ -120,7 +113,7 @@ export default function BudgetTracker() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div
               className="bg-white rounded-xl p-4 sm:p-6 border"
-              style={{ borderColor: "#e5e7eb" }}
+              style={{ borderColor: '#e5e7eb' }}
             >
               <Skeleton className="h-6 w-32 mb-4" />
               <div className="space-y-3">
@@ -131,7 +124,7 @@ export default function BudgetTracker() {
             </div>
             <div
               className="bg-white rounded-xl p-4 sm:p-6 border"
-              style={{ borderColor: "#e5e7eb" }}
+              style={{ borderColor: '#e5e7eb' }}
             >
               <Skeleton className="h-6 w-40 mb-4" />
               <Skeleton className="h-64 w-full rounded-lg" />
@@ -157,37 +150,31 @@ export default function BudgetTracker() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl p-4 sm:p-6 border"
-          style={{ borderColor: "#e5e7eb" }}
+          style={{ borderColor: '#e5e7eb' }}
         >
           <p className="text-sm text-gray-500 mb-1">Total Income</p>
-          <p className="text-2xl font-bold text-green-600">
-            {formatCurrency(totalIncome)}
-          </p>
+          <p className="text-2xl font-bold text-green-600">{formatCurrency(totalIncome)}</p>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="bg-white rounded-xl p-4 sm:p-6 border"
-          style={{ borderColor: "#e5e7eb" }}
+          style={{ borderColor: '#e5e7eb' }}
         >
           <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
-          <p className="text-2xl font-bold text-red-600">
-            {formatCurrency(totalExpenses)}
-          </p>
+          <p className="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</p>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="bg-white rounded-xl p-4 sm:p-6 border"
-          style={{ borderColor: "#e5e7eb" }}
+          style={{ borderColor: '#e5e7eb' }}
         >
           <p className="text-sm text-gray-500 mb-1">Net Savings</p>
           <p
-            className={`text-2xl font-bold ${
-              netSavings >= 0 ? "text-green-600" : "text-red-600"
-            }`}
+            className={`text-2xl font-bold ${netSavings >= 0 ? 'text-green-600' : 'text-red-600'}`}
           >
             {formatCurrency(netSavings)}
           </p>
@@ -198,21 +185,21 @@ export default function BudgetTracker() {
       <div className="mb-6 border-b border-gray-200">
         <nav className="flex gap-4">
           <button
-            onClick={() => setActiveTab("current")}
+            onClick={() => setActiveTab('current')}
             className={`px-4 py-2 font-medium text-sm transition-colors ${
-              activeTab === "current"
-                ? "text-secondary border-b-2 border-secondary"
-                : "text-gray-500 hover:text-gray-700"
+              activeTab === 'current'
+                ? 'text-secondary border-b-2 border-secondary'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Current Month
           </button>
           <button
-            onClick={() => setActiveTab("history")}
+            onClick={() => setActiveTab('history')}
             className={`px-4 py-2 font-medium text-sm transition-colors ${
-              activeTab === "history"
-                ? "text-secondary border-b-2 border-secondary"
-                : "text-gray-500 hover:text-gray-700"
+              activeTab === 'history'
+                ? 'text-secondary border-b-2 border-secondary'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             History
@@ -220,7 +207,7 @@ export default function BudgetTracker() {
         </nav>
       </div>
 
-      {activeTab === "current" ? (
+      {activeTab === 'current' ? (
         <div className="space-y-6">
           {/* Income and Goals Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -268,10 +255,7 @@ export default function BudgetTracker() {
           </div>
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <BudgetHistory />
         </motion.div>
       )}

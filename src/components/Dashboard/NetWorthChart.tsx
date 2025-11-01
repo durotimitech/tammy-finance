@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import {
   XAxis,
   YAxis,
@@ -12,11 +12,12 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-} from "recharts";
-import { Skeleton } from "@/components/Skeleton";
-import { queryKeys, useNetWorth } from "@/hooks/use-financial-data";
-import { apiClient } from "@/lib/api-client";
-import { formatCurrency, formatCompactNumber } from "@/lib/utils";
+} from 'recharts';
+import { Skeleton } from '@/components/Skeleton';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { queryKeys, useNetWorth } from '@/hooks/use-financial-data';
+import { apiClient } from '@/lib/api-client';
+import { formatCurrency, formatCompactNumber } from '@/lib/utils';
 
 interface NetWorthChartProps {
   refreshKey?: number;
@@ -31,45 +32,36 @@ interface ChartDataPoint {
 }
 
 export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
-  const [timeRange, setTimeRange] = useState<"30d" | "90d" | "1y" | "all">(
-    "90d",
-  );
+  const [timeRange, setTimeRange] = useState<'30d' | '90d' | '1y' | 'all'>('90d');
   const { data: netWorthData } = useNetWorth();
+  const { currency } = useCurrency();
 
   // Calculate date range
   const endDate = new Date();
   const startDate = new Date();
 
   switch (timeRange) {
-    case "30d":
+    case '30d':
       startDate.setDate(endDate.getDate() - 30);
       break;
-    case "90d":
+    case '90d':
       startDate.setDate(endDate.getDate() - 90);
       break;
-    case "1y":
+    case '1y':
       startDate.setFullYear(endDate.getFullYear() - 1);
       break;
-    case "all":
+    case 'all':
       // No start date filter for all data
       break;
   }
 
   // Fetch historical data using React Query
   const { data: historyData, isLoading } = useQuery({
-    queryKey: [
-      ...queryKeys.history,
-      timeRange,
-      startDate.toISOString().split("T")[0],
-      refreshKey,
-    ],
+    queryKey: [...queryKeys.history, timeRange, startDate.toISOString().split('T')[0], refreshKey],
     queryFn: () =>
       apiClient.history.get({
-        startDate:
-          timeRange !== "all"
-            ? startDate.toISOString().split("T")[0]
-            : undefined,
-        limit: timeRange === "all" ? 1000 : 365,
+        startDate: timeRange !== 'all' ? startDate.toISOString().split('T')[0] : undefined,
+        limit: timeRange === 'all' ? 1000 : 365,
       }),
     staleTime: 30000, // 30 seconds
   });
@@ -88,13 +80,13 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
           total_liabilities: string;
           net_worth: string;
         }) => ({
-          date: new Date(item.snapshot_date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
+          date: new Date(item.snapshot_date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
           }),
-          fullDate: new Date(item.snapshot_date).toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
+          fullDate: new Date(item.snapshot_date).toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric',
           }),
           assets: parseFloat(item.total_assets),
           liabilities: parseFloat(item.total_liabilities),
@@ -104,23 +96,23 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
 
     // Add current net worth as the latest data point if available and different from last snapshot
     if (netWorthData) {
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString().split('T')[0];
       const lastSnapshot = historyData.history[0];
-      const lastSnapshotDate = lastSnapshot?.snapshot_date?.split("T")[0] || "";
+      const lastSnapshotDate = lastSnapshot?.snapshot_date?.split('T')[0] || '';
 
       // Only add if today's snapshot doesn't exist or if current net worth differs
       if (
         lastSnapshotDate !== today ||
-        parseFloat(lastSnapshot?.net_worth || "0") !== netWorthData.netWorth
+        parseFloat(lastSnapshot?.net_worth || '0') !== netWorthData.netWorth
       ) {
         chartData.push({
-          date: new Date().toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
+          date: new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
           }),
-          fullDate: new Date().toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
+          fullDate: new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric',
           }),
           assets: netWorthData.totalAssets,
           liabilities: netWorthData.totalLiabilities,
@@ -140,9 +132,9 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
   const getTrendIcon = () => {
     if (!trend) return null;
 
-    if (trend.trend === "up") {
+    if (trend.trend === 'up') {
       return <TrendingUp className="w-5 h-5 text-green-500" />;
-    } else if (trend.trend === "down") {
+    } else if (trend.trend === 'down') {
       return <TrendingDown className="w-5 h-5 text-red-500" />;
     }
     return <Minus className="w-5 h-5 text-gray-500" />;
@@ -160,9 +152,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
       const dataPoint = payload[0].payload;
       return (
         <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3 min-w-[140px]">
-          <p className="text-xs font-medium text-gray-600 mb-2">
-            {dataPoint.fullDate}
-          </p>
+          <p className="text-xs font-medium text-gray-600 mb-2">{dataPoint.fullDate}</p>
           <div className="space-y-1">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-1.5">
@@ -170,7 +160,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Net Worth</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.netWorth)}
+                {formatCurrency(dataPoint.netWorth, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -179,7 +169,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Assets</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.assets)}
+                {formatCurrency(dataPoint.assets, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -188,7 +178,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Liabilities</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.liabilities)}
+                {formatCurrency(dataPoint.liabilities, currency)}
               </span>
             </div>
           </div>
@@ -209,10 +199,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div
-        className="bg-white rounded-xl p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
+      <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div>
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">
@@ -223,25 +210,25 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 {getTrendIcon()}
                 <span
                   className={`text-sm font-medium ${
-                    trend.trend === "up"
-                      ? "text-green-600"
-                      : trend.trend === "down"
-                        ? "text-red-600"
-                        : "text-gray-600"
+                    trend.trend === 'up'
+                      ? 'text-green-600'
+                      : trend.trend === 'down'
+                        ? 'text-red-600'
+                        : 'text-gray-600'
                   }`}
                 >
-                  {trend.changePercentage > 0 ? "+" : ""}
+                  {trend.changePercentage > 0 ? '+' : ''}
                   {trend.changePercentage.toFixed(1)}%
                 </span>
                 <span className="text-sm text-gray-500">
-                  ({formatCurrency(trend.change)})
+                  ({formatCurrency(trend.change, currency)})
                 </span>
               </div>
             )}
           </div>
 
           <div className="flex gap-1 sm:gap-2 w-full sm:w-auto overflow-x-auto">
-            {(["30d", "90d", "1y", "all"] as const).map((range) => (
+            {(['30d', '90d', '1y', 'all'] as const).map((range) => (
               <motion.button
                 key={range}
                 whileHover={{ scale: 1.05 }}
@@ -249,11 +236,11 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 onClick={() => setTimeRange(range)}
                 className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition-colors whitespace-nowrap ${
                   timeRange === range
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {range === "all" ? "All" : range.toUpperCase()}
+                {range === 'all' ? 'All' : range.toUpperCase()}
               </motion.button>
             ))}
           </div>
@@ -265,10 +252,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
+            <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
@@ -278,13 +262,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                   <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.02} />
                 </linearGradient>
-                <linearGradient
-                  id="colorLiabilities"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient id="colorLiabilities" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#EF4444" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#EF4444" stopOpacity={0.02} />
                 </linearGradient>
@@ -341,19 +319,19 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             <div>
               <p className="text-sm text-gray-500">Current Net Worth</p>
               <p className="text-lg font-semibold text-gray-900">
-                {formatCurrency(data[data.length - 1]?.netWorth || 0)}
+                {formatCurrency(data[data.length - 1]?.netWorth || 0, currency)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Assets</p>
               <p className="text-lg font-semibold text-blue-600">
-                {formatCurrency(data[data.length - 1]?.assets || 0)}
+                {formatCurrency(data[data.length - 1]?.assets || 0, currency)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Liabilities</p>
               <p className="text-lg font-semibold text-red-600">
-                {formatCurrency(data[data.length - 1]?.liabilities || 0)}
+                {formatCurrency(data[data.length - 1]?.liabilities || 0, currency)}
               </p>
             </div>
           </div>

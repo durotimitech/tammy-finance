@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Edit2, Trash2, Calendar, Tag } from "lucide-react";
-import { useState } from "react";
-import BudgetEditForm from "./BudgetEditForm";
-import { Button } from "@/components/ui/Button";
-import { useDeleteBudget } from "@/hooks/useBudgets";
-import { Budget } from "@/types/budget";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Edit2, Trash2, Calendar, Tag } from 'lucide-react';
+import { useState } from 'react';
+import BudgetEditForm from './BudgetEditForm';
+import { Button } from '@/components/ui/Button';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import { useDeleteBudget } from '@/hooks/useBudgets';
+import { Budget } from '@/types/budget';
 
 interface BudgetListProps {
   budgets: Budget[];
@@ -16,17 +17,25 @@ interface BudgetListProps {
 export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const deleteBudget = useDeleteBudget();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
     }).format(amount);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this budget?")) {
-      deleteBudget.mutate(id);
+    setBudgetToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (budgetToDelete) {
+      deleteBudget.mutate(budgetToDelete);
+      setBudgetToDelete(null);
     }
   };
 
@@ -88,16 +97,12 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
                   className="hover:bg-gray-50"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {budget.name}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900">{budget.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <Tag className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900 capitalize">
-                        {budget.category}
-                      </span>
+                      <span className="text-sm text-gray-900 capitalize">{budget.category}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -108,9 +113,7 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900 capitalize">
-                        {budget.period}
-                      </span>
+                      <span className="text-sm text-gray-900 capitalize">{budget.period}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -146,6 +149,20 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
           onClose={() => setEditingId(null)}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setBudgetToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Budget"
+        message="Are you sure you want to delete this budget? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

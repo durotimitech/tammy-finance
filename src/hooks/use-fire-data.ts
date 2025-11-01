@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api-client';
 
 // Query keys
 export const fireQueryKeys = {
-  preferences: ["user-preferences"] as const,
-  fireCalculation: ["fire-calculation"] as const,
+  preferences: ['user-preferences'] as const,
+  fireCalculation: ['fire-calculation'] as const,
 };
 
 // User preferences hook

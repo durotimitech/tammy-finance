@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
-import { Profile } from "@/types/financial";
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api-client';
+import { Profile } from '@/types/financial';
 
 export function useProfile() {
   return useQuery<Profile | null>({
-    queryKey: ["profile"],
+    queryKey: ['profile'],
     queryFn: async () => {
       const profile = await apiClient.profiles.get();
       return profile;
