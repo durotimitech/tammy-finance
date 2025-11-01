@@ -92,11 +92,16 @@ export interface BudgetGoalWithExpenses extends BudgetGoal {
   remaining_amount: number; // allocated_amount - spent_amount
 }
 
-// Budget history summary (totals only)
+// Budget history summary (totals and expenses)
 export interface BudgetHistorySummary {
   month: number;
   year: number;
   total_income: number;
   total_expenses: number;
   net_savings: number; // total_income - total_expenses
+  expenses: BudgetExpenseWithGoal[];
+}
+
+export interface BudgetExpenseWithGoal extends BudgetExpense {
+  goal_name: string; // category name from the goal
 }

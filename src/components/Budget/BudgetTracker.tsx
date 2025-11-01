@@ -8,18 +8,139 @@ import ExpenseDistributionChart from "./ExpenseDistributionChart";
 import ExpensesSection from "./ExpensesSection";
 import GoalsSection from "./GoalsSection";
 import IncomeSection from "./IncomeSection";
+import { Skeleton } from "@/components/Skeleton";
 import DashboardHeaderText from "@/components/ui/DashboardHeaderText";
-import { useCurrentBudget } from "@/hooks/use-budget-new";
+import {
+  useCurrentBudget,
+  useIncomeSources,
+  useBudgetGoals,
+} from "@/hooks/use-budget-new";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
 
 export default function BudgetTracker() {
-  const { data: budget, isLoading } = useCurrentBudget();
+  const { data: budget, isLoading: budgetLoading } = useCurrentBudget();
+  const { isLoading: incomeLoading } = useIncomeSources();
+  const { isLoading: goalsLoading } = useBudgetGoals();
   const { formatCurrency } = useCurrencyFormat();
   const [activeTab, setActiveTab] = useState<"current" | "history">("current");
+
+  // Show full page skeleton only while data is actively loading
+  // This prevents jitter when data is being copied for a new month
+  // Once data is loaded (even if empty), show the actual UI
+  const isInitialLoading = budgetLoading || incomeLoading || goalsLoading;
 
   const totalIncome = budget?.total_income || 0;
   const totalExpenses = budget?.total_expenses || 0;
   const netSavings = totalIncome - totalExpenses;
+
+  // Show full page skeleton while initial data is loading
+  if (isInitialLoading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8 max-w-7xl">
+        <div className="mb-8">
+          <DashboardHeaderText title="Budget Tracker" />
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
+            Track your income, expenses, and budget goals
+          </p>
+        </div>
+
+        {/* Summary Cards Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl p-4 sm:p-6 border"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-8 w-32" />
+            </div>
+          ))}
+        </div>
+
+        {/* Tabs Skeleton */}
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="space-y-6">
+          {/* Income and Goals Row Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              className="bg-white rounded-xl p-4 sm:p-6 border"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <Skeleton className="h-6 w-24 mb-4" />
+              <Skeleton className="h-4 w-32 mb-4" />
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            </div>
+            <div
+              className="bg-white rounded-xl p-4 sm:p-6 border"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <Skeleton className="h-6 w-32 mb-4" />
+              <Skeleton className="h-4 w-40 mb-4" />
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Goals Display Skeleton */}
+          <div
+            className="bg-white rounded-xl p-4 sm:p-6 border"
+            style={{ borderColor: "#e5e7eb" }}
+          >
+            <Skeleton className="h-6 w-48 mb-4" />
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-3 w-full" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Expenses and Chart Row Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              className="bg-white rounded-xl p-4 sm:p-6 border"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <Skeleton className="h-6 w-32 mb-4" />
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <Skeleton key={i} className="h-20 w-full" />
+                ))}
+              </div>
+            </div>
+            <div
+              className="bg-white rounded-xl p-4 sm:p-6 border"
+              style={{ borderColor: "#e5e7eb" }}
+            >
+              <Skeleton className="h-6 w-40 mb-4" />
+              <Skeleton className="h-64 w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 py-4 sm:py-6 lg:py-8 max-w-7xl">
@@ -40,7 +161,7 @@ export default function BudgetTracker() {
         >
           <p className="text-sm text-gray-500 mb-1">Total Income</p>
           <p className="text-2xl font-bold text-green-600">
-            {isLoading ? "..." : formatCurrency(totalIncome)}
+            {formatCurrency(totalIncome)}
           </p>
         </motion.div>
         <motion.div
@@ -52,7 +173,7 @@ export default function BudgetTracker() {
         >
           <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
           <p className="text-2xl font-bold text-red-600">
-            {isLoading ? "..." : formatCurrency(totalExpenses)}
+            {formatCurrency(totalExpenses)}
           </p>
         </motion.div>
         <motion.div
@@ -68,7 +189,7 @@ export default function BudgetTracker() {
               netSavings >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
-            {isLoading ? "..." : formatCurrency(netSavings)}
+            {formatCurrency(netSavings)}
           </p>
         </motion.div>
       </div>

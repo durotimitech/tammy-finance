@@ -27,21 +27,19 @@ Ensure to follow the rules in RULES.md for each iteration
 [✅] Historical net worth line chart (NetWorthChart)
 [✅] Asset/Liability pie charts (AssetDistributionChart, LiabilitiesDistributionChart)
 
-## Epic 4: Budget (Free Tier) - TRANSACTION SYSTEM
-[✅] Transactions table and schema (migration 007_create_transactions_table.sql)
-[✅] Manual transaction entry form (Income or Expense with categories) - TransactionForm component
-[✅] Monthly summary view showing Income vs Expenses - MonthlySummary and TransactionSummary components
-[✅] Calculate Net Savings from transactions - implemented in API routes
-[✅] Auto-populate "Avg. Monthly Savings" on FIRE Dashboard from Net Savings - updateMonthlySavingsFromTransactions helper
-[✅] Budget tracking system (separate from transactions - already exists)
-[ ] NEW: Redesign Budget Tracker with Income, Expenses, and Goals system:
-  [ ] Income section - Add multiple income sources (name, category, amount)
-  [ ] Goals section - User-defined budget categories (needs, wants, savings, etc.) with percentage allocation
-  [ ] Expenses section - Link expenses to goal categories
-  [ ] Display spending per goal category (amount and percentage)
-  [ ] Pie charts for expense distribution
-  [ ] Monthly reset functionality (auto-reset on 1st of month)
-  [ ] Budget history view (previous months)
+## Epic 4: Budget (Free Tier) - NEW BUDGET TRACKER SYSTEM
+[✅] Removed old transaction system (migration 008_remove_transactions_table.sql)
+[✅] New budget schema (migration 009_create_new_budget_system.sql) - budget_months, income_sources, budget_goals, budget_expenses
+[✅] Income section - Add multiple income sources (name, category, amount) - IncomeSection component
+[✅] Goals section - User-defined budget categories (needs, wants, savings, etc.) with percentage allocation - GoalsSection component
+[✅] Expenses section - Link expenses to goal categories - ExpensesSection component
+[✅] Display spending per goal category (amount and percentage with over-budget indicators) - BudgetGoalsDisplay component
+[✅] Pie charts for expense distribution - ExpenseDistributionChart component
+[✅] Monthly reset functionality (auto-reset expenses on 1st, copies income/goals from previous month)
+[✅] Budget history view (shows totals for previous months) - BudgetHistory component
+[✅] API routes for full CRUD operations (income, goals, expenses, current budget, history)
+[✅] React Query hooks for budget data management - use-budget-new.ts
+[✅] Comprehensive unit tests (48 tests passing) covering calculations, API routes, and components
 
 ## Premium Tier Features (Future)
 ### Epic 2: FIRE Dashboard (Premium Tier)

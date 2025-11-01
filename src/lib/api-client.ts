@@ -97,6 +97,38 @@ export const apiClient = {
       }>("/api/networth"),
   },
 
+  history: {
+    get: (params?: { startDate?: string; limit?: number }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.startDate) {
+        searchParams.append("startDate", params.startDate);
+      }
+      if (params?.limit) {
+        searchParams.append("limit", params.limit.toString());
+      }
+      const query = searchParams.toString();
+      return fetchWithAuth<{
+        history: Array<{
+          snapshot_date: string;
+          total_assets: string;
+          total_liabilities: string;
+          net_worth: string;
+        }>;
+        trend: {
+          current: number;
+          previous: number;
+          change: number;
+          changePercentage: number;
+          trend: "up" | "down" | "stable";
+        } | null;
+      }>(`/api/history${query ? `?${query}` : ""}`);
+    },
+    captureSnapshot: () =>
+      fetchWithAuth<{ message: string; date: string }>("/api/history", {
+        method: "POST",
+      }),
+  },
+
   preferences: {
     // Legacy endpoint - now uses profiles table
     get: () =>

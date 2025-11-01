@@ -1,46 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getOrCreateCurrentBudgetMonth } from "@/lib/budget-helpers";
 import { createClient } from "@/lib/supabase/server";
 import { CreateBudgetGoalDto } from "@/types/budget-new";
-
-// Helper to get current budget month ID
-async function getCurrentBudgetMonthId(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-): Promise<{ id: string; error: Error | null }> {
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-
-  const { data: existing } = await supabase
-    .from("budget_months")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("month", currentMonth)
-    .eq("year", currentYear)
-    .single();
-
-  if (existing) {
-    return { id: existing.id, error: null };
-  }
-
-  const { data: newBudget, error: createError } = await supabase
-    .from("budget_months")
-    .insert({
-      user_id: userId,
-      month: currentMonth,
-      year: currentYear,
-      total_income: 0,
-      total_expenses: 0,
-    })
-    .select("id")
-    .single();
-
-  if (createError) {
-    return { id: "", error: createError as Error };
-  }
-
-  return { id: newBudget.id, error: null };
-}
 
 // GET all budget goals for current month
 export async function GET() {
@@ -56,12 +17,34 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id: budgetMonthId, error: budgetError } =
-      await getCurrentBudgetMonthId(supabase, user.id);
+    let budgetMonthId: string | undefined;
+    let budgetError: Error | null = null;
+
+    // Retry up to 3 times to get or create budget month
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
+      budgetMonthId = result.id;
+      budgetError = result.error;
+
+      if (!budgetError && budgetMonthId) {
+        break;
+      }
+
+      // Wait a bit before retrying (exponential backoff)
+      if (attempt < 2) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 100 * (attempt + 1)),
+        );
+      }
+    }
 
     if (budgetError || !budgetMonthId) {
+      console.error(
+        "Failed to get or create budget month after retries:",
+        budgetError,
+      );
       return NextResponse.json(
-        { error: "Failed to get budget month" },
+        { error: "Failed to get budget month. Please try again." },
         { status: 500 },
       );
     }
@@ -119,12 +102,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { id: budgetMonthId, error: budgetError } =
-      await getCurrentBudgetMonthId(supabase, user.id);
+    let budgetMonthId: string | undefined;
+    let budgetError: Error | null = null;
+
+    // Retry up to 3 times to get or create budget month
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
+      budgetMonthId = result.id;
+      budgetError = result.error;
+
+      if (!budgetError && budgetMonthId) {
+        break;
+      }
+
+      // Wait a bit before retrying (exponential backoff)
+      if (attempt < 2) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 100 * (attempt + 1)),
+        );
+      }
+    }
 
     if (budgetError || !budgetMonthId) {
+      console.error(
+        "Failed to get or create budget month after retries:",
+        budgetError,
+      );
       return NextResponse.json(
-        { error: "Failed to get budget month" },
+        { error: "Failed to get budget month. Please try again." },
         { status: 500 },
       );
     }

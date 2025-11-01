@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Target } from "lucide-react";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import {
   useBudgetGoals,
@@ -15,8 +15,24 @@ import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { BudgetGoal, CreateBudgetGoalDto } from "@/types/budget-new";
 
 export default function GoalsSection() {
-  const { data: goals = [], isLoading: goalsLoading } = useBudgetGoals();
+  const {
+    data: goals = [],
+    isLoading: goalsLoading,
+    refetch: refetchGoals,
+  } = useBudgetGoals();
   const { data: incomeSources = [] } = useIncomeSources();
+
+  // Refetch goals when income sources change (in case goals were copied from previous month)
+  useEffect(() => {
+    if (incomeSources.length > 0 && goals.length === 0 && !goalsLoading) {
+      // If we have income but no goals, refetch in case goals were just copied
+      // Use a small delay to allow server-side copy to complete
+      const timeoutId = setTimeout(() => {
+        refetchGoals();
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [incomeSources.length, goals.length, goalsLoading, refetchGoals]);
   const createGoal = useCreateBudgetGoal();
   const updateGoal = useUpdateBudgetGoal();
   const deleteGoal = useDeleteBudgetGoal();

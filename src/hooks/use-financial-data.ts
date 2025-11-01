@@ -10,6 +10,7 @@ export const queryKeys = {
   assets: ["assets"] as const,
   liabilities: ["liabilities"] as const,
   networth: ["networth"] as const,
+  history: ["history"] as const,
 };
 
 // Assets hooks
@@ -33,6 +34,12 @@ export function useCreateAsset() {
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.assets });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
+
+      // Create/update snapshot for today
+      apiClient.history.captureSnapshot().catch((error) => {
+        console.error("Error capturing snapshot after asset update:", error);
+      });
     },
   });
 }
@@ -62,6 +69,7 @@ export function useUpdateAsset() {
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.assets });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
     },
   });
 }
@@ -97,6 +105,7 @@ export function useDeleteAsset() {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.assets });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
     },
   });
 }
@@ -122,6 +131,15 @@ export function useCreateLiability() {
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.liabilities });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
+
+      // Create/update snapshot for today
+      apiClient.history.captureSnapshot().catch((error) => {
+        console.error(
+          "Error capturing snapshot after liability update:",
+          error,
+        );
+      });
     },
   });
 }
@@ -139,7 +157,7 @@ export function useUpdateLiability() {
       category?: string;
       amount_owed?: number;
     }) => apiClient.liabilities.update(id, data),
-    onSuccess: (updatedLiability) => {
+    onSuccess: async (updatedLiability) => {
       // Optimistically update the cache
       queryClient.setQueryData<Liability[]>(queryKeys.liabilities, (old) => {
         return old
@@ -153,6 +171,15 @@ export function useUpdateLiability() {
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.liabilities });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
+
+      // Create/update snapshot for today (async, don't wait)
+      apiClient.history.captureSnapshot().catch((error) => {
+        console.error(
+          "Error capturing snapshot after liability update:",
+          error,
+        );
+      });
     },
   });
 }
@@ -193,6 +220,7 @@ export function useDeleteLiability() {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.liabilities });
       queryClient.invalidateQueries({ queryKey: queryKeys.networth });
+      queryClient.invalidateQueries({ queryKey: queryKeys.history });
     },
   });
 }

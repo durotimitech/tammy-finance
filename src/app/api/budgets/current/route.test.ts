@@ -112,6 +112,8 @@ describe("GET /api/budgets/current", () => {
         }),
         insert: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+        update: jest.fn().mockReturnThis(),
       })),
     };
 
@@ -127,11 +129,22 @@ describe("GET /api/budgets/current", () => {
 
     // Setup mocks for different queries
     (mockSupabase.from as jest.Mock).mockImplementation((table: string) => {
+      const baseChain = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+        update: jest.fn().mockReturnThis(),
+      };
+
       if (table === "budget_months") {
         return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
+          ...baseChain,
           single: jest.fn().mockResolvedValue({
+            data: mockBudgetMonth,
+            error: null,
+          }),
+          insert: jest.fn().mockReturnThis(),
+          order: jest.fn().mockResolvedValue({
             data: mockBudgetMonth,
             error: null,
           }),
@@ -139,37 +152,43 @@ describe("GET /api/budgets/current", () => {
       }
       if (table === "income_sources") {
         return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
+          ...baseChain,
           order: jest.fn().mockResolvedValue({
             data: mockIncomeSources,
             error: null,
           }),
+          insert: jest.fn().mockResolvedValue({ data: null, error: null }),
+          limit: jest
+            .fn()
+            .mockResolvedValue({ data: [{ id: "income-1" }], error: null }),
         };
       }
       if (table === "budget_goals") {
         return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
+          ...baseChain,
           order: jest.fn().mockResolvedValue({
             data: mockGoals,
             error: null,
           }),
+          insert: jest.fn().mockResolvedValue({ data: null, error: null }),
+          limit: jest
+            .fn()
+            .mockResolvedValue({ data: [{ id: "goal-1" }], error: null }),
         };
       }
       if (table === "budget_expenses") {
         return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
+          ...baseChain,
           order: jest.fn().mockResolvedValue({
             data: mockExpenses.filter((e) => e.goal_id === "goal-1"),
             error: null,
           }),
+          gte: jest.fn().mockReturnThis(),
+          lte: jest.fn().mockReturnThis(),
         };
       }
       return {
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
+        ...baseChain,
         order: jest.fn().mockResolvedValue({ data: [], error: null }),
       };
     });
@@ -196,7 +215,7 @@ describe("GET /api/budgets/current", () => {
 
     (mockSupabase.from as jest.Mock).mockImplementation((table: string) => {
       if (table === "budget_months") {
-        return {
+        const chain: any = {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
           single: jest.fn().mockImplementation(() => {
@@ -219,9 +238,19 @@ describe("GET /api/budgets/current", () => {
             data: mockBudgetMonth,
             error: null,
           }),
+          limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+          update: jest.fn().mockReturnThis(),
         };
+        return chain;
       }
       // Other tables return empty
+      const emptyChain: any = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+        order: jest.fn().mockResolvedValue({ data: [], error: null }),
+      };
+      return emptyChain;
       return {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),

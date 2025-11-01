@@ -269,7 +269,7 @@ export function useBudgetGoals() {
   return useQuery({
     queryKey: budgetKeys.goals,
     queryFn: fetchBudgetGoals,
-    staleTime: 30 * 1000,
+    staleTime: 0, // Always refetch to ensure we get goals that may have been copied from previous month
   });
 }
 

@@ -1,8 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 import {
   XAxis,
   YAxis,
@@ -13,8 +14,9 @@ import {
   AreaChart,
 } from "recharts";
 import { Skeleton } from "@/components/Skeleton";
+import { queryKeys, useNetWorth } from "@/hooks/use-financial-data";
+import { apiClient } from "@/lib/api-client";
 import { formatCurrency, formatCompactNumber } from "@/lib/utils";
-import { HistoricalTrend } from "@/types/financial";
 
 interface NetWorthChartProps {
   refreshKey?: number;
@@ -29,83 +31,109 @@ interface ChartDataPoint {
 }
 
 export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
-  const [data, setData] = useState<ChartDataPoint[]>([]);
-  const [trend, setTrend] = useState<HistoricalTrend | null>(null);
-  const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<"30d" | "90d" | "1y" | "all">(
     "90d",
   );
+  const { data: netWorthData } = useNetWorth();
 
-  const fetchHistoricalData = useCallback(async () => {
-    try {
-      setLoading(true);
+  // Calculate date range
+  const endDate = new Date();
+  const startDate = new Date();
 
-      // Calculate date range
-      const endDate = new Date();
-      const startDate = new Date();
+  switch (timeRange) {
+    case "30d":
+      startDate.setDate(endDate.getDate() - 30);
+      break;
+    case "90d":
+      startDate.setDate(endDate.getDate() - 90);
+      break;
+    case "1y":
+      startDate.setFullYear(endDate.getFullYear() - 1);
+      break;
+    case "all":
+      // No start date filter for all data
+      break;
+  }
 
-      switch (timeRange) {
-        case "30d":
-          startDate.setDate(endDate.getDate() - 30);
-          break;
-        case "90d":
-          startDate.setDate(endDate.getDate() - 90);
-          break;
-        case "1y":
-          startDate.setFullYear(endDate.getFullYear() - 1);
-          break;
-        case "all":
-          // No start date filter for all data
-          break;
-      }
+  // Fetch historical data using React Query
+  const { data: historyData, isLoading } = useQuery({
+    queryKey: [
+      ...queryKeys.history,
+      timeRange,
+      startDate.toISOString().split("T")[0],
+      refreshKey,
+    ],
+    queryFn: () =>
+      apiClient.history.get({
+        startDate:
+          timeRange !== "all"
+            ? startDate.toISOString().split("T")[0]
+            : undefined,
+        limit: timeRange === "all" ? 1000 : 365,
+      }),
+    staleTime: 30000, // 30 seconds
+  });
 
-      const params = new URLSearchParams();
-      if (timeRange !== "all") {
-        params.append("startDate", startDate.toISOString().split("T")[0]);
-      }
-      params.append("limit", timeRange === "all" ? "1000" : "365");
+  // Transform data for the chart and add current net worth as the latest point
+  const data = useMemo(() => {
+    if (!historyData?.history) return [];
 
-      const response = await fetch(`/api/history?${params}`);
-      if (!response.ok) throw new Error("Failed to fetch history");
-
-      const { history, trend: trendData } = await response.json();
-
-      // Transform data for the chart (reverse to show oldest first)
-      const chartData = history
-        .reverse()
-        .map(
-          (item: {
-            snapshot_date: string;
-            total_assets: string;
-            total_liabilities: string;
-            net_worth: string;
-          }) => ({
-            date: new Date(item.snapshot_date).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            }),
-            fullDate: new Date(item.snapshot_date).toLocaleDateString("en-US", {
-              month: "short",
-              year: "numeric",
-            }),
-            assets: parseFloat(item.total_assets),
-            liabilities: parseFloat(item.total_liabilities),
-            netWorth: parseFloat(item.net_worth),
+    // Transform historical data
+    const chartData = historyData.history
+      .reverse()
+      .map(
+        (item: {
+          snapshot_date: string;
+          total_assets: string;
+          total_liabilities: string;
+          net_worth: string;
+        }) => ({
+          date: new Date(item.snapshot_date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
           }),
-        );
+          fullDate: new Date(item.snapshot_date).toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          }),
+          assets: parseFloat(item.total_assets),
+          liabilities: parseFloat(item.total_liabilities),
+          netWorth: parseFloat(item.net_worth),
+        }),
+      );
 
-      setData(chartData);
-      setTrend(trendData);
-    } catch (error) {
-      console.error("Error fetching historical data:", error);
-    } finally {
-      setLoading(false);
+    // Add current net worth as the latest data point if available and different from last snapshot
+    if (netWorthData) {
+      const today = new Date().toISOString().split("T")[0];
+      const lastSnapshot = historyData.history[0];
+      const lastSnapshotDate = lastSnapshot?.snapshot_date?.split("T")[0] || "";
+
+      // Only add if today's snapshot doesn't exist or if current net worth differs
+      if (
+        lastSnapshotDate !== today ||
+        parseFloat(lastSnapshot?.net_worth || "0") !== netWorthData.netWorth
+      ) {
+        chartData.push({
+          date: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          fullDate: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          }),
+          assets: netWorthData.totalAssets,
+          liabilities: netWorthData.totalLiabilities,
+          netWorth: netWorthData.netWorth,
+        });
+      }
     }
-  }, [timeRange]);
 
-  useEffect(() => {
-    fetchHistoricalData();
-  }, [fetchHistoricalData, refreshKey]);
+    return chartData;
+  }, [historyData, netWorthData]);
+
+  const trend = historyData?.trend || null;
+  const loading = isLoading;
 
   const formatYAxis = (value: number) => formatCompactNumber(value);
 
