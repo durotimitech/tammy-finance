@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const STORAGE_KEY = "monthly-update-reminder-dismissed";
 
@@ -61,42 +63,60 @@ export default function MonthlyUpdateReminder() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6"
+        className="mb-6"
       >
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold text-blue-900 mb-1">
-              Monthly Balance Update Reminder
-            </h3>
-            <p className="text-sm text-blue-700 mb-3">
-              It&apos;s the beginning of the month! Take a moment to update your
-              asset and liability balances to keep your net worth tracking
-              accurate.
-            </p>
-            <div className="flex gap-3">
-              <Link
-                href="/dashboard/assets"
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
-              >
-                Update Assets
-              </Link>
-              <Link
-                href="/dashboard/liabilities"
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
-              >
-                Update Liabilities
-              </Link>
+        <Alert
+          className="relative"
+          style={{
+            backgroundColor: "var(--secondary)",
+            borderColor: "var(--secondary)",
+          }}
+        >
+          <AlertCircle className="h-4 w-4 text-white" />
+          <div className="relative">
+            <div className="flex items-start justify-between gap-4 pr-8">
+              <div className="flex-1">
+                <AlertTitle className="text-white">
+                  Monthly Balance Update Reminder
+                </AlertTitle>
+                <AlertDescription className="text-white/90">
+                  It&apos;s the beginning of the month! Take a moment to update
+                  your asset and liability balances to keep your net worth
+                  tracking accurate.
+                </AlertDescription>
+                <div className="flex gap-3 mt-3">
+                  <Link href="/dashboard/assets">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white hover:bg-white/90"
+                      style={{ color: "var(--secondary)" }}
+                    >
+                      Update Assets
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/liabilities">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="bg-white hover:bg-white/90"
+                      style={{ color: "var(--secondary)" }}
+                    >
+                      Update Liabilities
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
+            <button
+              onClick={handleDismiss}
+              className="absolute top-0 right-0 flex-shrink-0 p-1 text-white hover:text-white/80 hover:bg-white/20 rounded transition-colors"
+              aria-label="Dismiss reminder"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="flex-shrink-0 p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
-            aria-label="Dismiss reminder"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        </Alert>
       </motion.div>
     </AnimatePresence>
   );

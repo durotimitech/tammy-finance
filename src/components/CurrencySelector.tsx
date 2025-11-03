@@ -1,27 +1,32 @@
 "use client";
 
-import { Globe } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { CURRENCIES, getCurrencySymbol } from "@/lib/currency";
 
 export default function CurrencySelector() {
   const { currency, setCurrency, isLoading } = useCurrency();
-  const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const currencySymbol = getCurrencySymbol(currency);
 
   const handleCurrencyChange = async (newCurrency: string) => {
-    if (newCurrency === currency) {
-      setIsOpen(false);
+    if (newCurrency === currency || isUpdating) {
       return;
     }
 
     setIsUpdating(true);
     try {
       await setCurrency(newCurrency);
-      setIsOpen(false);
     } catch (error) {
       console.error("Failed to update currency:", error);
       // Error is already handled in context (reverts state)
@@ -40,72 +45,36 @@ export default function CurrencySelector() {
   }
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        disabled={isUpdating}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <Globe className="w-4 h-4" />
-        <span>{currencySymbol}</span>
-        {isUpdating && (
-          <svg
-            className="animate-spin h-3 w-3 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-        )}
-      </button>
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setIsOpen(false);
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Close currency selector"
-          ></div>
-          <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-96 overflow-y-auto">
-            <div className="py-1">
-              {CURRENCIES.map((curr) => (
-                <button
-                  key={curr.code}
-                  onClick={() => handleCurrencyChange(curr.code)}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center justify-between ${
-                    curr.code === currency
-                      ? "bg-secondary/10 text-secondary font-medium"
-                      : "text-gray-700"
-                  }`}
-                >
-                  <span>{curr.name}</span>
-                  <span className="text-gray-500">{curr.code}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-2"
+          disabled={isUpdating}
+        >
+          <span>{currencySymbol}</span>
+          {isUpdating && <Loader2 className="h-3 w-3 animate-spin" />}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuRadioGroup
+          value={currency}
+          onValueChange={handleCurrencyChange}
+        >
+          {CURRENCIES.map((curr) => (
+            <DropdownMenuRadioItem
+              key={curr.code}
+              value={curr.code}
+              disabled={isUpdating}
+              className="flex items-center justify-between"
+            >
+              <span>{curr.name}</span>
+              <span className="text-muted-foreground text-xs">{curr.code}</span>
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
