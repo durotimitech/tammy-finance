@@ -317,52 +317,11 @@ describe("AssetsSection", () => {
     });
   });
 
-  it("shows connect account callout when no accounts connected", async () => {
+  it("does not show connect account callout (removed)", async () => {
     mockUseAssets.mockReturnValue({
       data: [],
       isLoading: false,
     } as any);
-
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ credentials: [] }),
-    });
-
-    await act(async () => {
-      render(<AssetsSection />, { wrapper: createWrapper() });
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Connect your investment accounts"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Automatically import your portfolio data from brokers",
-        ),
-      ).toBeInTheDocument();
-      expect(screen.getByText("Connect Account")).toBeInTheDocument();
-    });
-  });
-
-  it("hides connect account callout when accounts are connected", async () => {
-    mockUseAssets.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any);
-
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        credentials: [
-          {
-            name: "some-provider",
-            displayName: "Some Provider",
-            connectedAt: new Date().toISOString(),
-          },
-        ],
-      }),
-    });
 
     await act(async () => {
       render(<AssetsSection />, { wrapper: createWrapper() });
@@ -372,23 +331,7 @@ describe("AssetsSection", () => {
       expect(
         screen.queryByText("Connect your investment accounts"),
       ).not.toBeInTheDocument();
-    });
-  });
-
-  it("navigates to settings when Connect Account is clicked", async () => {
-    mockUseAssets.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any);
-
-    await act(async () => {
-      render(<AssetsSection />, { wrapper: createWrapper() });
-    });
-
-    await waitFor(() => {
-      const connectButton = screen.getByText("Connect Account");
-      fireEvent.click(connectButton);
-      expect(mockPush).toHaveBeenCalledWith("/dashboard/settings");
+      expect(screen.queryByText("Connect Account")).not.toBeInTheDocument();
     });
   });
 
@@ -422,50 +365,22 @@ describe("AssetsSection", () => {
     expect(screen.getByText("Assets")).toBeInTheDocument();
   });
 
-  it("shows skeleton loader while checking for connected accounts", async () => {
-    // Create a promise that we can control
-    let resolveCredentials: (value: unknown) => void;
-    const credentialsPromise = new Promise((resolve) => {
-      resolveCredentials = resolve;
-    });
-
+  it("renders without checking for connected accounts", async () => {
     mockUseAssets.mockReturnValue({
       data: [],
       isLoading: false,
     } as any);
 
-    (fetch as jest.Mock).mockImplementation((url) => {
-      if (url === "/api/credentials") {
-        return credentialsPromise;
-      }
-      return Promise.reject(new Error(`Unexpected API call: ${url}`));
-    });
-
     await act(async () => {
       render(<AssetsSection />, { wrapper: createWrapper() });
     });
 
-    // Initially, a skeleton should be shown in place of the callout
     await waitFor(() => {
       expect(screen.getByText("Assets")).toBeInTheDocument();
-      // Look for skeleton element by test id (our mock creates elements with data-testid="skeleton")
-      const skeleton = screen.getByTestId("skeleton");
-      expect(skeleton).toBeInTheDocument();
-    });
-
-    // Now resolve the credentials promise
-    resolveCredentials!({
-      ok: true,
-      json: async () => ({
-        credentials: [], // No connected accounts
-      }),
-    });
-
-    // After loading, the callout should appear
-    await waitFor(() => {
+      // Verify no callout is rendered
       expect(
-        screen.getByText("Connect your investment accounts"),
-      ).toBeInTheDocument();
+        screen.queryByText("Connect your investment accounts"),
+      ).not.toBeInTheDocument();
     });
   });
 });

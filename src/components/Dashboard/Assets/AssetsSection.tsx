@@ -1,14 +1,12 @@
 "use client";
 
-import { Plus, Link } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import AddAssetModal from "./AddAssetModal";
 import { Skeleton } from "@/components/Skeleton";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import FinancialAccordion from "@/components/ui/FinancialAccordion";
-import { Callout } from "@/components/ui/callout";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import {
   useAssets,
@@ -26,9 +24,6 @@ export default function AssetsSection() {
     isOpen: boolean;
     assetId: string | null;
   }>({ isOpen: false, assetId: null });
-  const [hasConnectedAccounts, setHasConnectedAccounts] = useState(false);
-  const [isCheckingAccounts, setIsCheckingAccounts] = useState(true);
-  const router = useRouter();
 
   // Use React Query hooks
   const { data: assets = [], isLoading } = useAssets();
@@ -36,27 +31,6 @@ export default function AssetsSection() {
   const createAssetMutation = useCreateAsset();
   const updateAssetMutation = useUpdateAsset();
   const deleteAssetMutation = useDeleteAsset();
-
-  // Fetch connected accounts on component mount
-  useEffect(() => {
-    fetchConnectedAccounts();
-  }, []);
-
-  const fetchConnectedAccounts = async () => {
-    try {
-      const response = await fetch("/api/credentials");
-      if (response.ok) {
-        const data = await response.json();
-        setHasConnectedAccounts(
-          data.credentials && data.credentials.length > 0,
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching connected accounts:", error);
-    } finally {
-      setIsCheckingAccounts(false);
-    }
-  };
 
   const handleAddAsset = async (data: AssetFormData) => {
     try {
@@ -133,7 +107,7 @@ export default function AssetsSection() {
           <h2 className="text-lg font-semibold text-gray-900">Assets</h2>
           <Button
             onClick={() => setIsModalOpen(true)}
-            variant="default"
+            variant="secondary"
             size="sm"
             className="flex items-center gap-2"
           >
@@ -141,34 +115,6 @@ export default function AssetsSection() {
             Add Asset
           </Button>
         </div>
-
-        {/* Connect Account Callout - Only show if no accounts are connected */}
-        {isCheckingAccounts ? (
-          <div className="py-4">
-            <Skeleton className="h-16 w-full rounded-lg" />
-          </div>
-        ) : !hasConnectedAccounts ? (
-          <Callout className="mb-6">
-            <Link className="h-4 w-4" />
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <h3 className="font-medium">
-                  Connect your investment accounts
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Automatically import your portfolio data from brokers
-                </p>
-              </div>
-              <Button
-                onClick={() => router.push("/dashboard/settings")}
-                variant="secondary"
-                size="sm"
-              >
-                Connect Account
-              </Button>
-            </div>
-          </Callout>
-        ) : null}
 
         <div className="mb-4 p-4 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center">

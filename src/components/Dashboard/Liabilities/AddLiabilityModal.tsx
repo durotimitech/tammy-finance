@@ -236,7 +236,7 @@ export default function AddLiabilityModal({
             </Button>
             <Button
               type="submit"
-              variant="default"
+              variant="secondary"
               className="flex-1"
               loading={isLoading}
             >

@@ -128,7 +128,7 @@ export default function LiabilitiesSection() {
           <h2 className="text-lg font-semibold text-gray-900">Liabilities</h2>
           <Button
             onClick={() => setIsModalOpen(true)}
-            variant="default"
+            variant="secondary"
             size="sm"
             className="flex items-center gap-2"
           >

@@ -69,12 +69,8 @@ export default function ConfirmationModal({
                 onConfirm();
                 onClose();
               }}
-              variant="default"
-              className={`flex-1 ${
-                isDestructive
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
-              }`}
+              variant="secondary"
+              className={`flex-1`}
             >
               {confirmText}
             </Button>
