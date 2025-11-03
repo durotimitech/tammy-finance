@@ -95,9 +95,12 @@ export default function FinancialAccordion<T extends FinancialItem>({
                     </div>
                     <div className="flex items-center gap-3">
                       <p
-                        className={`text-sm font-medium ${
-                          type === "liability" ? "text-red-600" : ""
-                        }`}
+                        className="text-sm font-medium"
+                        style={
+                          type === "liability"
+                            ? { color: "var(--secondary)" }
+                            : undefined
+                        }
                       >
                         {formatCurrency(
                           type === "asset"

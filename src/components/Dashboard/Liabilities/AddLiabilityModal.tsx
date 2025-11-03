@@ -4,6 +4,13 @@ import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { getCurrencySymbol } from "@/lib/currency";
 import { UserLiabilityCategory } from "@/types/financial";
@@ -153,23 +160,44 @@ export default function AddLiabilityModal({
               Category
             </label>
             {!isAddingCategory ? (
-              <select
-                id="category"
-                value={formData.category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.category_name}>
-                    {category.category_name}
-                  </option>
-                ))}
-                <option value="add_new" className="font-semibold text-blue-600">
-                  + Add New Category
-                </option>
-              </select>
+              <div className="space-y-2">
+                <Select
+                  value={formData.category || undefined}
+                  onValueChange={(value) => {
+                    if (value === "add_new") {
+                      setIsAddingCategory(true);
+                      setFormData({ ...formData, category: "" });
+                    } else {
+                      handleCategoryChange(value);
+                    }
+                  }}
+                  required
+                >
+                  <SelectTrigger
+                    id="category"
+                    className="w-full bg-white border-gray-300 text-gray-900 hover:bg-gray-50"
+                  >
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {categories.map((category) => (
+                      <SelectItem
+                        key={category.id}
+                        value={category.category_name}
+                      >
+                        {category.category_name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem
+                      value="add_new"
+                      className="font-semibold"
+                      style={{ color: "var(--secondary)" }}
+                    >
+                      + Add New Category
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             ) : (
               <div className="space-y-2">
                 <Input

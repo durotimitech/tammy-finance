@@ -142,7 +142,7 @@ export default function LiabilitiesSection() {
             <span className="text-sm text-gray-600">Total Owed</span>
             <span
               className="text-xl font-semibold"
-              style={{ color: "var(--red)" }}
+              style={{ color: "var(--secondary)" }}
             >
               {formatCurrency(totalOwed)}
             </span>
