@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, DollarSign } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import {
   useIncomeSources,
   useCreateIncomeSource,
@@ -23,6 +24,8 @@ export default function IncomeSection() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingIncome, setEditingIncome] = useState<IncomeSource | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [incomeToDelete, setIncomeToDelete] = useState<string | null>(null);
 
   const totalIncome = incomeSources.reduce(
     (sum, income) => sum + Number(income.amount),
@@ -51,9 +54,15 @@ export default function IncomeSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this income source?")) {
-      await deleteIncome.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setIncomeToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (incomeToDelete) {
+      await deleteIncome.mutateAsync(incomeToDelete);
+      setIncomeToDelete(null);
     }
   };
 
@@ -151,6 +160,20 @@ export default function IncomeSection() {
           isLoading={createIncome.isPending || updateIncome.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setIncomeToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Income Source"
+        message="Are you sure you want to delete this income source? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

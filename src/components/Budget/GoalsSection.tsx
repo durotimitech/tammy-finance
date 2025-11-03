@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, Target } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import {
   useBudgetGoals,
   useIncomeSources,
@@ -40,6 +41,8 @@ export default function GoalsSection() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<BudgetGoal | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 
   const totalIncome = incomeSources.reduce(
     (sum, income) => sum + Number(income.amount),
@@ -73,9 +76,15 @@ export default function GoalsSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this budget goal?")) {
-      await deleteGoal.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setGoalToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (goalToDelete) {
+      await deleteGoal.mutateAsync(goalToDelete);
+      setGoalToDelete(null);
     }
   };
 
@@ -191,6 +200,20 @@ export default function GoalsSection() {
           isLoading={createGoal.isPending || updateGoal.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setGoalToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Budget Goal"
+        message="Are you sure you want to delete this budget goal? All expenses linked to this goal will also be deleted. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

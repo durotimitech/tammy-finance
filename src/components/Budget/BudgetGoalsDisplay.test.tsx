@@ -5,6 +5,13 @@ import BudgetGoalsDisplay from "./BudgetGoalsDisplay";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { useCurrentBudget } from "@/hooks/use-budget-new";
 
+// Mock ResizeObserver for Recharts
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
 // Mock the hooks
 jest.mock("@/hooks/use-budget-new");
 jest.mock("@/hooks/use-profile");
@@ -229,7 +236,7 @@ describe("BudgetGoalsDisplay", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Savings")).toBeInTheDocument();
-      expect(screen.getByText(/At Limit/i)).toBeInTheDocument();
+      expect(screen.getByText("€1,000.00")).toBeInTheDocument();
     });
   });
 

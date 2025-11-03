@@ -11,6 +11,6 @@ echo "🏗️ Building the project"
 npm run build
 
 echo "🔍 Running tests"
-# npm run test
+npm run test
 
 echo "🎉 pre-commit hooks completed 🎉"

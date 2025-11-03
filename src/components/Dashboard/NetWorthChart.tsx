@@ -14,6 +14,7 @@ import {
   AreaChart,
 } from "recharts";
 import { Skeleton } from "@/components/Skeleton";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { queryKeys, useNetWorth } from "@/hooks/use-financial-data";
 import { apiClient } from "@/lib/api-client";
 import { formatCurrency, formatCompactNumber } from "@/lib/utils";
@@ -35,6 +36,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
     "90d",
   );
   const { data: netWorthData } = useNetWorth();
+  const { currency } = useCurrency();
 
   // Calculate date range
   const endDate = new Date();
@@ -170,7 +172,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Net Worth</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.netWorth)}
+                {formatCurrency(dataPoint.netWorth, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -179,7 +181,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Assets</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.assets)}
+                {formatCurrency(dataPoint.assets, currency)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
@@ -188,7 +190,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 <span className="text-xs text-gray-600">Liabilities</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
-                {formatCurrency(dataPoint.liabilities)}
+                {formatCurrency(dataPoint.liabilities, currency)}
               </span>
             </div>
           </div>
@@ -234,7 +236,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                   {trend.changePercentage.toFixed(1)}%
                 </span>
                 <span className="text-sm text-gray-500">
-                  ({formatCurrency(trend.change)})
+                  ({formatCurrency(trend.change, currency)})
                 </span>
               </div>
             )}
@@ -341,19 +343,22 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             <div>
               <p className="text-sm text-gray-500">Current Net Worth</p>
               <p className="text-lg font-semibold text-gray-900">
-                {formatCurrency(data[data.length - 1]?.netWorth || 0)}
+                {formatCurrency(data[data.length - 1]?.netWorth || 0, currency)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Assets</p>
               <p className="text-lg font-semibold text-blue-600">
-                {formatCurrency(data[data.length - 1]?.assets || 0)}
+                {formatCurrency(data[data.length - 1]?.assets || 0, currency)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Liabilities</p>
               <p className="text-lg font-semibold text-red-600">
-                {formatCurrency(data[data.length - 1]?.liabilities || 0)}
+                {formatCurrency(
+                  data[data.length - 1]?.liabilities || 0,
+                  currency,
+                )}
               </p>
             </div>
           </div>

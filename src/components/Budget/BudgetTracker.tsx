@@ -185,9 +185,7 @@ export default function BudgetTracker() {
         >
           <p className="text-sm text-gray-500 mb-1">Net Savings</p>
           <p
-            className={`text-2xl font-bold ${
-              netSavings >= 0 ? "text-green-600" : "text-red-600"
-            }`}
+            className={`text-2xl font-bold ${netSavings >= 0 ? "text-green-600" : "text-red-600"}`}
           >
             {formatCurrency(netSavings)}
           </p>

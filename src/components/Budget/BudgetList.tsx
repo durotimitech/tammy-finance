@@ -5,6 +5,7 @@ import { Edit2, Trash2, Calendar, Tag } from "lucide-react";
 import { useState } from "react";
 import BudgetEditForm from "./BudgetEditForm";
 import { Button } from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { useDeleteBudget } from "@/hooks/useBudgets";
 import { Budget } from "@/types/budget";
 
@@ -16,6 +17,8 @@ interface BudgetListProps {
 export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const deleteBudget = useDeleteBudget();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -25,8 +28,14 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this budget?")) {
-      deleteBudget.mutate(id);
+    setBudgetToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (budgetToDelete) {
+      deleteBudget.mutate(budgetToDelete);
+      setBudgetToDelete(null);
     }
   };
 
@@ -146,6 +155,20 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
           onClose={() => setEditingId(null)}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setBudgetToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Budget"
+        message="Are you sure you want to delete this budget? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

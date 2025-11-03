@@ -75,9 +75,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-gray-100 text-gray-900 font-medium"
+                      ? "text-white font-medium"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
+                  style={isActive ? { backgroundColor: "#ff5722" } : {}}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>

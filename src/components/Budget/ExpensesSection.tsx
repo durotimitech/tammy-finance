@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit2, Trash2, TrendingDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import {
   useCurrentBudget,
   useCreateBudgetExpense,
@@ -25,6 +26,8 @@ export default function ExpensesSection() {
   const [editingExpense, setEditingExpense] = useState<BudgetExpense | null>(
     null,
   );
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
 
   const totalExpenses = useMemo(
     () =>
@@ -58,9 +61,15 @@ export default function ExpensesSection() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this expense?")) {
-      await deleteExpense.mutateAsync(id);
+  const handleDelete = (id: string) => {
+    setExpenseToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (expenseToDelete) {
+      await deleteExpense.mutateAsync(expenseToDelete);
+      setExpenseToDelete(null);
     }
   };
 
@@ -197,6 +206,20 @@ export default function ExpensesSection() {
           isLoading={createExpense.isPending || updateExpense.isPending}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setExpenseToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Expense"
+        message="Are you sure you want to delete this expense? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDestructive={true}
+      />
     </div>
   );
 }

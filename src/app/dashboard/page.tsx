@@ -4,15 +4,20 @@ import { motion } from "framer-motion";
 import { Menu, X, TrendingUp, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import AssetDistributionChart from "@/components/Dashboard/Assets/AssetDistributionChart";
+import ExpensesDistributionChart from "@/components/Dashboard/Budget/ExpensesDistributionChart";
+import IncomeDistributionChart from "@/components/Dashboard/Budget/IncomeDistributionChart";
 import PathToFIChart from "@/components/Dashboard/FIRE/PathToFIChart";
 import FIRESummary from "@/components/Dashboard/FIRESummary";
 import LiabilitiesDistributionChart from "@/components/Dashboard/Liabilities/LiabilitiesDistributionChart";
+import MonthlyBudgetSummary from "@/components/Dashboard/MonthlyBudgetSummary";
 import MonthlyUpdateReminder from "@/components/Dashboard/MonthlyUpdateReminder";
 import NetWorthChart from "@/components/Dashboard/NetWorthChart";
 import NetWorthSummary from "@/components/Dashboard/NetWorthSummary";
+import RecentTransactions from "@/components/Dashboard/RecentTransactions";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import ValueCard from "@/components/ValueCard";
+import { useCurrentBudget, usePreviousBudget } from "@/hooks/use-budget-data";
 import { useAssets, useLiabilities } from "@/hooks/use-financial-data";
 
 export default function DashboardPage() {
@@ -23,6 +28,10 @@ export default function DashboardPage() {
   const { data: assets = [], isLoading: isLoadingAssets } = useAssets();
   const { data: liabilities = [], isLoading: isLoadingLiabilities } =
     useLiabilities();
+  const { data: currentBudget, isLoading: isLoadingCurrentBudget } =
+    useCurrentBudget();
+  const { data: previousBudget, isLoading: isLoadingPreviousBudget } =
+    usePreviousBudget();
 
   return (
     <div className="relative flex h-screen bg-gray-50">
@@ -93,23 +102,65 @@ export default function DashboardPage() {
             {/* Monthly Update Reminder */}
             <MonthlyUpdateReminder />
 
-            {/* Net Worth and FIRE Summary */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              <NetWorthSummary />
-              <FIRESummary />
-            </div>
+            {/* Top Section: Cards and Recent Transactions */}
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 sm:gap-6">
+              {/* Left Column: Cards in 2-column grid */}
+              <div className="xl:col-span-3 space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <NetWorthSummary />
+                  <FIRESummary />
 
-            {/* Path to FI Chart */}
-            <div className="w-full overflow-x-auto">
-              <PathToFIChart />
-            </div>
+                  {/* Assets Value Card */}
+                  <ValueCard
+                    title="Total Assets"
+                    value={assets.reduce(
+                      (sum, asset) => sum + Number(asset.value),
+                      0,
+                    )}
+                    description="Current value of all your assets"
+                    icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+                    href="/dashboard/assets"
+                    isLoading={isLoadingAssets}
+                    testId="total-assets-card"
+                  />
 
-            {/* Historical Chart */}
-            <div className="w-full overflow-x-auto">
-              <NetWorthChart refreshKey={refreshKey} />
-            </div>
+                  {/* Liabilities Value Card */}
+                  <ValueCard
+                    title="Total Liabilities"
+                    value={liabilities.reduce(
+                      (sum, liability) => sum + Number(liability.amount_owed),
+                      0,
+                    )}
+                    description="Current value of all your liabilities"
+                    icon={<TrendingDown className="w-5 h-5 text-red-400" />}
+                    href="/dashboard/liabilities"
+                    isLoading={isLoadingLiabilities}
+                    testId="total-liabilities-card"
+                  />
+                </div>
 
-            {/* Distribution Charts Side-by-Side */}
+                {/* Monthly Budget Summary */}
+                <MonthlyBudgetSummary
+                  monthlyIncome={currentBudget?.total_income || 0}
+                  monthlyExpenses={currentBudget?.total_expenses || 0}
+                  previousMonthIncome={previousBudget?.total_income}
+                  previousMonthExpenses={previousBudget?.total_expenses}
+                  isLoading={isLoadingCurrentBudget || isLoadingPreviousBudget}
+                />
+              </div>
+
+              {/* Right Column: Recent Transactions */}
+              <div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <RecentTransactions />
+                </motion.div>
+              </div>
+            </div>
+            {/* Distribution Charts - Side by Side */}
             {(!isLoadingAssets || !isLoadingLiabilities) &&
               (assets.length > 0 || liabilities.length > 0) && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -118,7 +169,7 @@ export default function DashboardPage() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
                     >
                       <AssetDistributionChart assets={assets} />
                     </motion.div>
@@ -129,7 +180,7 @@ export default function DashboardPage() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
                     >
                       <LiabilitiesDistributionChart
                         liabilities={liabilities}
@@ -140,35 +191,46 @@ export default function DashboardPage() {
                 </div>
               )}
 
-            {/* Assets and Liabilities Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              {/* Assets Value Card */}
-              <ValueCard
-                title="Total Assets"
-                value={assets.reduce(
-                  (sum, asset) => sum + Number(asset.value),
-                  0,
-                )}
-                description="Current value of all your assets"
-                icon={<TrendingUp className="w-5 h-5 text-green-500" />}
-                href="/dashboard/assets"
-                isLoading={isLoadingAssets}
-                testId="total-assets-card"
-              />
+            {/* Budget Distribution Charts */}
+            {!isLoadingCurrentBudget &&
+              currentBudget &&
+              (currentBudget.income_sources.length > 0 ||
+                currentBudget.goals.some((g) => g.spent_amount > 0)) && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Income Distribution Chart */}
+                  {currentBudget.income_sources.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      <IncomeDistributionChart
+                        incomeSources={currentBudget.income_sources}
+                      />
+                    </motion.div>
+                  )}
 
-              {/* Liabilities Value Card */}
-              <ValueCard
-                title="Total Liabilities"
-                value={liabilities.reduce(
-                  (sum, liability) => sum + Number(liability.amount_owed),
-                  0,
-                )}
-                description="Current value of all your liabilities"
-                icon={<TrendingDown className="w-5 h-5 text-red-400" />}
-                href="/dashboard/liabilities"
-                isLoading={isLoadingLiabilities}
-                testId="total-liabilities-card"
-              />
+                  {/* Expenses Distribution Chart */}
+                  {currentBudget.goals.some((g) => g.spent_amount > 0) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                      <ExpensesDistributionChart goals={currentBudget.goals} />
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+            {/* Path to FI Chart */}
+            <div className="w-full overflow-x-auto">
+              <PathToFIChart />
+            </div>
+
+            {/* Historical Chart */}
+            <div className="w-full overflow-x-auto">
+              <NetWorthChart refreshKey={refreshKey} />
             </div>
           </motion.div>
         </main>

@@ -51,11 +51,8 @@ describe("Sidebar", () => {
     render(<Sidebar />);
 
     const settingsLink = screen.getByRole("link", { name: /settings/i });
-    expect(settingsLink).toHaveClass(
-      "bg-gray-100",
-      "text-gray-900",
-      "font-medium",
-    );
+    expect(settingsLink).toHaveClass("text-white", "font-medium");
+    expect(settingsLink).toHaveStyle({ backgroundColor: "#ff5722" });
   });
 
   it("renders Settings icon", () => {
