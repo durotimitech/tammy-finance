@@ -157,7 +157,7 @@ export default function AddLiabilityModal({
                 id="category"
                 value={formData.category}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 required
               >
                 <option value="">Select a category</option>
@@ -229,7 +229,7 @@ export default function AddLiabilityModal({
               type="button"
               onClick={onClose}
               variant="secondary"
-              className="flex-1 bg-transparent border border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="flex-1 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50"
               disabled={isLoading}
             >
               Cancel

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import {
   useUpdatePreferences,
@@ -81,15 +82,15 @@ export default function FIREForm() {
             Monthly Expenses
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
               {currencySymbol}
             </span>
-            <input
+            <Input
               type="number"
               id="monthly_expenses"
               value={formData.monthly_expenses}
               onChange={(e) => handleChange("monthly_expenses", e.target.value)}
-              className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="pl-8"
               step="0.01"
               min="0"
               required
@@ -108,15 +109,15 @@ export default function FIREForm() {
             Monthly Savings
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
               {currencySymbol}
             </span>
-            <input
+            <Input
               type="number"
               id="monthly_savings"
               value={formData.monthly_savings}
               onChange={(e) => handleChange("monthly_savings", e.target.value)}
-              className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="pl-8"
               step="0.01"
               min="0"
               required
@@ -134,12 +135,11 @@ export default function FIREForm() {
           >
             Withdrawal Rate (%)
           </label>
-          <input
+          <Input
             type="number"
             id="withdrawal_rate"
             value={formData.withdrawal_rate}
             onChange={(e) => handleChange("withdrawal_rate", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="1"
             max="10"
@@ -157,12 +157,11 @@ export default function FIREForm() {
           >
             Expected Investment Return (%)
           </label>
-          <input
+          <Input
             type="number"
             id="investment_return"
             value={formData.investment_return}
             onChange={(e) => handleChange("investment_return", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="0"
             max="100"
@@ -180,12 +179,11 @@ export default function FIREForm() {
           >
             Inflation Rate (%)
           </label>
-          <input
+          <Input
             type="number"
             id="inflation"
             value={formData.inflation}
             onChange={(e) => handleChange("inflation", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="0"
             max="100"
@@ -205,6 +203,7 @@ export default function FIREForm() {
         <Button
           type="submit"
           className="w-full"
+          variant="secondary"
           disabled={updatePreferences.isPending}
           loading={updatePreferences.isPending}
         >

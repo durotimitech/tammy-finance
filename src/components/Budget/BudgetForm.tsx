@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { useCreateBudget } from "@/hooks/useBudgets";
 import { BudgetCategory, BudgetPeriod } from "@/types/budget";
 
@@ -86,7 +87,7 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
               >
                 Budget Name
               </label>
-              <input
+              <Input
                 type="text"
                 id="name"
                 required
@@ -94,7 +95,6 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
                 placeholder="e.g., Monthly Groceries"
               />
             </div>
@@ -106,7 +106,7 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
               >
                 Amount
               </label>
-              <input
+              <Input
                 type="number"
                 id="amount"
                 required
@@ -116,7 +116,6 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
                 placeholder="0.00"
               />
             </div>
@@ -137,7 +136,7 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                     category: e.target.value as BudgetCategory,
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -163,7 +162,7 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                     period: e.target.value as BudgetPeriod,
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
                 {periods.map((period) => (
                   <option key={period} value={period}>

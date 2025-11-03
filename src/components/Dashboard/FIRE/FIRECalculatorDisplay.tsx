@@ -80,46 +80,6 @@ export default function FIRECalculatorDisplay() {
     <div className="space-y-4 sm:space-y-6">
       <FIREMetrics calculation={calculation} />
       <FIREProgress calculation={calculation} />
-
-      {/* Additional insights */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white rounded-xl p-4 sm:p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
-        <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
-          Tips to Reach FIRE Faster
-        </h3>
-        <ul className="space-y-2 sm:space-y-3">
-          <li className="flex items-start">
-            <span className="text-primary mr-2 flex-shrink-0">•</span>
-            <span className="text-gray-700 text-sm sm:text-base">
-              Increase your savings rate - even a 5% increase can shave years
-              off your timeline
-            </span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-primary mr-2 flex-shrink-0">•</span>
-            <span className="text-gray-700 text-sm sm:text-base">
-              Reduce monthly expenses to lower your FIRE number
-            </span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-primary mr-2 flex-shrink-0">•</span>
-            <span className="text-gray-700 text-sm sm:text-base">
-              Invest in low-cost index funds for steady growth
-            </span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-primary mr-2 flex-shrink-0">•</span>
-            <span className="text-gray-700 text-sm sm:text-base">
-              Consider side hustles to boost your monthly savings
-            </span>
-          </li>
-        </ul>
-      </motion.div>
     </div>
   );
 }

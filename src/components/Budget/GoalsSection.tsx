@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, Target } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { Input } from "@/components/ui/Input";
 import {
   useBudgetGoals,
   useIncomeSources,
@@ -275,14 +276,13 @@ function GoalForm({
             >
               Category Name
             </label>
-            <input
+            <Input
               id="goal-category"
               type="text"
               value={formData.category_name}
               onChange={(e) =>
                 setFormData({ ...formData, category_name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Needs, Wants, Savings, Trip"
               required
             />
@@ -294,14 +294,13 @@ function GoalForm({
             >
               Percentage (%)
             </label>
-            <input
+            <Input
               id="goal-percentage"
               type="number"
               value={formData.percentage}
               onChange={(e) =>
                 setFormData({ ...formData, percentage: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0.0"
               step="0.1"
               min="0"

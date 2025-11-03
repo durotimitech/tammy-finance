@@ -5,6 +5,7 @@ import { Plus, Edit2, Trash2, TrendingDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import { Input } from "@/components/ui/Input";
 import {
   useCurrentBudget,
   useCreateBudgetExpense,
@@ -293,7 +294,7 @@ function ExpenseForm({
               onChange={(e) =>
                 setFormData({ ...formData, goal_id: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400"
               required
             >
               {goals.map((goal) => (
@@ -310,14 +311,13 @@ function ExpenseForm({
             >
               Name
             </label>
-            <input
+            <Input
               id="expense-name"
               type="text"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Groceries, Rent, Coffee"
               required
             />
@@ -330,17 +330,17 @@ function ExpenseForm({
               Amount
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
                 {currencySymbol}
               </span>
-              <input
+              <Input
                 id="expense-amount"
                 type="number"
                 value={formData.amount}
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="pl-8"
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -355,14 +355,13 @@ function ExpenseForm({
             >
               Date
             </label>
-            <input
+            <Input
               id="expense-date"
               type="date"
               value={formData.expense_date}
               onChange={(e) =>
                 setFormData({ ...formData, expense_date: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>

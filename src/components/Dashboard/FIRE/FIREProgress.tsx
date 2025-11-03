@@ -45,7 +45,7 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
               animate={{ width: `${progressPercentage}%` }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="h-full"
-              style={{ backgroundColor: "var(--green)" }}
+              style={{ backgroundColor: "var(--secondary)" }}
             />
           </div>
 
@@ -89,47 +89,6 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
             </p>
           </div>
         </div>
-
-        {/* Message */}
-        {isAchieved ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg"
-            style={{
-              backgroundColor: "rgba(106, 242, 188, 0.1)",
-              borderColor: "var(--green)",
-              borderWidth: "1px",
-              borderStyle: "solid",
-            }}
-          >
-            <p
-              className="font-medium text-center text-sm sm:text-base"
-              style={{ color: "var(--green)" }}
-            >
-              🎉 Congratulations! You&apos;ve reached Financial Independence!
-            </p>
-            <p
-              className="text-xs sm:text-sm text-center mt-1"
-              style={{ color: "var(--green)" }}
-            >
-              You can now sustain your lifestyle with a{" "}
-              {calculation.withdrawalRate}% annual withdrawal rate.
-            </p>
-          </motion.div>
-        ) : (
-          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800 text-xs sm:text-sm">
-              At your current savings rate of{" "}
-              {formatCurrency(calculation.monthlySavings)}/month, you&apos;ll
-              reach financial independence in approximately{" "}
-              {calculation.yearsToFIRE >= 999
-                ? "many"
-                : calculation.yearsToFIRE}{" "}
-              {calculation.yearsToFIRE === 1 ? "year" : "years"}.
-            </p>
-          </div>
-        )}
       </div>
     </motion.div>
   );
