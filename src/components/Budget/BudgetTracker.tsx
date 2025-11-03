@@ -160,7 +160,10 @@ export default function BudgetTracker() {
           style={{ borderColor: "#e5e7eb" }}
         >
           <p className="text-sm text-gray-500 mb-1">Total Income</p>
-          <p className="text-2xl font-bold" style={{ color: "var(--green)" }}>
+          <p
+            className="text-2xl font-bold"
+            style={{ color: "var(--secondary)" }}
+          >
             {formatCurrency(totalIncome)}
           </p>
         </motion.div>
@@ -172,7 +175,10 @@ export default function BudgetTracker() {
           style={{ borderColor: "#e5e7eb" }}
         >
           <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
-          <p className="text-2xl font-bold" style={{ color: "var(--red)" }}>
+          <p
+            className="text-2xl font-bold"
+            style={{ color: "var(--secondary)" }}
+          >
             {formatCurrency(totalExpenses)}
           </p>
         </motion.div>
@@ -186,7 +192,7 @@ export default function BudgetTracker() {
           <p className="text-sm text-gray-500 mb-1">Net Savings</p>
           <p
             className="text-2xl font-bold"
-            style={{ color: netSavings >= 0 ? "var(--green)" : "var(--red)" }}
+            style={{ color: "var(--secondary)" }}
           >
             {formatCurrency(netSavings)}
           </p>

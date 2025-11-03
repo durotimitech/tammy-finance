@@ -86,6 +86,7 @@ export default function IncomeSection() {
           }}
           size="sm"
           className="flex items-center gap-2"
+          variant="secondary"
         >
           <Plus className="w-4 h-4" />
           Add Income
