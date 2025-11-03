@@ -112,7 +112,7 @@ export default function AccountConnectionModal({
             Cancel
           </Button>
           <Button
-            variant="default"
+            variant="primary"
             onClick={handleConnect}
             size="sm"
             disabled={!selectedIntegration}

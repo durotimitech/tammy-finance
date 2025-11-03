@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, DollarSign } from "lucide-react";
-import { useState } from "react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { Input } from "@/components/ui/Input";
@@ -16,7 +16,15 @@ import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { getCurrencySymbol } from "@/lib/currency";
 import { IncomeSource, CreateIncomeSourceDto } from "@/types/budget-new";
 
-export default function IncomeSection() {
+interface IncomeSectionProps {
+  triggerForm?: boolean;
+  onFormTriggered?: () => void;
+}
+
+export default function IncomeSection({
+  triggerForm = false,
+  onFormTriggered,
+}: IncomeSectionProps = {}) {
   const { data: incomeSources = [], isLoading } = useIncomeSources();
   const createIncome = useCreateIncomeSource();
   const updateIncome = useUpdateIncomeSource();
@@ -32,6 +40,14 @@ export default function IncomeSection() {
     (sum, income) => sum + Number(income.amount),
     0,
   );
+
+  useEffect(() => {
+    if (triggerForm) {
+      setEditingIncome(null);
+      setShowForm(true);
+      onFormTriggered?.();
+    }
+  }, [triggerForm, onFormTriggered]);
 
   const handleSubmit = async (data: CreateIncomeSourceDto) => {
     try {
@@ -114,20 +130,9 @@ export default function IncomeSection() {
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group hover:bg-gray-100 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="p-2 rounded-lg"
-                      style={{ backgroundColor: "rgba(106, 242, 188, 0.1)" }}
-                    >
-                      <DollarSign
-                        className="w-4 h-4"
-                        style={{ color: "var(--green)" }}
-                      />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{income.name}</p>
-                      <p className="text-sm text-gray-500">{income.category}</p>
-                    </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{income.name}</p>
+                    <p className="text-sm text-gray-500">{income.category}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -290,21 +295,22 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
           </div>
           <div className="flex gap-3 pt-4">
             <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {income ? "Update" : "Add Income"}
-            </Button>
-            <Button
               type="button"
-              variant="secondary"
+              variant="primary"
               onClick={onClose}
               className="flex-1"
               disabled={isLoading}
             >
               Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1"
+              variant="secondary"
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              {income ? "Update" : "Add Income"}
             </Button>
           </div>
         </form>

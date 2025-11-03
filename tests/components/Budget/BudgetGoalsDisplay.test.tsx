@@ -236,7 +236,7 @@ describe("BudgetGoalsDisplay", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Savings")).toBeInTheDocument();
-      expect(screen.getByText("€1,000.00")).toBeInTheDocument();
+      expect(screen.getByText(/€1,000\.00 \/ €1,000\.00/)).toBeInTheDocument();
     });
   });
 

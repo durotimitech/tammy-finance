@@ -1,15 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Target } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import { useCurrentBudget } from "@/hooks/use-budget-new";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
-
-const COLORS = {
-  spent: "#ff5722",
-  remaining: "#10b981",
-};
 
 export default function BudgetGoalsDisplay() {
   const { data: budget, isLoading } = useCurrentBudget();
@@ -22,9 +15,13 @@ export default function BudgetGoalsDisplay() {
         style={{ borderColor: "#e5e7eb" }}
       >
         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-64 bg-gray-200 rounded"></div>
+            <div key={i} className="space-y-3">
+              <div className="h-5 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-2 bg-gray-200 rounded-full"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3 mx-auto"></div>
+            </div>
           ))}
         </div>
       </div>
@@ -53,17 +50,15 @@ export default function BudgetGoalsDisplay() {
         Budget Goals & Spending
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-4">
         {budget.goals.map((goal, index) => {
           const spentAmount = Number(goal.spent_amount);
           const allocatedAmount = Number(goal.allocated_amount);
-          const remainingAmount = Math.max(0, Number(goal.remaining_amount));
           const isOverBudget = spentAmount > allocatedAmount;
-
-          const chartData = [
-            { name: "Spent", value: spentAmount },
-            { name: "Remaining", value: remainingAmount },
-          ];
+          const progressPercentage = Math.min(
+            (spentAmount / allocatedAmount) * 100,
+            100,
+          );
 
           return (
             <motion.div
@@ -73,50 +68,36 @@ export default function BudgetGoalsDisplay() {
               transition={{ delay: index * 0.1 }}
               className="flex flex-col"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <Target className="w-5 h-5 text-purple-600" />
+              <div className="mb-3">
                 <h4 className="font-semibold text-gray-900">
                   {goal.category_name}
                 </h4>
               </div>
 
-              <div className="h-48 mb-3">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={70}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      <Cell fill={COLORS.spent} />
-                      <Cell fill={COLORS.remaining} />
-                    </Pie>
-                    <Legend
-                      verticalAlign="bottom"
-                      height={36}
-                      formatter={(value, entry) => {
-                        const payload = entry?.payload as
-                          | { value: number }
-                          | undefined;
-                        return `${value}: ${formatCurrency(payload?.value ?? 0)}`;
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="mb-3">
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercentage}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="h-full"
+                    style={{
+                      backgroundColor: isOverBudget
+                        ? "var(--red)"
+                        : "var(--secondary)",
+                    }}
+                  />
+                </div>
+                <p className="text-sm text-gray-600 mt-2 text-center">
+                  {formatCurrency(spentAmount)} /{" "}
+                  {formatCurrency(allocatedAmount)}
+                </p>
               </div>
 
               <div className="text-center">
-                <p className="text-sm text-gray-500">Allocated</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {formatCurrency(allocatedAmount)}
-                </p>
                 {isOverBudget && (
                   <p
-                    className="text-sm font-medium mt-1"
+                    className="text-sm font-medium"
                     style={{ color: "var(--red)" }}
                   >
                     Over Budget

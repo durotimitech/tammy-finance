@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, Target } from "lucide-react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
@@ -113,6 +113,7 @@ export default function GoalsSection() {
           }}
           size="sm"
           className="flex items-center gap-2"
+          variant="secondary"
           disabled={totalIncome === 0}
         >
           <Plus className="w-4 h-4" />
@@ -151,19 +152,14 @@ export default function GoalsSection() {
                   className="p-3 bg-gray-50 rounded-lg group hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-50 rounded-lg">
-                        <Target className="w-4 h-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {goal.category_name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {Number(goal.percentage).toFixed(1)}% •{" "}
-                          {formatCurrency(allocatedAmount)}
-                        </p>
-                      </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {goal.category_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {Number(goal.percentage).toFixed(1)}% •{" "}
+                        {formatCurrency(allocatedAmount)}
+                      </p>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
@@ -196,6 +192,7 @@ export default function GoalsSection() {
         <GoalForm
           goal={editingGoal}
           currentTotalPercentage={totalPercentage}
+          totalIncome={totalIncome}
           onClose={() => {
             setShowForm(false);
             setEditingGoal(null);
@@ -225,6 +222,7 @@ export default function GoalsSection() {
 interface GoalFormProps {
   goal?: BudgetGoal | null;
   currentTotalPercentage: number;
+  totalIncome: number;
   onClose: () => void;
   onSubmit: (data: CreateBudgetGoalDto) => void;
   isLoading: boolean;
@@ -233,10 +231,12 @@ interface GoalFormProps {
 function GoalForm({
   goal,
   currentTotalPercentage,
+  totalIncome,
   onClose,
   onSubmit,
   isLoading,
 }: GoalFormProps) {
+  const { formatCurrency } = useCurrencyFormat();
   const [formData, setFormData] = useState({
     category_name: goal?.category_name || "",
     percentage: goal?.percentage?.toString() || "",
@@ -248,6 +248,9 @@ function GoalForm({
     currentTotalPercentage -
     currentGoalPercentage +
     (parseFloat(formData.percentage) || 0);
+
+  const calculatedAmount =
+    (totalIncome * (parseFloat(formData.percentage) || 0)) / 100;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,27 +310,39 @@ function GoalForm({
               max={maxPercentage > 100 ? undefined : maxPercentage}
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Current total: {newTotalPercentage.toFixed(1)}%
-            </p>
+            <div className="mt-1 space-y-0.5">
+              <p className="text-xs text-gray-500">
+                Current total: {newTotalPercentage.toFixed(1)}%
+              </p>
+              {parseFloat(formData.percentage) > 0 && totalIncome > 0 && (
+                <p
+                  className="text-xs font-medium"
+                  style={{ color: "var(--secondary)" }}
+                >
+                  Amount: {formatCurrency(calculatedAmount)} (
+                  {formData.percentage}% of {formatCurrency(totalIncome)})
+                </p>
+              )}
+            </div>
           </div>
           <div className="flex gap-3 pt-4">
             <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {goal ? "Update" : "Add Goal"}
-            </Button>
-            <Button
               type="button"
-              variant="secondary"
+              variant="primary"
               onClick={onClose}
               className="flex-1"
               disabled={isLoading}
             >
               Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="secondary"
+              className="flex-1"
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              {goal ? "Update" : "Add Goal"}
             </Button>
           </div>
         </form>

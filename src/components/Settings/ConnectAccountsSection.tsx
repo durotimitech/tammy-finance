@@ -133,7 +133,7 @@ export default function ConnectAccountsSection() {
             {/* Connect Account Button */}
             <Button
               onClick={handleConnectAccount}
-              variant="default"
+              variant="primary"
               size="sm"
               className="flex items-center gap-2"
             >

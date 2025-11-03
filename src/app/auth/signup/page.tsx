@@ -19,7 +19,7 @@ function SubmitButton() {
     <Button
       type="submit"
       loading={pending}
-      variant="default"
+      variant="primary"
       size="lg"
       className="w-full"
     >
@@ -150,7 +150,7 @@ export default function SignupPage() {
                 <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  variant="default"
+                  variant="primary"
                   size="sm"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                 >
@@ -182,7 +182,7 @@ export default function SignupPage() {
                 <Button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  variant="default"
+                  variant="primary"
                   size="sm"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                 >

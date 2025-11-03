@@ -9,6 +9,7 @@ import ExpensesSection from "./ExpensesSection";
 import GoalsSection from "./GoalsSection";
 import IncomeSection from "./IncomeSection";
 import { Skeleton } from "@/components/Skeleton";
+import { Button } from "@/components/ui/Button";
 import DashboardHeaderText from "@/components/ui/DashboardHeaderText";
 import {
   useCurrentBudget,
@@ -23,6 +24,8 @@ export default function BudgetTracker() {
   const { isLoading: goalsLoading } = useBudgetGoals();
   const { formatCurrency } = useCurrencyFormat();
   const [activeTab, setActiveTab] = useState<"current" | "history">("current");
+  const [triggerIncomeForm, setTriggerIncomeForm] = useState(false);
+  const [triggerExpenseForm, setTriggerExpenseForm] = useState(false);
 
   // Show full page skeleton only while data is actively loading
   // This prevents jitter when data is being copied for a new month
@@ -156,31 +159,51 @@ export default function BudgetTracker() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl p-4 sm:p-6 border"
+          className="bg-white rounded-xl p-4 sm:p-6 border flex flex-col"
           style={{ borderColor: "#e5e7eb" }}
         >
-          <p className="text-sm text-gray-500 mb-1">Total Income</p>
-          <p
-            className="text-2xl font-bold"
-            style={{ color: "var(--secondary)" }}
+          <div className="flex-1">
+            <p className="text-sm text-gray-500 mb-1">Total Income</p>
+            <p
+              className="text-2xl font-bold"
+              style={{ color: "var(--secondary)" }}
+            >
+              {formatCurrency(totalIncome)}
+            </p>
+          </div>
+          <Button
+            onClick={() => setTriggerIncomeForm(true)}
+            variant="secondary"
+            size="sm"
+            className="mt-4"
           >
-            {formatCurrency(totalIncome)}
-          </p>
+            Add Income
+          </Button>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl p-4 sm:p-6 border"
+          className="bg-white rounded-xl p-4 sm:p-6 border flex flex-col"
           style={{ borderColor: "#e5e7eb" }}
         >
-          <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
-          <p
-            className="text-2xl font-bold"
-            style={{ color: "var(--secondary)" }}
+          <div className="flex-1">
+            <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
+            <p
+              className="text-2xl font-bold"
+              style={{ color: "var(--secondary)" }}
+            >
+              {formatCurrency(totalExpenses)}
+            </p>
+          </div>
+          <Button
+            onClick={() => setTriggerExpenseForm(true)}
+            variant="secondary"
+            size="sm"
+            className="mt-4"
           >
-            {formatCurrency(totalExpenses)}
-          </p>
+            Add Expense
+          </Button>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -234,7 +257,10 @@ export default function BudgetTracker() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <IncomeSection />
+              <IncomeSection
+                triggerForm={triggerIncomeForm}
+                onFormTriggered={() => setTriggerIncomeForm(false)}
+              />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -261,7 +287,10 @@ export default function BudgetTracker() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <ExpensesSection />
+              <ExpensesSection
+                triggerForm={triggerExpenseForm}
+                onFormTriggered={() => setTriggerExpenseForm(false)}
+              />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}

@@ -87,6 +87,42 @@ export default function ExpenseDistributionChart() {
     return null;
   };
 
+  // Custom label renderer to prevent text truncation
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderCustomizedLabel = (props: any) => {
+    const { cx, cy, midAngle, outerRadius, name, percent } = props;
+
+    // Hide labels for very small slices
+    if ((percent ?? 0) * 100 < 3) return null;
+
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 20; // Position labels outside the pie
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    // Determine text anchor based on position
+    const textAnchor = x > cx ? "start" : "end";
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#374151"
+        textAnchor={textAnchor}
+        dominantBaseline="central"
+        className="text-xs font-medium"
+        style={{ fontSize: "12px" }}
+      >
+        <tspan x={x} dy="0">
+          {name}
+        </tspan>
+        <tspan x={x} dy="14" fill="#6B7280" style={{ fontSize: "11px" }}>
+          {((percent ?? 0) * 100).toFixed(0)}%
+        </tspan>
+      </text>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -103,11 +139,9 @@ export default function ExpenseDistributionChart() {
             data={chartData}
             cx="50%"
             cy="50%"
-            labelLine={false}
-            label={({ name, percent }) =>
-              `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
-            }
-            outerRadius={100}
+            labelLine={true}
+            label={renderCustomizedLabel}
+            outerRadius={80}
             fill="#8884d8"
             dataKey="value"
           >

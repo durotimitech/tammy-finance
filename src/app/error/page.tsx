@@ -34,13 +34,13 @@ function ErrorContent() {
 
         <div className="mt-8 space-y-4">
           <Link href="/auth/login" className="block">
-            <Button variant="default" size="lg" className="w-full">
+            <Button variant="primary" size="lg" className="w-full">
               Go to Login
             </Button>
           </Link>
           <Link href="/" className="block">
             <Button
-              variant="default"
+              variant="primary"
               size="lg"
               className="w-full bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50"
             >

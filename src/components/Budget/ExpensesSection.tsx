@@ -1,11 +1,18 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit2, Trash2, TrendingDown } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { Input } from "@/components/ui/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   useCurrentBudget,
   useCreateBudgetExpense,
@@ -16,7 +23,15 @@ import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import { getCurrencySymbol } from "@/lib/currency";
 import { BudgetExpense, CreateBudgetExpenseDto } from "@/types/budget-new";
 
-export default function ExpensesSection() {
+interface ExpensesSectionProps {
+  triggerForm?: boolean;
+  onFormTriggered?: () => void;
+}
+
+export default function ExpensesSection({
+  triggerForm = false,
+  onFormTriggered,
+}: ExpensesSectionProps = {}) {
   const { data: budget, isLoading } = useCurrentBudget();
   const createExpense = useCreateBudgetExpense();
   const updateExpense = useUpdateBudgetExpense();
@@ -39,6 +54,14 @@ export default function ExpensesSection() {
       ) || 0,
     [budget],
   );
+
+  useEffect(() => {
+    if (triggerForm && budget) {
+      setEditingExpense(null);
+      setShowForm(true);
+      onFormTriggered?.();
+    }
+  }, [triggerForm, budget, onFormTriggered]);
 
   const handleSubmit = async (data: CreateBudgetExpenseDto) => {
     try {
@@ -120,6 +143,7 @@ export default function ExpensesSection() {
           }}
           size="sm"
           className="flex items-center gap-2"
+          variant="secondary"
           disabled={!budget || budget.goals.length === 0}
         >
           <Plus className="w-4 h-4" />
@@ -154,28 +178,18 @@ export default function ExpensesSection() {
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group hover:bg-gray-100 transition-colors"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="p-2 rounded-lg"
-                      style={{ backgroundColor: "rgba(227, 73, 75, 0.1)" }}
-                    >
-                      <TrendingDown
-                        className="w-4 h-4"
-                        style={{ color: "var(--red)" }}
-                      />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {expense.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {expense.goal_name} • {formatDate(expense.expense_date)}
-                      </p>
-                    </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{expense.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {expense.goal_name} • {formatDate(expense.expense_date)}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <p className="font-semibold" style={{ color: "var(--red)" }}>
+                <div className="flex items-center gap-3 ml-auto">
+                  <p
+                    className="font-semibold text-right"
+                    style={{ color: "var(--red)" }}
+                  >
                     -{formatCurrency(Number(expense.amount))}
                   </p>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -288,21 +302,27 @@ function ExpenseForm({
             >
               Category
             </label>
-            <select
-              id="expense-goal"
-              value={formData.goal_id}
-              onChange={(e) =>
-                setFormData({ ...formData, goal_id: e.target.value })
+            <Select
+              value={formData.goal_id || undefined}
+              onValueChange={(value) =>
+                setFormData({ ...formData, goal_id: value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400"
               required
             >
-              {goals.map((goal) => (
-                <option key={goal.id} value={goal.id}>
-                  {goal.category_name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger
+                id="expense-goal"
+                className="w-full bg-white border-gray-300 text-gray-900 hover:bg-gray-50"
+              >
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {goals.map((goal) => (
+                  <SelectItem key={goal.id} value={goal.id}>
+                    {goal.category_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label
@@ -367,21 +387,22 @@ function ExpenseForm({
           </div>
           <div className="flex gap-3 pt-4">
             <Button
-              type="submit"
-              className="flex-1"
-              disabled={isLoading}
-              loading={isLoading}
-            >
-              {expense ? "Update" : "Add Expense"}
-            </Button>
-            <Button
               type="button"
-              variant="secondary"
+              variant="primary"
               onClick={onClose}
               className="flex-1"
               disabled={isLoading}
             >
               Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1"
+              variant="secondary"
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              {expense ? "Update" : "Add Expense"}
             </Button>
           </div>
         </form>
