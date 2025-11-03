@@ -118,7 +118,12 @@ export default function DashboardPage() {
                       0,
                     )}
                     description="Current value of all your assets"
-                    icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+                    icon={
+                      <TrendingUp
+                        className="w-5 h-5"
+                        style={{ color: "var(--secondary)" }}
+                      />
+                    }
                     href="/dashboard/assets"
                     isLoading={isLoadingAssets}
                     testId="total-assets-card"
@@ -132,7 +137,12 @@ export default function DashboardPage() {
                       0,
                     )}
                     description="Current value of all your liabilities"
-                    icon={<TrendingDown className="w-5 h-5 text-red-400" />}
+                    icon={
+                      <TrendingDown
+                        className="w-5 h-5"
+                        style={{ color: "var(--secondary)" }}
+                      />
+                    }
                     href="/dashboard/liabilities"
                     isLoading={isLoadingLiabilities}
                     testId="total-liabilities-card"

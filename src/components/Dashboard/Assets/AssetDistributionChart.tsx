@@ -10,7 +10,7 @@ interface AssetDistributionChartProps {
 }
 
 const ASSET_COLORS = [
-  "#8b5cf6", // Purple
+  "#6050DC", // Purple
   "#3b82f6", // Blue
   "#10b981", // Emerald
   "#f59e0b", // Amber

@@ -154,8 +154,14 @@ export default function ExpensesSection() {
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-red-50 rounded-lg">
-                      <TrendingDown className="w-4 h-4 text-red-600" />
+                    <div
+                      className="p-2 rounded-lg"
+                      style={{ backgroundColor: "rgba(227, 73, 75, 0.1)" }}
+                    >
+                      <TrendingDown
+                        className="w-4 h-4"
+                        style={{ color: "var(--red)" }}
+                      />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">
@@ -168,7 +174,7 @@ export default function ExpensesSection() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="font-semibold text-red-600">
+                  <p className="font-semibold" style={{ color: "var(--red)" }}>
                     -{formatCurrency(Number(expense.amount))}
                   </p>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -184,7 +190,10 @@ export default function ExpensesSection() {
                       className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
                       aria-label="Delete expense"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2
+                        className="w-4 h-4"
+                        style={{ color: "var(--red)" }}
+                      />
                     </button>
                   </div>
                 </div>
@@ -284,7 +293,7 @@ function ExpenseForm({
               onChange={(e) =>
                 setFormData({ ...formData, goal_id: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             >
               {goals.map((goal) => (
@@ -308,7 +317,7 @@ function ExpenseForm({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Groceries, Rent, Coffee"
               required
             />
@@ -331,7 +340,7 @@ function ExpenseForm({
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -353,7 +362,7 @@ function ExpenseForm({
               onChange={(e) =>
                 setFormData({ ...formData, expense_date: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>

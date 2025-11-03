@@ -177,7 +177,10 @@ export default function GoalsSection() {
                         className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
                         aria-label="Delete goal"
                       >
-                        <Trash2 className="w-4 h-4 text-red-600" />
+                        <Trash2
+                          className="w-4 h-4"
+                          style={{ color: "var(--red)" }}
+                        />
                       </button>
                     </div>
                   </div>
@@ -279,7 +282,7 @@ function GoalForm({
               onChange={(e) =>
                 setFormData({ ...formData, category_name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Needs, Wants, Savings, Trip"
               required
             />
@@ -298,7 +301,7 @@ function GoalForm({
               onChange={(e) =>
                 setFormData({ ...formData, percentage: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0.0"
               step="0.1"
               min="0"

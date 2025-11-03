@@ -115,7 +115,10 @@ export default function BudgetGoalsDisplay() {
                   {formatCurrency(allocatedAmount)}
                 </p>
                 {isOverBudget && (
-                  <p className="text-sm text-red-600 font-medium mt-1">
+                  <p
+                    className="text-sm font-medium mt-1"
+                    style={{ color: "var(--red)" }}
+                  >
                     Over Budget
                   </p>
                 )}

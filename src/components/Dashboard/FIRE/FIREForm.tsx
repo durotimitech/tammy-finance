@@ -89,7 +89,7 @@ export default function FIREForm() {
               id="monthly_expenses"
               value={formData.monthly_expenses}
               onChange={(e) => handleChange("monthly_expenses", e.target.value)}
-              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               step="0.01"
               min="0"
               required
@@ -116,7 +116,7 @@ export default function FIREForm() {
               id="monthly_savings"
               value={formData.monthly_savings}
               onChange={(e) => handleChange("monthly_savings", e.target.value)}
-              className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               step="0.01"
               min="0"
               required
@@ -139,7 +139,7 @@ export default function FIREForm() {
             id="withdrawal_rate"
             value={formData.withdrawal_rate}
             onChange={(e) => handleChange("withdrawal_rate", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="1"
             max="10"
@@ -162,7 +162,7 @@ export default function FIREForm() {
             id="investment_return"
             value={formData.investment_return}
             onChange={(e) => handleChange("investment_return", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="0"
             max="100"
@@ -185,7 +185,7 @@ export default function FIREForm() {
             id="inflation"
             value={formData.inflation}
             onChange={(e) => handleChange("inflation", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             step="0.1"
             min="0"
             max="100"

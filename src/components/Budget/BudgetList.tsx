@@ -136,7 +136,10 @@ export default function BudgetList({ budgets, isLoading }: BudgetListProps) {
                         variant="secondary"
                         size="sm"
                         onClick={() => handleDelete(budget.id)}
-                        className="p-2 hover:bg-red-50 hover:text-red-600"
+                        className="p-2 hover:bg-red-50"
+                        style={{
+                          color: "var(--red)",
+                        }}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

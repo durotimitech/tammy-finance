@@ -78,7 +78,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
                       ? "text-white font-medium"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
-                  style={isActive ? { backgroundColor: "#ff5722" } : {}}
+                  style={
+                    isActive ? { backgroundColor: "var(--secondary)" } : {}
+                  }
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>

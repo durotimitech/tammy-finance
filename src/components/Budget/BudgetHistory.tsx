@@ -125,14 +125,21 @@ export default function BudgetHistory() {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
                       {isPositive ? (
-                        <TrendingUp className="w-4 h-4 text-green-600" />
+                        <TrendingUp
+                          className="w-4 h-4"
+                          style={{ color: "var(--green)" }}
+                        />
                       ) : (
-                        <TrendingDown className="w-4 h-4 text-red-600" />
+                        <TrendingDown
+                          className="w-4 h-4"
+                          style={{ color: "var(--red)" }}
+                        />
                       )}
                       <span
-                        className={`font-semibold ${
-                          isPositive ? "text-green-600" : "text-red-600"
-                        }`}
+                        className="font-semibold"
+                        style={{
+                          color: isPositive ? "var(--green)" : "var(--red)",
+                        }}
                       >
                         {formatCurrency(month.net_savings)}
                       </span>
@@ -152,13 +159,16 @@ export default function BudgetHistory() {
                 <div className="grid grid-cols-2 gap-4 text-sm mb-2">
                   <div>
                     <p className="text-gray-500">Income</p>
-                    <p className="font-medium text-green-700">
+                    <p
+                      className="font-medium"
+                      style={{ color: "var(--green)" }}
+                    >
                       {formatCurrency(month.total_income)}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500">Expenses</p>
-                    <p className="font-medium text-red-700">
+                    <p className="font-medium" style={{ color: "var(--red)" }}>
                       {formatCurrency(month.total_expenses)}
                     </p>
                   </div>
@@ -205,7 +215,10 @@ export default function BudgetHistory() {
                                 </span>
                               </div>
                             </div>
-                            <p className="text-sm font-semibold text-red-600 ml-3">
+                            <p
+                              className="text-sm font-semibold ml-3"
+                              style={{ color: "var(--red)" }}
+                            >
                               {formatCurrency(expense.amount)}
                             </p>
                           </div>

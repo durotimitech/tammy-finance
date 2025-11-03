@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpCircle, ArrowDownCircle, Calendar } from "lucide-react";
+import { ArrowUp, ArrowDown, Calendar } from "lucide-react";
 import { Skeleton } from "@/components/Skeleton";
 import { useCurrentBudget } from "@/hooks/use-budget-new";
 import { useCurrencyFormat } from "@/hooks/use-currency-format";
@@ -93,17 +93,17 @@ export default function RecentTransactions() {
               transition={{ duration: 0.2, delay: index * 0.02 }}
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <div
-                className={`p-2 rounded-lg flex-shrink-0 ${
-                  transaction.type === "income" ? "bg-green-50" : "bg-red-50"
-                }`}
-              >
-                {transaction.type === "income" ? (
-                  <ArrowUpCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <ArrowDownCircle className="w-5 h-5 text-red-600" />
-                )}
-              </div>
+              {transaction.type === "income" ? (
+                <ArrowUp
+                  className="w-5 h-5 flex-shrink-0"
+                  style={{ color: "var(--secondary)" }}
+                />
+              ) : (
+                <ArrowDown
+                  className="w-5 h-5 flex-shrink-0"
+                  style={{ color: "var(--secondary)" }}
+                />
+              )}
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
@@ -122,11 +122,13 @@ export default function RecentTransactions() {
               </div>
 
               <p
-                className={`text-sm font-semibold whitespace-nowrap ${
-                  transaction.type === "income"
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+                className="text-sm font-semibold whitespace-nowrap"
+                style={{
+                  color:
+                    transaction.type === "income"
+                      ? "var(--green)"
+                      : "var(--red)",
+                }}
               >
                 {transaction.type === "income" ? "+" : "-"}
                 {formatCurrency(transaction.amount)}

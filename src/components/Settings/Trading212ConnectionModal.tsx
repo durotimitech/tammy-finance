@@ -190,7 +190,7 @@ export default function Trading212ConnectionModal({
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="Enter your Trading 212 API key"
                   disabled={isLoading}
-                  className="bg-white border-gray-300 text-black placeholder-gray-400"
+                  className="bg-white text-black placeholder-gray-400"
                 />
               </div>
 

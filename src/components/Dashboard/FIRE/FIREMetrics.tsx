@@ -41,8 +41,8 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
       label: "Current Net Worth",
       value: formatCurrencyCompact(calculation.currentNetWorth),
       icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "var(--green)",
+      bgColor: "rgba(106, 242, 188, 0.1)",
       description: "Your current financial position",
     },
     {
@@ -87,8 +87,11 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
             style={{ borderColor: "#e5e7eb" }}
           >
             <div className="flex items-start justify-between mb-2">
-              <div className={`p-2 rounded-lg ${metric.bgColor}`}>
-                <Icon className={`w-5 h-5 ${metric.color}`} />
+              <div
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: metric.bgColor }}
+              >
+                <Icon className="w-5 h-5" style={{ color: metric.color }} />
               </div>
             </div>
             <h3 className="text-sm font-medium text-gray-600 mb-1">

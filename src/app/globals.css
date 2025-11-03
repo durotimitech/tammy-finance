@@ -18,6 +18,8 @@
   --ring: #ff5722;
   --radius: 0.5rem;
   --input: #e5e7eb;
+  --green: #22c00d;
+  --red: #d34346;
 }
 
 @theme inline {
@@ -30,6 +32,8 @@
   --color-secondary: var(--secondary);
   --color-primary: var(--primary);
   --color-accent: var(--accent);
+  --color-green: var(--green);
+  --color-red: var(--red);
   --font-sans: var(--font-lato);
   --font-mono: var(--font-lato);
   --font-pirata: var(--font-pirata);
@@ -43,7 +47,7 @@
     --card: #1a1a1a;
     --card-foreground: #ededed;
     --border: #374151;
-    --secondary: #302f2f;
+    --secondary: #262626;
     --orange: #ff5722;
   }
 }
@@ -116,4 +120,8 @@ body {
 
 .font-pirata {
   font-family: var(--font-pirata), cursive;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

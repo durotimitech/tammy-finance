@@ -229,7 +229,7 @@ export default function AddLiabilityModal({
               type="button"
               onClick={onClose}
               variant="secondary"
-              className="flex-1 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="flex-1 bg-transparent border border-gray-200 text-gray-700 hover:bg-gray-50"
               disabled={isLoading}
             >
               Cancel

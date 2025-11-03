@@ -44,7 +44,8 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="h-full bg-green-500"
+              className="h-full"
+              style={{ backgroundColor: "var(--green)" }}
             />
           </div>
 
@@ -94,12 +95,24 @@ export default function FIREProgress({ calculation }: FIREProgressProps) {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg"
+            className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg"
+            style={{
+              backgroundColor: "rgba(106, 242, 188, 0.1)",
+              borderColor: "var(--green)",
+              borderWidth: "1px",
+              borderStyle: "solid",
+            }}
           >
-            <p className="text-green-800 font-medium text-center text-sm sm:text-base">
+            <p
+              className="font-medium text-center text-sm sm:text-base"
+              style={{ color: "var(--green)" }}
+            >
               🎉 Congratulations! You&apos;ve reached Financial Independence!
             </p>
-            <p className="text-green-700 text-xs sm:text-sm text-center mt-1">
+            <p
+              className="text-xs sm:text-sm text-center mt-1"
+              style={{ color: "var(--green)" }}
+            >
               You can now sustain your lifestyle with a{" "}
               {calculation.withdrawalRate}% annual withdrawal rate.
             </p>

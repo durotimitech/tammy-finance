@@ -50,7 +50,7 @@ export default function CurrencySelector() {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={isUpdating}
         >
           <span>{currencySymbol}</span>

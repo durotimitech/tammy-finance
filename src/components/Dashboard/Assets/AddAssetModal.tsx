@@ -244,7 +244,7 @@ export default function AddAssetModal({
               type="button"
               onClick={onClose}
               variant="secondary"
-              className="w-full sm:flex-1 bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 order-2 sm:order-1"
+              className="w-full sm:flex-1 bg-transparent border border-gray-200 text-gray-700 hover:bg-gray-50 order-2 sm:order-1"
               disabled={isLoading}
             >
               Cancel

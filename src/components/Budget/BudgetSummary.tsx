@@ -43,7 +43,7 @@ export default function BudgetSummary({ budgets }: BudgetSummaryProps) {
         currency: "USD",
       }).format(monthlyTotal),
       icon: DollarSign,
-      color: "bg-green-500",
+      color: "var(--green)",
     },
     {
       title: "Yearly Total",

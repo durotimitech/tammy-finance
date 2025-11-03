@@ -113,8 +113,14 @@ export default function IncomeSection() {
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-50 rounded-lg">
-                      <DollarSign className="w-4 h-4 text-green-600" />
+                    <div
+                      className="p-2 rounded-lg"
+                      style={{ backgroundColor: "rgba(106, 242, 188, 0.1)" }}
+                    >
+                      <DollarSign
+                        className="w-4 h-4"
+                        style={{ color: "var(--green)" }}
+                      />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{income.name}</p>
@@ -139,7 +145,10 @@ export default function IncomeSection() {
                       className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
                       aria-label="Delete income"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2
+                        className="w-4 h-4"
+                        style={{ color: "var(--red)" }}
+                      />
                     </button>
                   </div>
                 </div>
@@ -229,7 +238,7 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., Salary, Freelance, Dividends"
               required
             />
@@ -248,7 +257,7 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="e.g., 9-to-5, Side Hustle, Investment"
               required
             />
@@ -271,7 +280,7 @@ function IncomeForm({ income, onClose, onSubmit, isLoading }: IncomeFormProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="0.00"
                 step="0.01"
                 min="0"

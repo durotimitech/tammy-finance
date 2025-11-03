@@ -140,7 +140,10 @@ export default function LiabilitiesSection() {
         <div className="mb-4 p-4 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Total Owed</span>
-            <span className="text-xl font-semibold text-red-600">
+            <span
+              className="text-xl font-semibold"
+              style={{ color: "var(--red)" }}
+            >
               {formatCurrency(totalOwed)}
             </span>
           </div>

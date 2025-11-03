@@ -42,7 +42,7 @@ function ErrorContent() {
             <Button
               variant="default"
               size="lg"
-              className="w-full bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="w-full bg-transparent border border-gray-200 text-gray-700 hover:bg-gray-50"
             >
               Back to Home
             </Button>

@@ -143,9 +143,13 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
     if (!trend) return null;
 
     if (trend.trend === "up") {
-      return <TrendingUp className="w-5 h-5 text-green-500" />;
+      return (
+        <TrendingUp className="w-5 h-5" style={{ color: "var(--green)" }} />
+      );
     } else if (trend.trend === "down") {
-      return <TrendingDown className="w-5 h-5 text-red-500" />;
+      return (
+        <TrendingDown className="w-5 h-5" style={{ color: "var(--red)" }} />
+      );
     }
     return <Minus className="w-5 h-5 text-gray-500" />;
   };
@@ -168,7 +172,10 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
           <div className="space-y-1">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: "#76c893" }}
+                />
                 <span className="text-xs text-gray-600">Net Worth</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
@@ -177,7 +184,10 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: "#0096c7" }}
+                />
                 <span className="text-xs text-gray-600">Assets</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
@@ -186,7 +196,10 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: "var(--red)" }}
+                />
                 <span className="text-xs text-gray-600">Liabilities</span>
               </div>
               <span className="text-xs font-semibold text-gray-900">
@@ -224,13 +237,15 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
               <div className="flex items-center gap-2 mt-2">
                 {getTrendIcon()}
                 <span
-                  className={`text-sm font-medium ${
-                    trend.trend === "up"
-                      ? "text-green-600"
-                      : trend.trend === "down"
-                        ? "text-red-600"
-                        : "text-gray-600"
-                  }`}
+                  className="text-sm font-medium"
+                  style={{
+                    color:
+                      trend.trend === "up"
+                        ? "var(--green)"
+                        : trend.trend === "down"
+                          ? "var(--red)"
+                          : "#6b7280",
+                  }}
                 >
                   {trend.changePercentage > 0 ? "+" : ""}
                   {trend.changePercentage.toFixed(1)}%
@@ -242,7 +257,14 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             )}
           </div>
 
-          <div className="flex gap-1 sm:gap-2 w-full sm:w-auto overflow-x-auto">
+          <div
+            className="flex gap-1 sm:gap-2 w-full sm:w-auto hide-scrollbar"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
             {(["30d", "90d", "1y", "all"] as const).map((range) => (
               <motion.button
                 key={range}
@@ -251,9 +273,14 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
                 onClick={() => setTimeRange(range)}
                 className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition-colors whitespace-nowrap ${
                   timeRange === range
-                    ? "bg-blue-600 text-white"
+                    ? "text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
+                style={
+                  timeRange === range
+                    ? { backgroundColor: "var(--secondary)" }
+                    : {}
+                }
               >
                 {range === "all" ? "All" : range.toUpperCase()}
               </motion.button>
@@ -273,12 +300,12 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             >
               <defs>
                 <linearGradient id="colorNetWorth" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="#76c893" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#76c893" stopOpacity={0.02} />
                 </linearGradient>
                 <linearGradient id="colorAssets" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="#0096c7" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#0096c7" stopOpacity={0.02} />
                 </linearGradient>
                 <linearGradient
                   id="colorLiabilities"
@@ -310,7 +337,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
               <Area
                 type="monotone"
                 dataKey="netWorth"
-                stroke="#10B981"
+                stroke="#76c893"
                 fillOpacity={1}
                 fill="url(#colorNetWorth)"
                 strokeWidth={2}
@@ -319,7 +346,7 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
               <Area
                 type="monotone"
                 dataKey="assets"
-                stroke="#3B82F6"
+                stroke="#0096c7"
                 fillOpacity={1}
                 fill="url(#colorAssets)"
                 strokeWidth={2}
@@ -348,13 +375,16 @@ export default function NetWorthChart({ refreshKey }: NetWorthChartProps) {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Assets</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p className="text-lg font-semibold" style={{ color: "#0096c7" }}>
                 {formatCurrency(data[data.length - 1]?.assets || 0, currency)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Liabilities</p>
-              <p className="text-lg font-semibold text-red-600">
+              <p
+                className="text-lg font-semibold"
+                style={{ color: "var(--red)" }}
+              >
                 {formatCurrency(
                   data[data.length - 1]?.liabilities || 0,
                   currency,

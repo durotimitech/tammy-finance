@@ -33,8 +33,11 @@ export default function FIRECalculatorDisplay() {
         style={{ borderColor: "#e5e7eb" }}
       >
         <div className="flex items-center">
-          <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-          <p className="text-red-800">
+          <AlertCircle
+            className="w-5 h-5 mr-2"
+            style={{ color: "var(--red)" }}
+          />
+          <p style={{ color: "var(--red)" }}>
             Failed to load FIRE calculations. Please try again.
           </p>
         </div>

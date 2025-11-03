@@ -144,38 +144,74 @@ export default function PathToFIChart() {
       const netWorthPayload = payload.find((p) => p.dataKey === "netWorth");
       const fireNumberPayload = payload.find((p) => p.dataKey === "fireNumber");
 
+      // Recharts will handle positioning automatically to keep tooltip in view
       return (
-        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3 min-w-[180px]">
+        <div
+          className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3"
+          style={{
+            minWidth: "180px",
+            minHeight: "100px",
+          }}
+        >
           <p className="text-xs font-medium text-gray-600 mb-2">
             {dataPoint.month === 0
               ? "Current"
               : `${dataPoint.month} month${dataPoint.month !== 1 ? "s" : ""}`}
           </p>
-          <div className="space-y-1">
-            {netWorthPayload && (
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-xs text-gray-600">Net Worth</span>
-                </div>
-                <span className="text-xs font-semibold text-gray-900">
-                  {formatCurrency(netWorthPayload.value)}
-                </span>
-              </div>
-            )}
-            {fireNumberPayload && (
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span className="text-xs text-gray-600">FIRE Goal</span>
-                </div>
-                <span className="text-xs font-semibold text-blue-600">
-                  {formatCurrency(fireNumberPayload.value)}
-                </span>
-              </div>
-            )}
+          <div className="space-y-1" style={{ minHeight: "60px" }}>
+            <div
+              className="flex items-center justify-between gap-4"
+              style={{ height: "20px" }}
+            >
+              {netWorthPayload ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: "var(--secondary)" }}
+                    />
+                    <span className="text-xs text-gray-600">Net Worth</span>
+                  </div>
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--secondary)" }}
+                  >
+                    {formatCurrency(netWorthPayload.value)}
+                  </span>
+                </>
+              ) : (
+                <div style={{ width: "100%" }} />
+              )}
+            </div>
+            <div
+              className="flex items-center justify-between gap-4"
+              style={{ height: "20px" }}
+            >
+              {fireNumberPayload ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: "var(--secondary)" }}
+                    />
+                    <span className="text-xs text-gray-600">FIRE Goal</span>
+                  </div>
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--secondary)" }}
+                  >
+                    {formatCurrency(fireNumberPayload.value)}
+                  </span>
+                </>
+              ) : (
+                <div style={{ width: "100%" }} />
+              )}
+            </div>
             {dataPoint.month > 0 && (
-              <div className="pt-1 mt-1 border-t border-gray-200">
+              <div
+                className="pt-1 mt-1 border-t border-gray-200"
+                style={{ height: "20px" }}
+              >
                 <span className="text-xs text-gray-500">
                   {((netWorthPayload?.value || 0) /
                     (fireNumberPayload?.value || 1)) *
@@ -206,7 +242,7 @@ export default function PathToFIChart() {
       transition={{ duration: 0.5 }}
     >
       <div
-        className="bg-white rounded-xl p-6 border"
+        className="bg-white rounded-xl p-6 border overflow-visible"
         style={{ borderColor: "#e5e7eb" }}
       >
         <div className="mb-6">
@@ -237,43 +273,52 @@ export default function PathToFIChart() {
               <CartesianGrid strokeDasharray="0" stroke="transparent" />
               <XAxis
                 dataKey="monthLabel"
-                stroke="#9CA3AF"
+                stroke="var(--secondary)"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                stroke="#9CA3AF"
+                stroke="var(--secondary)"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={formatYAxis}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip
+                content={<CustomTooltip />}
+                allowEscapeViewBox={{ x: false, y: false }}
+                cursor={{
+                  stroke: "var(--secondary)",
+                  strokeWidth: 1,
+                  strokeDasharray: "3 3",
+                }}
+                wrapperStyle={{ pointerEvents: "none", zIndex: 1000 }}
+              />
               <ReferenceLine
                 y={fireData?.fireNumber}
-                stroke="#3B82F6"
+                stroke="var(--secondary)"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 label={{
                   value: "FIRE Goal",
                   position: "right",
-                  fill: "#3B82F6",
+                  fill: "var(--secondary)",
                   fontSize: 12,
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="netWorth"
-                stroke="#10B981"
+                stroke="var(--secondary)"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4 }}
+                activeDot={{ r: 4, strokeWidth: 0 }}
               />
               <Line
                 type="monotone"
                 dataKey="fireNumber"
-                stroke="#3B82F6"
+                stroke="var(--secondary)"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}
@@ -292,13 +337,19 @@ export default function PathToFIChart() {
             </div>
             <div>
               <p className="text-sm text-gray-500">FIRE Number</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p
+                className="text-lg font-semibold"
+                style={{ color: "var(--secondary)" }}
+              >
                 {formatCurrency(fireData.fireNumber)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Time to FIRE</p>
-              <p className="text-lg font-semibold text-emerald-600">
+              <p
+                className="text-lg font-semibold"
+                style={{ color: "var(--secondary)" }}
+              >
                 {fireData.yearsToFIRE > 0
                   ? `${fireData.yearsToFIRE} year${fireData.yearsToFIRE !== 1 ? "s" : ""}`
                   : "Already there!"}
