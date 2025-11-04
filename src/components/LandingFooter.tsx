@@ -20,7 +20,7 @@ export default function LandingFooter() {
                 Login
               </Link>
               <Link
-                href="/auth/register"
+                href="/auth/signup"
                 className="px-4 py-2 text-sm font-medium text-white bg-[#2D2D2D] rounded-lg hover:bg-[#1a1a1a] transition-colors"
               >
                 Register

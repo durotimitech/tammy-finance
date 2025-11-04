@@ -13,11 +13,11 @@
 The Net Worth Tracker application demonstrates **solid security fundamentals** with proper authentication, encryption, and database-level security (RLS). Several **critical and high-severity vulnerabilities** were identified, with the **2 CRITICAL issues now RESOLVED**:
 
 - **0 Critical** vulnerabilities ✅ **RESOLVED** (exposed credential endpoint removed, secrets removed from Git)
-- **4 High** severity issues ⬇️ (rate limiting, dependency vulnerabilities, hardcoded credentials, public feature flags)
+- **3 High** severity issues ⬇️ (dependency vulnerabilities, hardcoded credentials, public feature flags)
 - **7 Medium** severity issues (input validation, error disclosure, authorization)
 - **10 Low** severity issues (logging, standardization, configuration)
 
-**Overall Security Score: 8.0/10** ⬆️ (improved from 7.5/10 after fixing unauthenticated Trading 212 validation)
+**Overall Security Score: 8.5/10** ⬆️ (improved from 8.0/10 after implementing rate limiting)
 
 ---
 
@@ -232,15 +232,26 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
 ---
 
-## **[HIGH]** - **Missing Rate Limiting on All API Routes**
+## ✅ **[HIGH - RESOLVED]** - **Missing Rate Limiting on All API Routes**
 
-- **Description:** No rate limiting is implemented on any API endpoint. This exposes the application to brute-force attacks (login, API keys), denial-of-service attacks, and resource exhaustion. An attacker could make unlimited requests to expensive endpoints like `/api/history` or `/api/trading212/portfolio`.
+- **Status:** **FIXED** ✅
+- **Date Resolved:** 2025-11-04
+
+- **Description:** No rate limiting was implemented on any API endpoint. This exposed the application to brute-force attacks (login, API keys), denial-of-service attacks, and resource exhaustion. An attacker could make unlimited requests to expensive endpoints like `/api/history` or `/api/trading212/portfolio`.
 
 - **Location(s):**
-  - ALL API routes in `src/app/api/` (25+ endpoints)
-  - `src/middleware.ts` (Lines 1-10) - No rate limiting middleware
+  - ~~ALL API routes in `src/app/api/` (25+ endpoints)~~ **FIXED**
+  - ~~`src/middleware.ts` (Lines 1-10)~~ **FIXED**
 
-- **Recommended Fix:** Implement rate limiting middleware using Redis or Upstash.
+- **Fix Applied:**
+  1. Created in-memory rate limiting solution in `src/lib/rate-limit.ts`
+  2. Implemented three rate limit tiers:
+     - **Auth endpoints**: 5 requests per 15 minutes (strict)
+     - **Expensive operations** (Trading 212, history): 10 requests per minute
+     - **Standard API endpoints**: 100 requests per minute
+  3. Updated middleware to apply rate limiting to all API routes
+  4. Added rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`)
+  5. Returns HTTP 429 (Too Many Requests) when limits are exceeded
   - **Bad Code:**
 
     ```typescript
@@ -255,38 +266,57 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
   - **Good Code:**
 
-    ```bash
-    # Install rate limiting library
-    npm install @upstash/ratelimit @upstash/redis
-    ```
-
     ```typescript
     // src/lib/rate-limit.ts (new file) ✅
-    import { Ratelimit } from '@upstash/ratelimit';
-    import { Redis } from '@upstash/redis';
+    interface RateLimitEntry {
+      count: number;
+      resetAt: number;
+    }
 
-    // Create rate limiter instances
+    class RateLimiter {
+      private storage: Map<string, RateLimitEntry> = new Map();
+
+      public async limit(
+        identifier: string,
+        maxRequests: number,
+        windowMs: number,
+      ): Promise<{
+        success: boolean;
+        limit: number;
+        remaining: number;
+        reset: number;
+      }> {
+        const now = Date.now();
+        const entry = this.storage.get(identifier);
+
+        if (!entry || entry.resetAt < now) {
+          this.storage.set(identifier, { count: 1, resetAt: now + windowMs });
+          return {
+            success: true,
+            limit: maxRequests,
+            remaining: maxRequests - 1,
+            reset: now + windowMs,
+          };
+        }
+
+        if (entry.count >= maxRequests) {
+          return { success: false, limit: maxRequests, remaining: 0, reset: entry.resetAt };
+        }
+
+        entry.count++;
+        return {
+          success: true,
+          limit: maxRequests,
+          remaining: maxRequests - entry.count,
+          reset: entry.resetAt,
+        };
+      }
+    }
+
     export const ratelimit = {
-      // Strict rate limit for authentication endpoints
-      auth: new Ratelimit({
-        redis: Redis.fromEnv(),
-        limiter: Ratelimit.slidingWindow(5, '15 m'), // 5 requests per 15 minutes
-        analytics: true,
-      }),
-
-      // Standard rate limit for API endpoints
-      api: new Ratelimit({
-        redis: Redis.fromEnv(),
-        limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
-        analytics: true,
-      }),
-
-      // Strict limit for expensive operations
-      expensive: new Ratelimit({
-        redis: Redis.fromEnv(),
-        limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute
-        analytics: true,
-      }),
+      auth: (ip: string) => rateLimiter.limit(`auth:${ip}`, 5, 15 * 60 * 1000),
+      api: (ip: string) => rateLimiter.limit(`api:${ip}`, 100, 60 * 1000),
+      expensive: (ip: string) => rateLimiter.limit(`expensive:${ip}`, 10, 60 * 1000),
     };
     ```
 
@@ -301,7 +331,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
       // Apply rate limiting based on route
       if (request.nextUrl.pathname.startsWith('/api/auth')) {
-        const { success, limit, reset, remaining } = await ratelimit.auth.limit(ip);
+        const { success, limit, reset, remaining } = await ratelimit.auth(ip);
 
         if (!success) {
           return NextResponse.json(
@@ -320,20 +350,38 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
         request.nextUrl.pathname.startsWith('/api/trading212') ||
         request.nextUrl.pathname.startsWith('/api/history')
       ) {
-        const { success } = await ratelimit.expensive.limit(ip);
+        const { success, limit, remaining, reset } = await ratelimit.expensive(ip);
         if (!success) {
-          return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+          return NextResponse.json(
+            { error: 'Rate limit exceeded. Please try again later.' },
+            {
+              status: 429,
+              headers: {
+                /* rate limit headers */
+              },
+            },
+          );
         }
       } else if (request.nextUrl.pathname.startsWith('/api/')) {
-        const { success } = await ratelimit.api.limit(ip);
+        const { success, limit, remaining, reset } = await ratelimit.api(ip);
         if (!success) {
-          return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+          return NextResponse.json(
+            { error: 'Rate limit exceeded. Please try again later.' },
+            {
+              status: 429,
+              headers: {
+                /* rate limit headers */
+              },
+            },
+          );
         }
       }
 
       return await updateSession(request);
     }
     ```
+
+**Note:** This implementation uses in-memory storage, which is suitable for single-server deployments. For distributed/multi-server production environments, consider upgrading to Redis-based rate limiting (Upstash, Vercel KV, or self-hosted Redis).
 
 ---
 
@@ -1479,9 +1527,9 @@ The following security practices are **correctly implemented**:
 
 | Category                   | Count               |
 | -------------------------- | ------------------- |
-| **Total Vulnerabilities**  | **21** (3 resolved) |
+| **Total Vulnerabilities**  | **20** (4 resolved) |
 | Critical                   | ~~2~~ **0** ✅      |
-| High                       | ~~5~~ **4** ✅      |
+| High                       | ~~5~~ **3** ✅      |
 | Medium                     | 7                   |
 | Low                        | 10                  |
 | **Files Reviewed**         | **150+**            |
@@ -1514,36 +1562,36 @@ The following security practices are **correctly implemented**:
 1. ✅ ~~Remove `/api/credentials/[name]` GET endpoint~~ **COMPLETED**
 2. ✅ ~~Remove `cypress.env.json` from Git~~ **COMPLETED** - **User should rotate anon key and clean Git history**
 3. ✅ ~~Add authentication to Trading 212 validation endpoint~~ **COMPLETED**
-4. Update vulnerable dependencies (axios, next, eslint)
-5. Remove hardcoded credentials from `cypress.config.ts`
+4. ✅ ~~Implement rate limiting on all API routes~~ **COMPLETED**
+5. Update vulnerable dependencies (axios, next, eslint)
+6. Remove hardcoded credentials from `cypress.config.ts`
 
 ### Phase 2: HIGH PRIORITY (Within 2 Weeks)
 
-4. Implement rate limiting on all API routes
-5. Add authentication to feature flags endpoint
-6. Fix input validation on query parameters
-7. Add explicit authorization checks in DELETE operations
-8. Implement proper error sanitization
+1. Add authentication to feature flags endpoint
+2. Fix input validation on query parameters
+3. Add explicit authorization checks in DELETE operations
+4. Implement proper error sanitization
 
 ### Phase 3: MEDIUM PRIORITY (Within 1 Month)
 
-9. Replace JavaScript Number with Decimal.js for financials
-10. Add Content-Type validation on all POST/PUT routes
-11. Implement request body size limits
-12. Standardize error response format
-13. Add URL parameter validation on error page
-14. Fix mass assignment vulnerabilities
+5. Replace JavaScript Number with Decimal.js for financials
+6. Add Content-Type validation on all POST/PUT routes
+7. Implement request body size limits
+8. Standardize error response format
+9. Add URL parameter validation on error page
+10. Fix mass assignment vulnerabilities
 
 ### Phase 4: LOW PRIORITY (Within 2 Months)
 
-15. Implement structured logging and audit trail
-16. Add security headers in Next.js config
-17. Strengthen client-side encryption password
-18. Add date validation in budget operations
-19. Secure testing backdoor in middleware
-20. Implement distributed locking for concurrent operations
-21. Add CORS configuration if needed
-22. Replace console.log with structured logger
+11. Implement structured logging and audit trail
+12. Add security headers in Next.js config
+13. Strengthen client-side encryption password
+14. Add date validation in budget operations
+15. Secure testing backdoor in middleware
+16. Implement distributed locking for concurrent operations
+17. Add CORS configuration if needed
+18. Replace console.log with structured logger
 
 ---
 
@@ -1623,8 +1671,20 @@ The Net Worth Tracker demonstrates **solid security fundamentals** but has sever
 - Moved authentication check to beginning of GET function
 - API key validation now requires authenticated user session
 
+**Issue 4: Missing Rate Limiting on All API Routes** ✅
+
+- Implemented in-memory rate limiting solution in `src/lib/rate-limit.ts`
+- Applied rate limiting to all API routes via middleware:
+  - Auth endpoints: 5 requests per 15 minutes
+  - Expensive operations (Trading 212, history): 10 requests per minute
+  - Standard API endpoints: 100 requests per minute
+- Added rate limit headers for client transparency
+- Returns HTTP 429 with proper headers when limits exceeded
+- **Note:** For production multi-server deployments, consider upgrading to Redis-based solution
+
 **Remaining Actions for User:**
 
 1. Rotate Supabase anon key if repository is/was public
 2. Clean Git history with: `git filter-branch --force --index-filter "git rm --cached --ignore-unmatch cypress.env.json" --prune-empty --tag-name-filter cat -- --all`
 3. Force push to remote (if applicable): `git push origin --force --all`
+4. For distributed production deployments, consider upgrading to Redis-based rate limiting (Upstash/Vercel KV)

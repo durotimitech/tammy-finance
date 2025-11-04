@@ -16,7 +16,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" loading={pending} variant="primary" size="lg" className="w-full">
+    <Button type="submit" loading={pending} variant="secondary" size="lg" className="w-full">
       Sign Up
     </Button>
   );
