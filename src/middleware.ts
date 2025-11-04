@@ -1,10 +1,22 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { validateBodySize } from './lib/api-validation';
 import { ratelimit } from './lib/rate-limit';
 import { updateSession } from './lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
   const ip =
     request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? '127.0.0.1';
+
+  // Check body size for POST/PUT/PATCH requests on API routes
+  if (
+    request.nextUrl.pathname.startsWith('/api/') &&
+    ['POST', 'PUT', 'PATCH'].includes(request.method)
+  ) {
+    const bodySizeError = validateBodySize(request);
+    if (bodySizeError) {
+      return bodySizeError;
+    }
+  }
 
   if (request.nextUrl.pathname.startsWith('/api/auth')) {
     const { success, limit, reset, remaining } = await ratelimit.auth(ip);

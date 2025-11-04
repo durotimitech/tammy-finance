@@ -138,7 +138,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid goal_id or goal not found' }, { status: 400 });
     }
 
-    const expense_date = body.expense_date || new Date().toISOString().split('T')[0];
+    // Validate date format and range
+    let expense_date: string;
+
+    if (body.expense_date) {
+      // Validate date format (YYYY-MM-DD)
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(body.expense_date)) {
+        return NextResponse.json(
+          { error: 'Invalid date format. Use YYYY-MM-DD.' },
+          { status: 400 },
+        );
+      }
+
+      // Parse and validate date
+      const parsedDate = new Date(body.expense_date);
+      if (isNaN(parsedDate.getTime())) {
+        return NextResponse.json({ error: 'Invalid date value.' }, { status: 400 });
+      }
+
+      // Validate date range (not in future, not before year 2000)
+      const minDate = new Date('2000-01-01');
+      const maxDate = new Date();
+      maxDate.setHours(23, 59, 59, 999); // End of today
+
+      if (parsedDate < minDate || parsedDate > maxDate) {
+        return NextResponse.json(
+          { error: 'Date must be between 2000-01-01 and today.' },
+          { status: 400 },
+        );
+      }
+
+      expense_date = body.expense_date;
+    } else {
+      expense_date = new Date().toISOString().split('T')[0];
+    }
 
     // Determine which month the expense belongs to based on expense_date
     const expenseDate = new Date(expense_date);

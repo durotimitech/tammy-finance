@@ -75,6 +75,22 @@ Ensure to follow the rules in RULES.md for each iteration
 [ ] Add a section showing a gif of doing crucial things on the app (add some animation here)
 [ ] As time goes on build a FAQs
 
-look at the @SECURITY_AUDIT_REPORT.md and fix the Missing Input Validation on Query Parameters issue and update the doc
 
-look at the @SECURITY_AUDIT_REPORT.md and fix the Mass Assignment Vulnerability in Budget Creation issue and update the doc
+
+[] Landing page
+[] Login page
+[] Signup page
+[] Privacy policy page
+[] Dashboard
+[] Reviews
+On the dashboard, I want to have a section where     │
+│   users can drop feature requests. So, create a new    │
+│   page under the dashboard and link it to the side     │
+│   menu.                                                │
+│                                                        │
+│   Now, on this page, I want it to be a list of all     │
+│   the feature requests in this application. Ideally,   │
+│   they should be stored in the database, and there     │
+│   should be the ability to upvote particular features  │
+│   and on the list show the features by highest votes   │
+│   to the list votes.

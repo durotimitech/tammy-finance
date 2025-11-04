@@ -179,6 +179,56 @@ All financial types defined in `src/types/financial.ts`:
 
 6. **RLS security**: All database queries are automatically scoped to authenticated user
 
+7. **Standardized error responses**: All API routes must use the centralized error handling pattern
+
+   ```typescript
+   import { ErrorResponses } from '@/lib/api-errors';
+
+   // Authentication errors
+   if (!user) {
+     return ErrorResponses.unauthorized();
+   }
+
+   // Validation errors with field details
+   if (!body.name) {
+     return ErrorResponses.validationError('Name is required', 'name');
+   }
+
+   // Database errors
+   if (error) {
+     console.error('Database operation failed:', error);
+     return ErrorResponses.databaseError('Failed to create asset');
+   }
+
+   // Other error types
+   return ErrorResponses.notFound('Asset');
+   return ErrorResponses.internalError('Unexpected error occurred');
+   ```
+
+   **Available error helpers**:
+   - `unauthorized()` - HTTP 401 with UNAUTHORIZED code
+   - `forbidden()` - HTTP 403 with FORBIDDEN code
+   - `notFound(resource)` - HTTP 404 with NOT_FOUND code
+   - `validationError(message, field?)` - HTTP 400 with VALIDATION_ERROR code and optional field details
+   - `missingField(field)` - HTTP 400 with MISSING_REQUIRED_FIELD code
+   - `invalidInput(message, details?)` - HTTP 400 with INVALID_INPUT code
+   - `databaseError(message)` - HTTP 500 with DATABASE_ERROR code
+   - `internalError(message)` - HTTP 500 with INTERNAL_ERROR code
+   - `serviceUnavailable()` - HTTP 503 with SERVICE_UNAVAILABLE code
+   - `rateLimitExceeded()` - HTTP 429 with RATE_LIMIT_EXCEEDED code
+
+   **Error response structure**:
+
+   ```typescript
+   {
+     error: {
+       message: "User-friendly error message",
+       code: "ERROR_CODE",
+       details?: { field: "fieldName" } // Optional for validation errors
+     }
+   }
+   ```
+
 ## File Organization
 
 ```

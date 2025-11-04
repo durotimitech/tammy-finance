@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+
+import { ErrorResponses } from '@/lib/api-errors';
 import { createClient } from '@/lib/supabase/server';
 import { Environment, FeatureFlagMap } from '@/types/feature-flags';
 
@@ -14,7 +16,7 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching feature flags:', error);
-      return NextResponse.json({ error: 'Failed to fetch feature flags' }, { status: 500 });
+      return ErrorResponses.databaseError('Failed to fetch feature flags');
     }
 
     // Convert to a map of flag name -> boolean based on current environment
@@ -29,6 +31,6 @@ export async function GET() {
     return NextResponse.json(featureFlagMap);
   } catch (error) {
     console.error('Unexpected error in feature flags API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ErrorResponses.internalError();
   }
 }

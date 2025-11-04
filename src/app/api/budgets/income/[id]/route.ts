@@ -113,18 +113,30 @@ export async function DELETE(
       .from('income_sources')
       .select('budget_month_id')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single();
 
-    const { error } = await supabase.from('income_sources').delete().eq('id', id);
+    if (!incomeSource) {
+      return NextResponse.json({ error: 'Income source not found' }, { status: 404 });
+    }
+
+    const { error, count } = await supabase
+      .from('income_sources')
+      .delete({ count: 'exact' })
+      .eq('id', id)
+      .eq('user_id', user.id);
 
     if (error) {
+      console.error('Error deleting income source:', error);
       return NextResponse.json({ error: 'Failed to delete income source' }, { status: 500 });
     }
 
-    // Recalculate goal allocations when income changes
-    if (incomeSource) {
-      await recalculateGoalAllocations(supabase, incomeSource.budget_month_id);
+    if (count === 0) {
+      return NextResponse.json({ error: 'Income source not found' }, { status: 404 });
     }
+
+    // Recalculate goal allocations when income changes
+    await recalculateGoalAllocations(supabase, incomeSource.budget_month_id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

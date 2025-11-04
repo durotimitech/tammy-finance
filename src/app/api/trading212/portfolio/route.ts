@@ -54,7 +54,8 @@ export async function GET(request: NextRequest) {
     // Generate user-specific secret
     const encryptionSecret = process.env.ENCRYPTION_SECRET;
     if (!encryptionSecret) {
-      return NextResponse.json({ error: 'ENCRYPTION_SECRET is not configured' }, { status: 500 });
+      console.error('[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.');
+      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
     }
     const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
 
@@ -71,17 +72,21 @@ export async function GET(request: NextRequest) {
         userSecret,
       );
     } catch (decryptError) {
-      console.error('Decryption failed:', decryptError);
+      console.error('[SECURITY] Decryption failed for user:', user.id, decryptError);
       return NextResponse.json(
         {
-          error: 'Failed to decrypt API key. Please reconnect your Trading 212 account.',
+          error: 'Unable to retrieve credentials. Please reconnect your account.',
         },
         { status: 500 },
       );
     }
 
     if (!apiKey) {
-      return NextResponse.json({ error: 'Failed to decrypt API key' }, { status: 500 });
+      console.error('[SECURITY] API key decryption returned null for user:', user.id);
+      return NextResponse.json(
+        { error: 'Unable to retrieve credentials. Please reconnect your account.' },
+        { status: 500 },
+      );
     }
 
     // Check if we already have Trading 212 data from today in the assets table

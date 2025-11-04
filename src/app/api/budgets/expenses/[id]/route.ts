@@ -88,10 +88,19 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const { error } = await supabase.from('budget_expenses').delete().eq('id', id);
+    const { error, count } = await supabase
+      .from('budget_expenses')
+      .delete({ count: 'exact' })
+      .eq('id', id)
+      .eq('user_id', user.id);
 
     if (error) {
+      console.error('Error deleting expense:', error);
       return NextResponse.json({ error: 'Failed to delete expense' }, { status: 500 });
+    }
+
+    if (count === 0) {
+      return NextResponse.json({ error: 'Expense not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });

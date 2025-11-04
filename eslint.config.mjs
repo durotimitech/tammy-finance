@@ -29,10 +29,11 @@ const eslintConfig = [
     },
   },
   {
-    // Override for Cypress support files
-    files: ['cypress/support/**/*.ts'],
+    // Override for Cypress files
+    files: ['cypress/**/*.ts'],
     rules: {
       '@typescript-eslint/no-namespace': 'off', // Required for Cypress type declarations
+      '@typescript-eslint/no-unused-expressions': 'off', // Required for Chai assertions (expect().to.be.true)
     },
   },
   {

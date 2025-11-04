@@ -143,9 +143,17 @@ export async function encryptValue(value: string, password: string): Promise<Enc
  * This should be deterministic for a given user but unique per user
  */
 export function generateClientPassword(userId: string, timestamp: number): string {
-  // Combine user ID with timestamp to create a unique password
-  // The timestamp ensures each encryption uses a different key
-  return `${userId}-${timestamp}-client-encryption`;
+  // Generate cryptographically secure random bytes
+  const randomBytes = new Uint8Array(32);
+  crypto.getRandomValues(randomBytes);
+  const randomHex = Array.from(randomBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  // Combine user ID, timestamp, and random data
+  // The random bytes provide high entropy, making the password unpredictable
+  // The salt and IV stored with the encrypted data ensure uniqueness
+  return `${userId}-${timestamp}-${randomHex}`;
 }
 
 /**

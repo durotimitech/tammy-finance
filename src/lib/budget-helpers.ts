@@ -201,45 +201,67 @@ export async function getOrCreateCurrentBudgetMonth(
     return { id: existing.id, error: null };
   }
 
-  // If not found or any error occurred, try to create a new budget month
-  // Even if fetchError exists and is not "no rows found", we'll still try to create
-  // This handles cases where there might be transient errors but the month doesn't exist
+  // If not found or any error occurred, use upsert to handle concurrent requests atomically
+  // Upsert will insert if the record doesn't exist, or return existing if it does
   console.log('Budget month not found or error occurred, attempting to create new one...');
 
-  // Create new budget month
+  // Use upsert with unique constraint on (user_id, month, year) to handle race conditions
+  // This is safe because the database has a unique constraint preventing duplicates
   const { data: newBudget, error: createError } = await supabase
     .from('budget_months')
-    .insert({
-      user_id: userId,
-      month: currentMonth,
-      year: currentYear,
-      total_income: 0,
-      total_expenses: 0,
-    })
+    .upsert(
+      {
+        user_id: userId,
+        month: currentMonth,
+        year: currentYear,
+        total_income: 0,
+        total_expenses: 0,
+      },
+      {
+        onConflict: 'user_id,month,year',
+        ignoreDuplicates: false,
+      },
+    )
     .select('id')
     .single();
 
-  // If creation failed, it might be because the month already exists (race condition)
-  // Try to fetch it again as a fallback
-  if (createError || !newBudget) {
-    console.log('Create failed, attempting to fetch existing budget month as fallback...');
-    const { data: fallbackBudget, error: fallbackError } = await supabase
-      .from('budget_months')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('month', currentMonth)
-      .eq('year', currentYear)
-      .single();
+  // If upsert failed with an error other than unique constraint violation, return error
+  if (createError) {
+    // Error code 23505 is unique constraint violation in PostgreSQL
+    // This shouldn't happen with upsert, but handle it gracefully
+    if (createError.code === '23505') {
+      console.log('Unique constraint violation, fetching existing budget month...');
+      const { data: fallbackBudget, error: fallbackError } = await supabase
+        .from('budget_months')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('month', currentMonth)
+        .eq('year', currentYear)
+        .single();
 
-    if (fallbackBudget && !fallbackError) {
-      return { id: fallbackBudget.id, error: null };
+      if (fallbackBudget && !fallbackError) {
+        return { id: fallbackBudget.id, error: null };
+      }
+
+      console.error('Failed to fetch budget month after constraint violation:', fallbackError);
+      return {
+        id: '',
+        error: fallbackError || new Error('Failed to create budget month'),
+      };
     }
 
-    // If still can't get it, log the error but return it so caller can handle
-    console.error('Failed to create or fetch budget month:', createError || fallbackError);
+    console.error('Failed to upsert budget month:', createError);
     return {
       id: '',
-      error: createError || fallbackError || new Error('Failed to create budget month'),
+      error: createError,
+    };
+  }
+
+  if (!newBudget) {
+    console.error('Upsert succeeded but returned no data');
+    return {
+      id: '',
+      error: new Error('Failed to create budget month'),
     };
   }
 

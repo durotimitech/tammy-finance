@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { parseJsonBody } from '@/lib/api-validation';
 import { encryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { CredentialRequest, EncryptedPayload } from '@/lib/crypto/shared';
 import { createClient } from '@/lib/supabase/server';
@@ -79,8 +80,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const body: CredentialRequest = await request.json();
+    // Parse request body with Content-Type validation
+    const body = await parseJsonBody<CredentialRequest>(request);
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { name, value, isEncrypted } = body;
 
     // Validate input
@@ -148,8 +152,8 @@ export async function POST(request: NextRequest) {
       // Value is plain text, encrypt it on the server (backward compatibility)
       const encryptionSecret = process.env.ENCRYPTION_SECRET;
       if (!encryptionSecret) {
-        console.error('ENCRYPTION_SECRET not configured');
-        return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+        console.error('[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.');
+        return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
       }
 
       // For now, use user ID as session ID (in production, use actual session ID)

@@ -137,6 +137,9 @@ describe("POST /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "New Asset",
         category: "Investments",
@@ -165,6 +168,9 @@ describe("POST /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "New Asset",
         category: "Investments",
@@ -192,6 +198,9 @@ describe("POST /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         // Missing required fields
         name: "New Asset",
@@ -240,6 +249,9 @@ describe("PUT /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: "asset-id",
         name: "Updated Asset",
@@ -268,6 +280,9 @@ describe("PUT /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "Test",
         category: "Cash",
@@ -312,6 +327,9 @@ describe("DELETE /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ id: "asset-id" }),
     });
 
@@ -335,6 +353,9 @@ describe("DELETE /api/assets", () => {
 
     const request = new NextRequest("http://localhost:3000/api/assets", {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({}),
     });
 

@@ -1,4 +1,7 @@
+import Decimal from 'decimal.js';
 import { NextResponse } from 'next/server';
+
+import { ErrorResponses } from '@/lib/api-errors';
 import { calculateAge, calculateYearsToFIRE, calculateFIRENumber } from '@/lib/fire-calculations';
 import { createClient } from '@/lib/supabase/server';
 import { FIRECalculation } from '@/types/financial';
@@ -14,7 +17,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     // Fetch user profile for all FIRE calculation data
@@ -26,7 +29,7 @@ export async function GET() {
 
     if (profileError && profileError.code !== 'PGRST116') {
       console.error('Error fetching profile:', profileError);
-      return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
+      return ErrorResponses.databaseError('Failed to fetch profile');
     }
 
     // Use profile data with defaults if profile doesn't exist
@@ -47,7 +50,7 @@ export async function GET() {
 
     if (assetsError) {
       console.error('Error fetching assets:', assetsError);
-      return NextResponse.json({ error: 'Failed to fetch assets' }, { status: 500 });
+      return ErrorResponses.databaseError('Failed to fetch assets');
     }
 
     const { data: liabilities, error: liabilitiesError } = await supabase
@@ -57,18 +60,23 @@ export async function GET() {
 
     if (liabilitiesError) {
       console.error('Error fetching liabilities:', liabilitiesError);
-      return NextResponse.json({ error: 'Failed to fetch liabilities' }, { status: 500 });
+      return ErrorResponses.databaseError('Failed to fetch liabilities');
     }
 
-    // Calculate net worth
-    const totalAssets = assets?.reduce((sum, asset) => sum + Number(asset.value), 0) || 0;
-    const totalLiabilities =
-      liabilities?.reduce((sum, liability) => sum + Number(liability.amount_owed), 0) || 0;
-    const currentNetWorth = totalAssets - totalLiabilities;
+    // Calculate net worth using Decimal for precision
+    const totalAssets = (assets || []).reduce(
+      (sum, asset) => sum.plus(new Decimal(asset.value || 0)),
+      new Decimal(0),
+    );
+    const totalLiabilities = (liabilities || []).reduce(
+      (sum, liability) => sum.plus(new Decimal(liability.amount_owed || 0)),
+      new Decimal(0),
+    );
+    const currentNetWorth = totalAssets.minus(totalLiabilities).toNumber();
 
-    // Calculate FIRE metrics
-    const annualExpenses = monthlyExpenses * 12;
-    const annualSavings = monthlySavings * 12;
+    // Calculate FIRE metrics using Decimal for precision
+    const annualExpenses = new Decimal(monthlyExpenses).times(12).toNumber();
+    const annualSavings = new Decimal(monthlySavings).times(12).toNumber();
     const fireNumber = calculateFIRENumber(annualExpenses, withdrawalRate);
 
     // Calculate time to FIRE using utility function
@@ -100,9 +108,11 @@ export async function GET() {
     const fireDate = new Date(today);
     fireDate.setMonth(fireDate.getMonth() + monthsToFIRE);
 
-    // Calculate progress percentage
+    // Calculate progress percentage using Decimal for precision
     const progressPercentage =
-      fireNumber > 0 ? Math.min((currentNetWorth / fireNumber) * 100, 100) : 0;
+      fireNumber > 0
+        ? Math.min(new Decimal(currentNetWorth).dividedBy(fireNumber).times(100).toNumber(), 100)
+        : 0;
 
     const fireCalculation: FIRECalculation = {
       fireNumber,
@@ -121,6 +131,6 @@ export async function GET() {
     return NextResponse.json(fireCalculation);
   } catch (error) {
     console.error('Unexpected error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ErrorResponses.internalError();
   }
 }

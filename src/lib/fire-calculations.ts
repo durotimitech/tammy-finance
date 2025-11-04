@@ -3,6 +3,8 @@
  * These functions handle all FIRE-related calculations
  */
 
+import Decimal from 'decimal.js';
+
 /**
  * Calculate age from date of birth
  */
@@ -22,7 +24,9 @@ export function calculateAge(dateOfBirth: string): number {
  * For 4% withdrawal rate, this equals Annual Expenses * 25
  */
 export function calculateFIRENumber(annualExpenses: number, withdrawalRate: number): number {
-  return annualExpenses * (100 / withdrawalRate);
+  const expenses = new Decimal(annualExpenses);
+  const rate = new Decimal(withdrawalRate);
+  return expenses.times(new Decimal(100).dividedBy(rate)).toNumber();
 }
 
 /**
@@ -30,7 +34,10 @@ export function calculateFIRENumber(annualExpenses: number, withdrawalRate: numb
  */
 export function calculateFIPercentage(currentNetWorth: number, fireNumber: number): number {
   if (fireNumber === 0) return 0;
-  return Math.min((currentNetWorth / fireNumber) * 100, 100);
+  const netWorth = new Decimal(currentNetWorth);
+  const fire = new Decimal(fireNumber);
+  const percentage = netWorth.dividedBy(fire).times(100);
+  return Math.min(percentage.toNumber(), 100);
 }
 
 /**
@@ -38,7 +45,9 @@ export function calculateFIPercentage(currentNetWorth: number, fireNumber: numbe
  */
 export function calculateSavingsRate(monthlySavings: number, monthlyIncome: number): number {
   if (monthlyIncome === 0) return 0;
-  return (monthlySavings / monthlyIncome) * 100;
+  const savings = new Decimal(monthlySavings);
+  const income = new Decimal(monthlyIncome);
+  return savings.dividedBy(income).times(100).toNumber();
 }
 
 /**
@@ -67,8 +76,11 @@ export function calculateYearsToFIRE(
     if (annualReturn > 0 && currentNetWorth > 0) {
       // Calculate years for current net worth to grow to FIRE number: FV = PV(1+r)^t
       // Solving for t: t = ln(FV/PV) / ln(1+r)
-      const years = Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
-      return Math.max(0, years); // Ensure non-negative
+      const fire = new Decimal(fireNumber);
+      const netWorth = new Decimal(currentNetWorth);
+      const returnRate = new Decimal(annualReturn);
+      const years = fire.dividedBy(netWorth).ln().dividedBy(returnRate.plus(1).ln());
+      return Math.max(0, years.toNumber()); // Ensure non-negative
     } else {
       // No savings and no returns (or zero net worth) - impossible to reach FIRE
       return 999;
@@ -79,15 +91,20 @@ export function calculateYearsToFIRE(
   if (annualReturn > 0) {
     // Formula: FV = PV(1+r)^t + PMT[((1+r)^t - 1)/r]
     // Solving for t: t = ln((FV + PMT/r) / (PV + PMT/r)) / ln(1+r)
-    const numerator = Math.log(
-      (fireNumber + annualSavings / annualReturn) /
-        (currentNetWorth + annualSavings / annualReturn),
-    );
-    const denominator = Math.log(1 + annualReturn);
-    return numerator / denominator;
+    const fire = new Decimal(fireNumber);
+    const netWorth = new Decimal(currentNetWorth);
+    const savings = new Decimal(annualSavings);
+    const returnRate = new Decimal(annualReturn);
+
+    const savingsOverRate = savings.dividedBy(returnRate);
+    const numerator = fire.plus(savingsOverRate).dividedBy(netWorth.plus(savingsOverRate)).ln();
+    const denominator = returnRate.plus(1).ln();
+    return numerator.dividedBy(denominator).toNumber();
   } else {
     // Simple calculation without returns: (FIRE Number - Current Net Worth) / Annual Savings
-    const remainingAmount = fireNumber - currentNetWorth;
-    return remainingAmount / annualSavings;
+    const fire = new Decimal(fireNumber);
+    const netWorth = new Decimal(currentNetWorth);
+    const savings = new Decimal(annualSavings);
+    return fire.minus(netWorth).dividedBy(savings).toNumber();
   }
 }

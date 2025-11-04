@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { parseJsonBody } from '@/lib/api-validation';
 import { createClient } from '@/lib/supabase/server';
 
 // Helper function to fetch liabilities - no caching at this level
@@ -59,7 +60,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await parseJsonBody<{ name: string; category: string; amount_owed: number }>(
+      request,
+    );
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { name, category, amount_owed } = body;
 
     if (!name || !category || amount_owed === undefined) {
@@ -71,7 +77,7 @@ export async function POST(request: NextRequest) {
       .insert({
         name,
         category,
-        amount_owed: parseFloat(amount_owed),
+        amount_owed: Number(amount_owed),
         user_id: user.id,
       })
       .select()
@@ -104,7 +110,15 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await parseJsonBody<{
+      id: string;
+      name: string;
+      category: string;
+      amount_owed: number;
+    }>(request);
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { id, name, category, amount_owed } = body;
 
     if (!id || !name || !category || amount_owed === undefined) {
@@ -116,7 +130,7 @@ export async function PUT(request: NextRequest) {
       .update({
         name,
         category,
-        amount_owed: parseFloat(amount_owed),
+        amount_owed: Number(amount_owed),
       })
       .eq('id', id)
       .eq('user_id', user.id)

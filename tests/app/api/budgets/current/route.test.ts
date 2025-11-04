@@ -111,6 +111,7 @@ describe("GET /api/budgets/current", () => {
           error: null,
         }),
         insert: jest.fn().mockReturnThis(),
+        upsert: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
         limit: jest.fn().mockResolvedValue({ data: [], error: null }),
         update: jest.fn().mockReturnThis(),
@@ -144,6 +145,7 @@ describe("GET /api/budgets/current", () => {
             error: null,
           }),
           insert: jest.fn().mockReturnThis(),
+          upsert: jest.fn().mockReturnThis(),
           order: jest.fn().mockResolvedValue({
             data: mockBudgetMonth,
             error: null,
@@ -234,6 +236,7 @@ describe("GET /api/budgets/current", () => {
             });
           }),
           insert: jest.fn().mockReturnThis(),
+          upsert: jest.fn().mockReturnThis(),
           order: jest.fn().mockResolvedValue({
             data: mockBudgetMonth,
             error: null,

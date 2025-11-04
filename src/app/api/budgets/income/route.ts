@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateCurrentBudgetMonth } from '@/lib/budget-helpers';
 import { createClient } from '@/lib/supabase/server';
@@ -16,7 +17,7 @@ async function recalculateGoalAllocations(
 
   if (!budgetMonth) return;
 
-  const totalIncome = Number(budgetMonth.total_income);
+  const totalIncome = new Decimal(budgetMonth.total_income || 0);
 
   // Get all goals for this month
   const { data: goals } = await supabase
@@ -26,9 +27,10 @@ async function recalculateGoalAllocations(
 
   if (!goals) return;
 
-  // Update each goal's allocated_amount
+  // Update each goal's allocated_amount using Decimal for precision
   for (const goal of goals) {
-    const allocatedAmount = (goal.percentage / 100) * totalIncome;
+    const percentage = new Decimal(goal.percentage);
+    const allocatedAmount = percentage.dividedBy(100).times(totalIncome).toNumber();
     await supabase
       .from('budget_goals')
       .update({ allocated_amount: allocatedAmount })
@@ -50,27 +52,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    let budgetMonthId: string | undefined;
-    let budgetError: Error | null = null;
-
-    // Retry up to 3 times to get or create budget month
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
-      budgetMonthId = result.id;
-      budgetError = result.error;
-
-      if (!budgetError && budgetMonthId) {
-        break;
-      }
-
-      // Wait a bit before retrying (exponential backoff)
-      if (attempt < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 100 * (attempt + 1)));
-      }
-    }
+    // Get or create current budget month using atomic upsert
+    // No retry loop needed since upsert handles concurrent requests atomically
+    const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
+    const budgetMonthId = result.id;
+    const budgetError = result.error;
 
     if (budgetError || !budgetMonthId) {
-      console.error('Failed to get or create budget month after retries:', budgetError);
+      console.error('Failed to get or create budget month:', budgetError);
       return NextResponse.json(
         { error: 'Failed to get budget month. Please try again.' },
         { status: 500 },
@@ -121,27 +110,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Amount must be non-negative' }, { status: 400 });
     }
 
-    let budgetMonthId: string | undefined;
-    let budgetError: Error | null = null;
-
-    // Retry up to 3 times to get or create budget month
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
-      budgetMonthId = result.id;
-      budgetError = result.error;
-
-      if (!budgetError && budgetMonthId) {
-        break;
-      }
-
-      // Wait a bit before retrying (exponential backoff)
-      if (attempt < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 100 * (attempt + 1)));
-      }
-    }
+    // Get or create current budget month using atomic upsert
+    // No retry loop needed since upsert handles concurrent requests atomically
+    const result = await getOrCreateCurrentBudgetMonth(supabase, user.id);
+    const budgetMonthId = result.id;
+    const budgetError = result.error;
 
     if (budgetError || !budgetMonthId) {
-      console.error('Failed to get or create budget month after retries:', budgetError);
+      console.error('Failed to get or create budget month:', budgetError);
       return NextResponse.json(
         { error: 'Failed to get budget month. Please try again.' },
         { status: 500 },

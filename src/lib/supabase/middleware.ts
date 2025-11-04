@@ -6,19 +6,40 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // Check if we're in Cypress test mode
-  const isCypressTest =
-    // Check for Cypress environment variable
-    process.env.CYPRESS === 'true' ||
-    // Check for custom header that Cypress could send
-    request.headers.get('x-cypress-test') === 'true' ||
-    // Check for specific test user cookie
-    request.cookies.has('cypress-test-mode');
+  // Strict check for test mode - only allow in non-production environments
+  const isCypressTest = process.env.NODE_ENV !== 'production' && process.env.CYPRESS === 'true';
+
+  // Add production safety check
+  if (process.env.NODE_ENV === 'production' && process.env.CYPRESS === 'true') {
+    console.error(
+      '[SECURITY] CYPRESS environment variable detected in production! Disabling test mode.',
+    );
+    throw new Error(
+      'CYPRESS environment variable detected in production! Check your deployment configuration.',
+    );
+  }
 
   let user = null;
   let supabase: ReturnType<typeof createServerClient> | null = null;
 
   if (isCypressTest) {
+    // Verify request origin is localhost
+    const origin = request.headers.get('origin') || '';
+    const host = request.headers.get('host') || '';
+    const isLocalhost =
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      host.includes('localhost') ||
+      host.includes('127.0.0.1');
+
+    if (!isLocalhost) {
+      // Reject test bypass from non-localhost origins
+      console.error('[SECURITY] Test mode requested from non-localhost origin:', origin || host);
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    console.warn('[TEST MODE] Authentication bypassed for Cypress tests from localhost');
+
     // Mock user for Cypress tests
     user = {
       id: 'test-user-id',

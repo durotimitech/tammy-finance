@@ -89,7 +89,8 @@ describe("GET /api/networth", () => {
     const data = await response.json();
 
     expect(response.status).toBe(401);
-    expect(data.error).toBe("Unauthorized");
+    expect(data.error.message).toBe("Authentication required");
+    expect(data.error.code).toBe("UNAUTHORIZED");
   });
 
   it("should handle empty assets and liabilities", async () => {
@@ -156,7 +157,8 @@ describe("GET /api/networth", () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe("Failed to calculate net worth");
+    expect(data.error.message).toBe("Failed to calculate net worth");
+    expect(data.error.code).toBe("INTERNAL_ERROR");
   });
 
   it("should handle database errors when fetching liabilities", async () => {
@@ -195,7 +197,8 @@ describe("GET /api/networth", () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe("Failed to calculate net worth");
+    expect(data.error.message).toBe("Failed to calculate net worth");
+    expect(data.error.code).toBe("INTERNAL_ERROR");
   });
 
   it("should handle null or undefined values in assets", async () => {

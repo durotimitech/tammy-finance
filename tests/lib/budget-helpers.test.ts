@@ -76,6 +76,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
               });
             });
             chain.insert = jest.fn().mockReturnValue(chain);
+            chain.upsert = jest.fn().mockReturnValue(chain);
             chain.update = jest.fn().mockReturnValue(chain);
             return chain;
           }
@@ -225,6 +226,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.upsert = jest.fn().mockReturnValue(chain);
           return chain;
         }),
       };
@@ -278,6 +280,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.upsert = jest.fn().mockReturnValue(chain);
           return chain;
         }),
       };
@@ -533,6 +536,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.upsert = jest.fn().mockReturnValue(chain);
           chain.update = jest.fn().mockReturnValue(chain);
           chain.limit = jest.fn().mockResolvedValue({
             data: [],
@@ -683,6 +687,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.upsert = jest.fn().mockReturnValue(chain);
 
           if (table === "income_sources") {
             const incomeChain: any = {};
@@ -778,6 +783,7 @@ describe("Budget Helpers - Monthly Copy Logic", () => {
             });
           });
           chain.insert = jest.fn().mockReturnValue(chain);
+          chain.upsert = jest.fn().mockReturnValue(chain);
 
           if (table === "income_sources") {
             const incomeChain: any = {};

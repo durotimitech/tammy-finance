@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { parseJsonBody } from '@/lib/api-validation';
 import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { isSameDay } from '@/lib/date-utils';
 import { createClient } from '@/lib/supabase/server';
@@ -72,7 +73,10 @@ export async function GET() {
           // Generate user-specific secret
           const encryptionSecret = process.env.ENCRYPTION_SECRET;
           if (!encryptionSecret) {
-            throw new Error('ENCRYPTION_SECRET is not configured');
+            console.error(
+              '[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.',
+            );
+            throw new Error('Encryption configuration unavailable');
           }
           const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
 
@@ -83,13 +87,14 @@ export async function GET() {
             !credential.iv ||
             !credential.auth_tag
           ) {
-            console.error('Invalid credential data:', {
+            console.error('[SECURITY] Invalid credential structure for user:', user.id, {
+              credentialName: 'trading212',
               hasEncryptedValue: !!credential.encrypted_value,
               hasSalt: !!credential.salt,
               hasIv: !!credential.iv,
               hasAuthTag: !!credential.auth_tag,
             });
-            throw new Error('Invalid credential data');
+            throw new Error('Credential data corrupted');
           }
 
           // Decrypt API key
@@ -104,10 +109,12 @@ export async function GET() {
               },
               userSecret,
             );
-          } catch {
+          } catch (decryptError) {
             // Log error but continue - the Trading 212 integration is optional
             console.error(
-              'Failed to decrypt Trading 212 API key. You may need to reconnect your account.',
+              '[SECURITY] Failed to decrypt Trading 212 API key for user:',
+              user.id,
+              decryptError,
             );
           }
 
@@ -175,8 +182,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const body: AssetFormData = await request.json();
+    // Parse request body with Content-Type validation
+    const body = await parseJsonBody<AssetFormData>(request);
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { name, category, value } = body;
 
     // Validate input
@@ -223,8 +233,11 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const body = await request.json();
+    // Parse request body with Content-Type validation
+    const body = await parseJsonBody<AssetFormData & { id: string }>(request);
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { id, name, category, value } = body;
 
     // Validate input
@@ -273,8 +286,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse request body
-    const body = await request.json();
+    // Parse request body with Content-Type validation
+    const body = await parseJsonBody<{ id: string }>(request);
+    if (body instanceof NextResponse) {
+      return body;
+    }
     const { id } = body;
 
     if (!id) {

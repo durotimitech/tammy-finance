@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+import { ErrorResponses } from '@/lib/api-errors';
 import { createClient } from '@/lib/supabase/server';
 import { CreateBudgetDto } from '@/types/budget';
 
@@ -11,7 +13,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const { data, error } = await supabase
@@ -27,7 +29,7 @@ export async function GET() {
     return NextResponse.json(data || []);
   } catch (error) {
     console.error('Error fetching budgets:', error);
-    return NextResponse.json({ error: 'Failed to fetch budgets' }, { status: 500 });
+    return ErrorResponses.internalError('Failed to fetch budgets');
   }
 }
 
@@ -40,15 +42,63 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
-    const body: CreateBudgetDto = await request.json();
+    const body = await request.json();
+
+    // Validate required fields
+    if (!body.name || typeof body.name !== 'string') {
+      return ErrorResponses.validationError('Missing or invalid required field: name', 'name');
+    }
+
+    if (body.amount === undefined || typeof body.amount !== 'number' || body.amount < 0) {
+      return ErrorResponses.validationError(
+        'Invalid amount. Must be a non-negative number.',
+        'amount',
+      );
+    }
+
+    if (!body.period || !['weekly', 'monthly', 'yearly'].includes(body.period)) {
+      return ErrorResponses.validationError(
+        'Invalid period. Must be weekly, monthly, or yearly.',
+        'period',
+      );
+    }
+
+    if (
+      !body.category ||
+      ![
+        'housing',
+        'transportation',
+        'food',
+        'utilities',
+        'healthcare',
+        'entertainment',
+        'shopping',
+        'education',
+        'savings',
+        'other',
+      ].includes(body.category)
+    ) {
+      return ErrorResponses.validationError(
+        'Invalid category. Must be one of: housing, transportation, food, utilities, healthcare, entertainment, shopping, education, savings, other.',
+        'category',
+      );
+    }
+
+    // Only insert whitelisted fields
+    const budgetData: CreateBudgetDto = {
+      name: String(body.name).trim().slice(0, 255),
+      amount: parseFloat(body.amount),
+      period: body.period,
+      category: body.category,
+    };
 
     const { data, error } = await supabase
       .from('budgets')
       .insert({
-        ...body,
+        ...budgetData,
         user_id: user.id,
       })
       .select()
@@ -61,6 +111,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
     console.error('Error creating budget:', error);
-    return NextResponse.json({ error: 'Failed to create budget' }, { status: 500 });
+    return ErrorResponses.internalError('Failed to create budget');
   }
 }

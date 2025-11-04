@@ -18,7 +18,25 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 365;
+
+    // Validate limit parameter with bounds checking
+    const rawLimit = searchParams.get('limit');
+    let limit = 365; // Default
+
+    if (rawLimit) {
+      const parsedLimit = parseInt(rawLimit, 10);
+
+      // Validate: must be positive integer between 1 and 1000
+      if (isNaN(parsedLimit) || parsedLimit < 1) {
+        return NextResponse.json(
+          { error: 'Invalid limit parameter. Must be a positive integer.' },
+          { status: 400 },
+        );
+      }
+
+      // Enforce maximum limit to prevent DoS
+      limit = Math.min(parsedLimit, 1000);
+    }
 
     // Build query
     let query = supabase

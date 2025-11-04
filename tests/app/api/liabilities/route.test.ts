@@ -142,6 +142,9 @@ describe("POST /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "New Loan",
         category: "Personal Loan",
@@ -173,6 +176,9 @@ describe("POST /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "New Loan",
         category: "Personal Loan",
@@ -200,6 +206,9 @@ describe("POST /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         // Missing required fields
         name: "New Loan",
@@ -236,6 +245,9 @@ describe("POST /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: "Simple Debt",
         category: "Other",
@@ -300,6 +312,9 @@ describe("PUT /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         id: "liability-id",
         name: "Updated Liability",
@@ -333,6 +348,9 @@ describe("PUT /api/liabilities", () => {
 
     const request = new NextRequest("http://localhost:3000/api/liabilities", {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         amount_owed: 8000,
       }),
