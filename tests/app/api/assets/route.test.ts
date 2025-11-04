@@ -5,11 +5,9 @@ import { NextRequest } from "next/server";
 import { GET, POST, PUT, DELETE } from "@/app/api/assets/route";
 import { decryptApiKey, generateUserSecret } from "@/lib/crypto";
 import { createClient } from "@/lib/supabase/server";
-import { fetchPortfolio, formatPortfolioData } from "@/lib/trading212";
 
 // Mock dependencies
 jest.mock("@/lib/supabase/server");
-jest.mock("@/lib/trading212");
 jest.mock("@/lib/crypto");
 
 // Mock NextRequest
@@ -17,12 +15,6 @@ global.Request = jest.fn().mockImplementation(() => ({})) as any;
 
 const mockCreateClient = createClient as jest.MockedFunction<
   typeof createClient
->;
-const mockFetchPortfolio = fetchPortfolio as jest.MockedFunction<
-  typeof fetchPortfolio
->;
-const mockFormatPortfolioData = formatPortfolioData as jest.MockedFunction<
-  typeof formatPortfolioData
 >;
 const mockDecryptApiKey = decryptApiKey as jest.MockedFunction<
   typeof decryptApiKey
