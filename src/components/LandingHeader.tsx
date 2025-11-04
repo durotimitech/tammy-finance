@@ -11,8 +11,10 @@ export default function LandingHeader() {
   const supabase = createClient();
   const [session, setSession] = useState<Session | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -34,7 +36,7 @@ export default function LandingHeader() {
         </Link>
 
         <div className="hidden lg:flex items-center gap-8">
-          {session ? (
+          {mounted && session ? (
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
                 <Button variant="secondary">Dashboard</Button>
@@ -63,7 +65,7 @@ export default function LandingHeader() {
         <div className="lg:hidden mt-4 pb-4 border-b">
           <div className="flex flex-col gap-4 pt-4">
             <div className="pt-4 flex flex-col gap-2">
-              {session ? (
+              {mounted && session ? (
                 <>
                   <Link href="/dashboard">
                     <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6">
