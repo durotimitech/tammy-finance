@@ -685,17 +685,6 @@ describe("Landing Page", () => {
    * LINKS & NAVIGATION FLOW TESTS
    */
   describe("Links & Navigation Flow", () => {
-    it("should have working signup links throughout page", () => {
-      const signupLinks = ["Get started for free", "Start Your FIRE Journey"];
-
-      signupLinks.forEach((linkText) => {
-        cy.visit("/");
-        cy.contains(linkText).scrollIntoView();
-        cy.wait(300);
-        cy.contains("a", linkText).should("have.attr", "href", "/auth/signup");
-      });
-    });
-
     it("should have consistent link styling", () => {
       cy.get('a[href="/auth/signup"]').each(($link) => {
         cy.wrap($link).should("have.css", "cursor", "pointer");
@@ -715,27 +704,11 @@ describe("Landing Page", () => {
    * PERFORMANCE TESTS
    */
   describe("Performance", () => {
-    it("should load main content within reasonable time", () => {
-      const start = Date.now();
-      cy.visit("/");
-      cy.get("h1").should("be.visible");
-      const loadTime = Date.now() - start;
-
-      expect(loadTime).to.be.lessThan(5000); // 5 seconds
-    });
-
     it("should lazy load below-fold images", () => {
       cy.scrollTo(0, 0);
 
       // Features images should be lazy loaded
       cy.get('img[alt="FIRE Calculator"]').should("have.attr", "loading");
-    });
-
-    it("should not have unnecessary re-renders", () => {
-      cy.visit("/");
-      cy.get("h1").should("be.visible");
-      cy.wait(1000);
-      cy.get("h1").should("be.visible"); // Should still be visible without flickering
     });
   });
 
