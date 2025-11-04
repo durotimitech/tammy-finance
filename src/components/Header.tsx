@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-import CurrencySelector from "@/components/CurrencySelector";
-import { Skeleton } from "@/components/Skeleton";
-import { createClient } from "@/lib/supabase/client";
+import { User } from '@supabase/supabase-js';
+import { useEffect, useState } from 'react';
+import CurrencySelector from '@/components/CurrencySelector';
+import { Skeleton } from '@/components/Skeleton';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Header() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const [greeting, setGreeting] = useState("Good Morning");
+  const [greeting, setGreeting] = useState('Good Morning');
 
   useEffect(() => {
     const getUser = async () => {
@@ -24,14 +24,13 @@ export default function Header() {
 
     // Set greeting based on time of day
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting("Good Morning");
-    else if (hour < 18) setGreeting("Good Afternoon");
-    else setGreeting("Good Evening");
+    if (hour < 12) setGreeting('Good Morning');
+    else if (hour < 18) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
   }, []);
 
   // Get firstname from user metadata, fallback to email if not available
-  const firstName =
-    user?.user_metadata?.first_name || user?.email?.split("@")[0] || "User";
+  const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
   const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   return (

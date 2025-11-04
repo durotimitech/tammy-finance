@@ -1,30 +1,30 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Budget, CreateBudgetDto, UpdateBudgetDto } from "@/types/budget";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Budget, CreateBudgetDto, UpdateBudgetDto } from '@/types/budget';
 
 // Query keys
 export const budgetKeys = {
-  all: ["budgets"] as const,
+  all: ['budgets'] as const,
 };
 
 const fetchBudgets = async (): Promise<Budget[]> => {
-  const response = await fetch("/api/budgets");
+  const response = await fetch('/api/budgets');
   if (!response.ok) {
-    throw new Error("Failed to fetch budgets");
+    throw new Error('Failed to fetch budgets');
   }
   return response.json();
 };
 
 const createBudget = async (budget: CreateBudgetDto): Promise<Budget> => {
-  const response = await fetch("/api/budgets", {
-    method: "POST",
+  const response = await fetch('/api/budgets', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(budget),
   });
   if (!response.ok) {
-    throw new Error("Failed to create budget");
+    throw new Error('Failed to create budget');
   }
   return response.json();
 };
@@ -37,24 +37,24 @@ const updateBudget = async ({
   data: UpdateBudgetDto;
 }): Promise<Budget> => {
   const response = await fetch(`/api/budgets/${id}`, {
-    method: "PUT",
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    throw new Error("Failed to update budget");
+    throw new Error('Failed to update budget');
   }
   return response.json();
 };
 
 const deleteBudget = async (id: string): Promise<void> => {
   const response = await fetch(`/api/budgets/${id}`, {
-    method: "DELETE",
+    method: 'DELETE',
   });
   if (!response.ok) {
-    throw new Error("Failed to delete budget");
+    throw new Error('Failed to delete budget');
   }
 };
 
@@ -74,31 +74,26 @@ export function useCreateBudget() {
     onMutate: async (newBudget) => {
       await queryClient.cancelQueries({ queryKey: budgetKeys.all });
 
-      const previousBudgets = queryClient.getQueryData<Budget[]>(
-        budgetKeys.all,
-      );
+      const previousBudgets = queryClient.getQueryData<Budget[]>(budgetKeys.all);
 
       const tempBudget: Budget = {
         id: `temp-${Date.now()}`,
-        user_id: "temp",
+        user_id: 'temp',
         ...newBudget,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
-      queryClient.setQueryData<Budget[]>(budgetKeys.all, (old = []) => [
-        tempBudget,
-        ...old,
-      ]);
+      queryClient.setQueryData<Budget[]>(budgetKeys.all, (old = []) => [tempBudget, ...old]);
 
       return { previousBudgets };
     },
     onError: (err, newBudget, context) => {
       queryClient.setQueryData(budgetKeys.all, context?.previousBudgets);
-      toast.error("Failed to create budget");
+      toast.error('Failed to create budget');
     },
     onSuccess: () => {
-      toast.success("Budget created successfully");
+      toast.success('Budget created successfully');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
@@ -114,15 +109,11 @@ export function useUpdateBudget() {
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: budgetKeys.all });
 
-      const previousBudgets = queryClient.getQueryData<Budget[]>(
-        budgetKeys.all,
-      );
+      const previousBudgets = queryClient.getQueryData<Budget[]>(budgetKeys.all);
 
       queryClient.setQueryData<Budget[]>(budgetKeys.all, (old = []) =>
         old.map((budget) =>
-          budget.id === id
-            ? { ...budget, ...data, updated_at: new Date().toISOString() }
-            : budget,
+          budget.id === id ? { ...budget, ...data, updated_at: new Date().toISOString() } : budget,
         ),
       );
 
@@ -130,10 +121,10 @@ export function useUpdateBudget() {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(budgetKeys.all, context?.previousBudgets);
-      toast.error("Failed to update budget");
+      toast.error('Failed to update budget');
     },
     onSuccess: () => {
-      toast.success("Budget updated successfully");
+      toast.success('Budget updated successfully');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });
@@ -149,9 +140,7 @@ export function useDeleteBudget() {
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: budgetKeys.all });
 
-      const previousBudgets = queryClient.getQueryData<Budget[]>(
-        budgetKeys.all,
-      );
+      const previousBudgets = queryClient.getQueryData<Budget[]>(budgetKeys.all);
 
       queryClient.setQueryData<Budget[]>(budgetKeys.all, (old = []) =>
         old.filter((budget) => budget.id !== id),
@@ -161,10 +150,10 @@ export function useDeleteBudget() {
     },
     onError: (err, id, context) => {
       queryClient.setQueryData(budgetKeys.all, context?.previousBudgets);
-      toast.error("Failed to delete budget");
+      toast.error('Failed to delete budget');
     },
     onSuccess: () => {
-      toast.success("Budget deleted successfully");
+      toast.success('Budget deleted successfully');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.all });

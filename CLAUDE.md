@@ -61,7 +61,7 @@ All must pass before commits are allowed.
 All API calls use the centralized `apiClient` (`src/lib/api-client.ts`):
 
 ```typescript
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from '@/lib/api-client';
 
 // Usage
 const assets = await apiClient.assets.getAll();

@@ -1,28 +1,22 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
-import { signup } from "../../../lib/auth/signup";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { NotificationBanner } from "@/components/ui/NotificationBanner";
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
+import { signup } from '../../../lib/auth/signup';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { NotificationBanner } from '@/components/ui/NotificationBanner';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button
-      type="submit"
-      loading={pending}
-      variant="primary"
-      size="lg"
-      className="w-full"
-    >
+    <Button type="submit" loading={pending} variant="primary" size="lg" className="w-full">
       Sign Up
     </Button>
   );
@@ -38,7 +32,7 @@ export default function SignupPage() {
     if (state?.accountExists) {
       // Redirect to login page after a short delay to show the message
       const timer = setTimeout(() => {
-        router.push("/auth/login");
+        router.push('/auth/login');
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -49,7 +43,7 @@ export default function SignupPage() {
       {/* Left side - Orange Background with Centered Image */}
       <motion.div
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
-        style={{ backgroundColor: "#ff5722" }}
+        style={{ backgroundColor: '#ff5722' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -85,25 +79,16 @@ export default function SignupPage() {
           {/* Logo */}
           <div className="flex items-center justify-center mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold font-pirata text-secondary">
-                tammy
-              </span>
+              <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold text-center mb-2">
-            Create Account
-          </h2>
-          <p className="text-gray-600 text-center mb-8">
-            Enter your details to get started
-          </p>
+          <h2 className="text-3xl font-bold text-center mb-2">Create Account</h2>
+          <p className="text-gray-600 text-center mb-8">Enter your details to get started</p>
 
           <form action={formAction} className="space-y-6">
             <div>
-              <label
-                htmlFor="firstname"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 mb-2">
                 First Name
               </label>
               <Input
@@ -116,33 +101,21 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                required
-              />
+              <Input id="email" name="email" type="email" placeholder="Enter your email" required />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Create a password"
                   required
                   className="pr-12"
@@ -154,11 +127,7 @@ export default function SignupPage() {
                   size="sm"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </Button>
               </div>
             </div>
@@ -174,7 +143,7 @@ export default function SignupPage() {
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
                   required
                   className="pr-12"
@@ -196,11 +165,7 @@ export default function SignupPage() {
             </div>
 
             {state?.error && (
-              <NotificationBanner
-                message={state.error}
-                type="error"
-                onClose={() => {}}
-              />
+              <NotificationBanner message={state.error} type="error" onClose={() => {}} />
             )}
             {state?.success && (
               <NotificationBanner
@@ -214,11 +179,8 @@ export default function SignupPage() {
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-8">
-            Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="font-medium text-secondary hover:underline"
-            >
+            Already have an account?{' '}
+            <Link href="/auth/login" className="font-medium text-secondary hover:underline">
               Sign In
             </Link>
           </p>

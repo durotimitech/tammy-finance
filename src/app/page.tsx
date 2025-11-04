@@ -1,95 +1,17 @@
-"use client";
+'use client';
 
-import type { Session } from "@supabase/supabase-js";
-import { motion } from "framer-motion";
-import { ArrowRight, BarChart3, FileText, Menu, Target, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { createClient } from "@/lib/supabase/client";
+import { motion } from 'framer-motion';
+import { ArrowRight, BarChart3, FileText, Target } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import LandingFooter from '@/components/LandingFooter';
+import LandingHeader from '@/components/LandingHeader';
+import { Button } from '@/components/ui/Button';
 
 export default function Home() {
-  const supabase = createClient();
-  const [session, setSession] = useState<Session | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [supabase.auth]);
-
   return (
     <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <nav className="w-full px-6 lg:px-12 py-5 bg-white border-b border-gray-100">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">
-              tammy
-            </span>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
-            {session ? (
-              <div className="flex items-center gap-4">
-                <Link href="/dashboard">
-                  <Button variant="secondary">Dashboard</Button>
-                </Link>
-              </div>
-            ) : (
-              <Link href="/auth/login">
-                <Button variant="secondary">Login</Button>
-              </Link>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-b">
-            <div className="flex flex-col gap-4 pt-4">
-              <div className="pt-4 flex flex-col gap-2">
-                {session ? (
-                  <>
-                    <Link href="/dashboard">
-                      <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6">
-                        Dashboard
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Link href="/auth/login">
-                    <Button className="w-full bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full">
-                      Login
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="relative px-6 lg:px-12 pt-16 pb-24 overflow-hidden bg-white">
@@ -106,9 +28,9 @@ export default function Home() {
               </h1>
 
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Know and track your FIRE journey with access to your net worth,
-                assets and liabilities, track your budgets and reach your
-                financial independence goals. All in one easy-to-use app.
+                Know and track your FIRE journey with access to your net worth, assets and
+                liabilities, track your budgets and reach your financial independence goals. All in
+                one easy-to-use app.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-12">
@@ -158,9 +80,8 @@ export default function Home() {
               <br /> of Your Finances
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Manage your finances with Tammy Finance. Monitor expenses, track
-              net worth, and reach financial independence. All within a
-              user-friendly app.
+              Manage your finances with Tammy Finance. Monitor expenses, track net worth, and reach
+              financial independence. All within a user-friendly app.
             </p>
           </div>
 
@@ -169,17 +90,15 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="mb-6">
                 <Target className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
-                FIRE Calculator
-              </h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">FIRE Calculator</h3>
               <p className="text-[#6B6B6B] mb-6">
-                Calculate your path to Financial Independence, Retire Early
-                (FIRE) with personalized projections and milestone tracking.
+                Calculate your path to Financial Independence, Retire Early (FIRE) with personalized
+                projections and milestone tracking.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -195,17 +114,15 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="mb-6">
                 <BarChart3 className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
-                Net Worth Tracking
-              </h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Net Worth Tracking</h3>
               <p className="text-[#6B6B6B] mb-6">
-                Monitor your complete financial picture by tracking assets,
-                liabilities, and calculating your net worth in real-time.
+                Monitor your complete financial picture by tracking assets, liabilities, and
+                calculating your net worth in real-time.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -221,17 +138,15 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="mb-6">
                 <FileText className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
-                Expense Tracking
-              </h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Expense Tracking</h3>
               <p className="text-[#6B6B6B] mb-6">
-                Easily track your daily, weekly, and monthly expenses to stay in
-                control of where your money goes.
+                Easily track your daily, weekly, and monthly expenses to stay in control of where
+                your money goes.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -246,106 +161,73 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-5 gap-8 mb-8">
-            <div className="col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">
-                  tammy
-                </span>
+      {/* Creator Section */}
+      <section className="py-24 px-6 lg:px-12 bg-white">
+        <motion.div
+          className="max-w-7xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="bg-gray-50 rounded-3xl p-8 md:p-12 lg:p-16">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="relative">
+                <div className="absolute -top-8 -left-8 text-6xl">👋</div>
+                <Image
+                  src="/creator.jpg"
+                  alt="Timmy Mejabi"
+                  width={400}
+                  height={400}
+                  className="rounded-full w-48 h-48 md:w-64 md:h-64 object-cover mx-auto lg:mx-0"
+                />
+                <div className="mt-8 text-center lg:text-left">
+                  <p className="text-sm text-[#6B6B6B] mb-4">
+                    If you want to follow along with my journey, here is my TikTok.
+                  </p>
+                  <div className="flex gap-4 justify-center lg:justify-start">
+                    {/* <a
+                      href="https://youtube.com/@createdbytimmy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors text-sm"
+                    >
+                      YouTube
+                    </a> */}
+                    <a
+                      href="https://tiktok.com/@createdbytimmy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      TikTok
+                    </a>
+                  </div>
+                </div>
               </div>
-              <p className="text-[#6B6B6B] mb-6">
-                Your personal net worth and budget tracker for achieving
-                financial independence.
-              </p>
-            </div>
 
-            {/* <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Features</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Financial Reports
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Pricing
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
-
-            {/* <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Resources</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/docs" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/guides" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Guides & Tutorials
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/updates" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Product Updates
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
-
-            {/* <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Company</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/about" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/team" className="text-[#6B6B6B] hover:text-[#2D2D2D] text-sm">
-                    Our Team
-                  </Link>
-                </li>
-              </ul>
-            </div> */}
-          </div>
-
-          <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-[#6B6B6B]">
-              Terms of Service | Cookies Settings | Privacy Policy
-            </div>
-            <div className="text-sm text-[#6B6B6B]">
-              © 2025 tammy - All Rights Reserved
+              <div>
+                <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
+                  Hello, my name is Timmy and I built Tammy because I needed a way to track my
+                  journey to Financial Independence.
+                </p>
+                <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
+                  As it turns out, there are other things that need to be tracked in order to have a
+                  complete view of your FIRE target. Things like budgets, networth and so on.
+                </p>
+                <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
+                  My goal with this app is that it assists your financial journey like it has done
+                  to mine. I spend a lot of time actually using the app personally because progress
+                  can be addicting and I hope you enjoy using it as much as me.
+                </p>
+                <p className="text-lg font-semibold text-[#2D2D2D]">- Timmy Mejabi</p>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
+        </motion.div>
+      </section>
+
+      <LandingFooter />
     </div>
   );
 }

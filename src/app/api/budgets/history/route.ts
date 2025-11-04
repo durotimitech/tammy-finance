@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { BudgetHistorySummary } from "@/types/budget-new";
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { BudgetHistorySummary } from '@/types/budget-new';
 
 // GET budget history (totals only for previous months)
 export async function GET() {
@@ -13,7 +13,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const now = new Date();
@@ -22,21 +22,16 @@ export async function GET() {
 
     // Get all budget months except the current one, ordered by year and month descending
     const { data: budgetMonths, error } = await supabase
-      .from("budget_months")
-      .select("id, month, year, total_income, total_expenses")
-      .eq("user_id", user.id)
-      .or(
-        `year.lt.${currentYear},and(year.eq.${currentYear},month.lt.${currentMonth})`,
-      )
-      .order("year", { ascending: false })
-      .order("month", { ascending: false })
+      .from('budget_months')
+      .select('id, month, year, total_income, total_expenses')
+      .eq('user_id', user.id)
+      .or(`year.lt.${currentYear},and(year.eq.${currentYear},month.lt.${currentMonth})`)
+      .order('year', { ascending: false })
+      .order('month', { ascending: false })
       .limit(12); // Last 12 months
 
     if (error) {
-      return NextResponse.json(
-        { error: "Failed to fetch budget history" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: 'Failed to fetch budget history' }, { status: 500 });
     }
 
     // Fetch expenses for each budget month
@@ -45,14 +40,14 @@ export async function GET() {
         // Calculate the date range for this month
         const monthStart = new Date(month.year, month.month - 1, 1);
         const monthEnd = new Date(month.year, month.month, 0, 23, 59, 59);
-        const monthStartStr = monthStart.toISOString().split("T")[0];
-        const monthEndStr = monthEnd.toISOString().split("T")[0];
+        const monthStartStr = monthStart.toISOString().split('T')[0];
+        const monthEndStr = monthEnd.toISOString().split('T')[0];
 
         // Get all expenses where expense_date falls within this month
         // This ensures expenses added retroactively show in the correct month
         // RLS policies will automatically filter to user's expenses through budget_months
         const { data: expenses, error: expensesError } = await supabase
-          .from("budget_expenses")
+          .from('budget_expenses')
           .select(
             `
             id,
@@ -68,15 +63,12 @@ export async function GET() {
             )
           `,
           )
-          .gte("expense_date", monthStartStr)
-          .lte("expense_date", monthEndStr)
-          .order("expense_date", { ascending: false });
+          .gte('expense_date', monthStartStr)
+          .lte('expense_date', monthEndStr)
+          .order('expense_date', { ascending: false });
 
         if (expensesError) {
-          console.error(
-            `Error fetching expenses for ${month.year}-${month.month}:`,
-            expensesError,
-          );
+          console.error(`Error fetching expenses for ${month.year}-${month.month}:`, expensesError);
         }
 
         // Transform expenses to include goal name
@@ -114,9 +106,8 @@ export async function GET() {
               created_at: String(expense.created_at),
               updated_at: String(expense.updated_at),
               goal_name:
-                (goalData?.category_name
-                  ? String(goalData.category_name)
-                  : null) || "Unknown Category",
+                (goalData?.category_name ? String(goalData.category_name) : null) ||
+                'Unknown Category',
             };
           }) || [];
 
@@ -125,8 +116,7 @@ export async function GET() {
           year: month.year,
           total_income: Number(month.total_income),
           total_expenses: Number(month.total_expenses),
-          net_savings:
-            Number(month.total_income) - Number(month.total_expenses),
+          net_savings: Number(month.total_income) - Number(month.total_expenses),
           expenses: expensesWithGoals,
         };
       }),
@@ -134,10 +124,7 @@ export async function GET() {
 
     return NextResponse.json(history);
   } catch (error) {
-    console.error("Error in GET /api/budgets/history:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    console.error('Error in GET /api/budgets/history:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,26 +1,19 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
-import { useCurrentBudget } from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { motion } from 'framer-motion';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useCurrentBudget } from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
 
 const COLORS = [
-  "#8B5CF6", // Purple
-  "#3B82F6", // Blue
-  "#10B981", // Green
-  "#F59E0B", // Amber
-  "#EF4444", // Red
-  "#EC4899", // Pink
-  "#06B6D4", // Cyan
-  "#84CC16", // Lime
+  '#8B5CF6', // Purple
+  '#3B82F6', // Blue
+  '#10B981', // Green
+  '#F59E0B', // Amber
+  '#EF4444', // Red
+  '#EC4899', // Pink
+  '#06B6D4', // Cyan
+  '#84CC16', // Lime
 ];
 
 export default function ExpenseDistributionChart() {
@@ -31,7 +24,7 @@ export default function ExpenseDistributionChart() {
     return (
       <div
         className="bg-white rounded-xl p-4 sm:p-6 border animate-pulse"
-        style={{ borderColor: "#e5e7eb" }}
+        style={{ borderColor: '#e5e7eb' }}
       >
         <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
         <div className="h-64 bg-gray-200 rounded"></div>
@@ -53,16 +46,9 @@ export default function ExpenseDistributionChart() {
 
   if (chartData.length === 0) {
     return (
-      <div
-        className="bg-white rounded-xl p-4 sm:p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Expense Distribution
-        </h3>
-        <p className="text-gray-500 text-center py-8">
-          Add expenses to see the distribution chart
-        </p>
+      <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Expense Distribution</h3>
+        <p className="text-gray-500 text-center py-8">Add expenses to see the distribution chart</p>
       </div>
     );
   }
@@ -78,9 +64,7 @@ export default function ExpenseDistributionChart() {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-semibold text-gray-900">{payload[0].name}</p>
-          <p className="text-sm text-gray-600">
-            {formatCurrency(payload[0].value)}
-          </p>
+          <p className="text-sm text-gray-600">{formatCurrency(payload[0].value)}</p>
         </div>
       );
     }
@@ -101,7 +85,7 @@ export default function ExpenseDistributionChart() {
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     // Determine text anchor based on position
-    const textAnchor = x > cx ? "start" : "end";
+    const textAnchor = x > cx ? 'start' : 'end';
 
     return (
       <text
@@ -111,12 +95,12 @@ export default function ExpenseDistributionChart() {
         textAnchor={textAnchor}
         dominantBaseline="central"
         className="text-xs font-medium"
-        style={{ fontSize: "12px" }}
+        style={{ fontSize: '12px' }}
       >
         <tspan x={x} dy="0">
           {name}
         </tspan>
-        <tspan x={x} dy="14" fill="#6B7280" style={{ fontSize: "11px" }}>
+        <tspan x={x} dy="14" fill="#6B7280" style={{ fontSize: '11px' }}>
           {((percent ?? 0) * 100).toFixed(0)}%
         </tspan>
       </text>
@@ -128,11 +112,9 @@ export default function ExpenseDistributionChart() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
+      style={{ borderColor: '#e5e7eb' }}
     >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Expense Distribution
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Expense Distribution</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie

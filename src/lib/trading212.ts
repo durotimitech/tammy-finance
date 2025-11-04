@@ -7,7 +7,7 @@ export interface Trading212Position {
   ppl: number; // Profit/Loss
   fxPpl?: number;
   initialFillDate: string;
-  frontend: "PIE" | "ISA" | "INVEST";
+  frontend: 'PIE' | 'ISA' | 'INVEST';
   maxBuy: number;
   maxSell: number;
 }
@@ -34,7 +34,7 @@ export interface Trading212ErrorResponse {
 
 // Configuration
 const TRADING_212_API_BASE_URL =
-  process.env.TRADING_212_API_BASE_URL || "https://live.trading212.com";
+  process.env.TRADING_212_API_BASE_URL || 'https://live.trading212.com';
 const RATE_LIMIT_DELAY = 1000; // 1 second between requests
 
 // Rate limiting
@@ -66,27 +66,24 @@ export async function fetchPortfolio(apiKey: string): Promise<{
     await enforceRateLimit();
 
     // Only fetch account cash
-    const cashResponse = await fetch(
-      `${TRADING_212_API_BASE_URL}/api/v0/equity/account/cash`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: apiKey,
-          "Content-Type": "application/json",
-        },
+    const cashResponse = await fetch(`${TRADING_212_API_BASE_URL}/api/v0/equity/account/cash`, {
+      method: 'GET',
+      headers: {
+        Authorization: apiKey,
+        'Content-Type': 'application/json',
       },
-    );
+    });
 
     if (!cashResponse.ok) {
       if (cashResponse.status === 401) {
-        return { error: "Invalid API key" };
+        return { error: 'Invalid API key' };
       }
       if (cashResponse.status === 429) {
-        return { error: "Rate limit exceeded. Please try again later." };
+        return { error: 'Rate limit exceeded. Please try again later.' };
       }
 
       const errorData = (await cashResponse.json()) as Trading212ErrorResponse;
-      return { error: errorData.message || "Failed to fetch account cash" };
+      return { error: errorData.message || 'Failed to fetch account cash' };
     }
 
     const cash = (await cashResponse.json()) as Trading212AccountCash;
@@ -98,8 +95,8 @@ export async function fetchPortfolio(apiKey: string): Promise<{
       },
     };
   } catch (error) {
-    console.error("Error fetching Trading 212 portfolio:", error);
-    return { error: "Failed to connect to Trading 212" };
+    console.error('Error fetching Trading 212 portfolio:', error);
+    return { error: 'Failed to connect to Trading 212' };
   }
 }
 
@@ -108,9 +105,7 @@ export async function fetchPortfolio(apiKey: string): Promise<{
  * @param portfolio - The Trading 212 portfolio data
  * @returns The total portfolio value in the account currency
  */
-export function calculatePortfolioValue(
-  portfolio: Trading212Portfolio,
-): number {
+export function calculatePortfolioValue(portfolio: Trading212Portfolio): number {
   // Return only the total cash value
   return portfolio.cash.total;
 }
@@ -136,20 +131,17 @@ export async function validateApiKey(apiKey: string): Promise<boolean> {
   try {
     await enforceRateLimit();
 
-    const response = await fetch(
-      `${TRADING_212_API_BASE_URL}/api/v0/equity/account/info`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: apiKey,
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`${TRADING_212_API_BASE_URL}/api/v0/equity/account/info`, {
+      method: 'GET',
+      headers: {
+        Authorization: apiKey,
+        'Content-Type': 'application/json',
       },
-    );
+    });
 
     return response.ok;
   } catch (error) {
-    console.error("Error validating Trading 212 API key:", error);
+    console.error('Error validating Trading 212 API key:', error);
     return false;
   }
 }

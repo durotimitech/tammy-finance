@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Calendar, DollarSign, Target, TrendingUp } from "lucide-react";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { FIRECalculation } from "@/types/financial";
+import { motion } from 'framer-motion';
+import { Calendar, DollarSign, Target, TrendingUp } from 'lucide-react';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { FIRECalculation } from '@/types/financial';
 
 interface FIREMetricsProps {
   calculation: FIRECalculation;
@@ -13,8 +13,8 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
   const { currency } = useCurrencyFormat();
 
   const formatCurrencyCompact = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
       currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
@@ -22,53 +22,47 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "long",
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
     }).format(new Date(date));
   };
 
   const metrics = [
     {
-      label: "FIRE Number",
+      label: 'FIRE Number',
       value: formatCurrencyCompact(calculation.fireNumber),
       icon: Target,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      description: "Amount needed to retire",
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      description: 'Amount needed to retire',
     },
     {
-      label: "Current Net Worth",
+      label: 'Current Net Worth',
       value: formatCurrencyCompact(calculation.currentNetWorth),
       icon: DollarSign,
-      color: "var(--secondary)",
-      bgColor: "rgba(106, 242, 188, 0.1)",
-      description: "Your current financial position",
+      color: 'var(--secondary)',
+      bgColor: 'rgba(106, 242, 188, 0.1)',
+      description: 'Your current financial position',
     },
     {
-      label: "Time to FIRE",
-      value:
-        calculation.yearsToFIRE === 0
-          ? "Achieved!"
-          : `${calculation.yearsToFIRE} years`,
+      label: 'Time to FIRE',
+      value: calculation.yearsToFIRE === 0 ? 'Achieved!' : `${calculation.yearsToFIRE} years`,
       icon: TrendingUp,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
       description:
         calculation.monthsToFIRE > 0
           ? `About ${calculation.monthsToFIRE} months`
-          : "Congratulations!",
+          : 'Congratulations!',
     },
     {
-      label: "FIRE Date",
-      value:
-        calculation.yearsToFIRE === 0
-          ? "Now!"
-          : formatDate(calculation.fireDate),
+      label: 'FIRE Date',
+      value: calculation.yearsToFIRE === 0 ? 'Now!' : formatDate(calculation.fireDate),
       icon: Calendar,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      description: "Estimated retirement date",
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      description: 'Estimated retirement date',
     },
   ];
 
@@ -84,23 +78,18 @@ export default function FIREMetrics({ calculation }: FIREMetricsProps) {
             transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ scale: 1.02 }}
             className="bg-white rounded-xl p-4 sm:p-6 border"
-            style={{ borderColor: "#e5e7eb" }}
+            style={{ borderColor: '#e5e7eb' }}
           >
             <div className="flex items-start justify-between mb-2">
-              {metric.label === "Current Net Worth" ? (
+              {metric.label === 'Current Net Worth' ? (
                 <Icon className="w-5 h-5" style={{ color: metric.color }} />
               ) : (
-                <div
-                  className="p-2 rounded-lg"
-                  style={{ backgroundColor: metric.bgColor }}
-                >
+                <div className="p-2 rounded-lg" style={{ backgroundColor: metric.bgColor }}>
                   <Icon className="w-5 h-5" style={{ color: metric.color }} />
                 </div>
               )}
             </div>
-            <h3 className="text-sm font-medium text-gray-600 mb-1">
-              {metric.label}
-            </h3>
+            <h3 className="text-sm font-medium text-gray-600 mb-1">{metric.label}</h3>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
               {metric.value}
             </p>

@@ -1,16 +1,10 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Calendar,
-  TrendingUp,
-  TrendingDown,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { useState } from "react";
-import { useBudgetHistory } from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+import { useBudgetHistory } from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
 
 export default function BudgetHistory() {
   const { data: history = [], isLoading } = useBudgetHistory();
@@ -21,7 +15,7 @@ export default function BudgetHistory() {
     return (
       <div
         className="bg-white rounded-xl p-4 sm:p-6 border animate-pulse"
-        style={{ borderColor: "#e5e7eb" }}
+        style={{ borderColor: '#e5e7eb' }}
       >
         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
         <div className="space-y-3">
@@ -35,31 +29,24 @@ export default function BudgetHistory() {
 
   if (history.length === 0) {
     return (
-      <div
-        className="bg-white rounded-xl p-4 sm:p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Budget History
-        </h3>
-        <p className="text-gray-500 text-center py-8">
-          No budget history available yet
-        </p>
+      <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget History</h3>
+        <p className="text-gray-500 text-center py-8">No budget history available yet</p>
       </div>
     );
   }
 
   const formatMonth = (month: number, year: number) => {
     const date = new Date(year, month - 1, 1);
-    return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   };
 
@@ -81,10 +68,7 @@ export default function BudgetHistory() {
   };
 
   return (
-    <div
-      className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
-    >
+    <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-gray-600" />
         <h3 className="text-lg font-semibold text-gray-900">Budget History</h3>
@@ -105,16 +89,14 @@ export default function BudgetHistory() {
               className="bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors overflow-hidden"
             >
               <button
-                onClick={() =>
-                  hasExpenses && toggleMonth(month.month, month.year)
-                }
+                onClick={() => hasExpenses && toggleMonth(month.month, month.year)}
                 disabled={!hasExpenses}
-                className={`w-full text-left p-4 ${hasExpenses ? "cursor-pointer hover:bg-gray-100 transition-colors" : "cursor-default"}`}
+                className={`w-full text-left p-4 ${hasExpenses ? 'cursor-pointer hover:bg-gray-100 transition-colors' : 'cursor-default'}`}
                 aria-label={
                   hasExpenses
                     ? expanded
-                      ? "Collapse transactions"
-                      : "Expand transactions"
+                      ? 'Collapse transactions'
+                      : 'Expand transactions'
                     : undefined
                 }
               >
@@ -125,20 +107,14 @@ export default function BudgetHistory() {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1">
                       {isPositive ? (
-                        <TrendingUp
-                          className="w-4 h-4"
-                          style={{ color: "var(--green)" }}
-                        />
+                        <TrendingUp className="w-4 h-4" style={{ color: 'var(--green)' }} />
                       ) : (
-                        <TrendingDown
-                          className="w-4 h-4"
-                          style={{ color: "var(--red)" }}
-                        />
+                        <TrendingDown className="w-4 h-4" style={{ color: 'var(--red)' }} />
                       )}
                       <span
                         className="font-semibold"
                         style={{
-                          color: isPositive ? "var(--green)" : "var(--red)",
+                          color: isPositive ? 'var(--green)' : 'var(--red)',
                         }}
                       >
                         {formatCurrency(month.net_savings)}
@@ -159,16 +135,13 @@ export default function BudgetHistory() {
                 <div className="grid grid-cols-2 gap-4 text-sm mb-2">
                   <div>
                     <p className="text-gray-500">Income</p>
-                    <p
-                      className="font-medium"
-                      style={{ color: "var(--green)" }}
-                    >
+                    <p className="font-medium" style={{ color: 'var(--green)' }}>
                       {formatCurrency(month.total_income)}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500">Expenses</p>
-                    <p className="font-medium" style={{ color: "var(--red)" }}>
+                    <p className="font-medium" style={{ color: 'var(--red)' }}>
                       {formatCurrency(month.total_expenses)}
                     </p>
                   </div>
@@ -177,7 +150,7 @@ export default function BudgetHistory() {
                 {hasExpenses && (
                   <p className="text-xs text-gray-500 mt-2">
                     {month.expenses.length} transaction
-                    {month.expenses.length !== 1 ? "s" : ""}
+                    {month.expenses.length !== 1 ? 's' : ''}
                   </p>
                 )}
               </button>
@@ -186,15 +159,13 @@ export default function BudgetHistory() {
                 {expanded && hasExpenses && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
+                    animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
                     <div className="px-4 pb-4 border-t border-gray-200 pt-3 mt-2">
-                      <h5 className="text-sm font-medium text-gray-700 mb-3">
-                        Transactions
-                      </h5>
+                      <h5 className="text-sm font-medium text-gray-700 mb-3">Transactions</h5>
                       <div className="space-y-2">
                         {month.expenses.map((expense) => (
                           <div
@@ -217,7 +188,7 @@ export default function BudgetHistory() {
                             </div>
                             <p
                               className="text-sm font-semibold ml-3"
-                              style={{ color: "var(--red)" }}
+                              style={{ color: 'var(--red)' }}
                             >
                               {formatCurrency(expense.amount)}
                             </p>

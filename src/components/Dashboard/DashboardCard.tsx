@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
-import { Skeleton } from "@/components/Skeleton";
+import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
+import { Skeleton } from '@/components/Skeleton';
 
 interface DashboardCardProps {
   title: string;
@@ -21,7 +21,7 @@ export default function DashboardCard({
   onClick,
   isLoading = false,
   testId,
-  className = "",
+  className = '',
 }: DashboardCardProps) {
   return (
     <motion.div
@@ -31,8 +31,8 @@ export default function DashboardCard({
       whileHover={onClick ? { scale: 1.02 } : undefined}
       whileTap={onClick ? { scale: 0.98 } : undefined}
       onClick={onClick}
-      className={`bg-white rounded-xl p-6 border ${onClick ? "cursor-pointer" : ""} ${className}`}
-      style={{ borderColor: "#e5e7eb" }}
+      className={`bg-white rounded-xl p-6 border ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      style={{ borderColor: '#e5e7eb' }}
       data-testid={testId}
     >
       <div className="flex justify-between items-start mb-4">

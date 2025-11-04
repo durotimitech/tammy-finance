@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { useUpdateBudget } from "@/hooks/useBudgets";
-import { Budget, BudgetCategory, BudgetPeriod } from "@/types/budget";
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { useUpdateBudget } from '@/hooks/useBudgets';
+import { Budget, BudgetCategory, BudgetPeriod } from '@/types/budget';
 
 interface BudgetEditFormProps {
   budget: Budget;
@@ -14,24 +14,21 @@ interface BudgetEditFormProps {
 }
 
 const categories: BudgetCategory[] = [
-  "housing",
-  "transportation",
-  "food",
-  "utilities",
-  "healthcare",
-  "entertainment",
-  "shopping",
-  "education",
-  "savings",
-  "other",
+  'housing',
+  'transportation',
+  'food',
+  'utilities',
+  'healthcare',
+  'entertainment',
+  'shopping',
+  'education',
+  'savings',
+  'other',
 ];
 
-const periods: BudgetPeriod[] = ["weekly", "monthly", "yearly"];
+const periods: BudgetPeriod[] = ['weekly', 'monthly', 'yearly'];
 
-export default function BudgetEditForm({
-  budget,
-  onClose,
-}: BudgetEditFormProps) {
+export default function BudgetEditForm({ budget, onClose }: BudgetEditFormProps) {
   const updateBudget = useUpdateBudget();
   const [formData, setFormData] = useState({
     name: budget.name,
@@ -55,7 +52,7 @@ export default function BudgetEditForm({
       });
       onClose();
     } catch (error) {
-      console.error("Error updating budget:", error);
+      console.error('Error updating budget:', error);
     }
   };
 
@@ -88,10 +85,7 @@ export default function BudgetEditForm({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Budget Name
               </label>
               <Input
@@ -99,18 +93,13 @@ export default function BudgetEditForm({
                 id="name"
                 required
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., Monthly Groceries"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="amount"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
                 Amount
               </label>
               <Input
@@ -120,18 +109,13 @@ export default function BudgetEditForm({
                 step="0.01"
                 min="0"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 placeholder="0.00"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="category"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
                 Category
               </label>
               <select
@@ -154,10 +138,7 @@ export default function BudgetEditForm({
             </div>
 
             <div>
-              <label
-                htmlFor="period"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="period" className="block text-sm font-medium text-gray-700 mb-1">
                 Period
               </label>
               <select
@@ -180,19 +161,10 @@ export default function BudgetEditForm({
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button
-                type="submit"
-                disabled={updateBudget.isPending}
-                className="flex-1"
-              >
-                {updateBudget.isPending ? "Updating..." : "Update Budget"}
+              <Button type="submit" disabled={updateBudget.isPending} className="flex-1">
+                {updateBudget.isPending ? 'Updating...' : 'Update Budget'}
               </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                className="flex-1"
-              >
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
                 Cancel
               </Button>
             </div>

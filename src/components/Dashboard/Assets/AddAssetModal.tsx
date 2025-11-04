@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { getCurrencySymbol } from "@/lib/currency";
-import { AssetFormData, UserAssetCategory } from "@/types/financial";
+} from '@/components/ui/select';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { getCurrencySymbol } from '@/lib/currency';
+import { AssetFormData, UserAssetCategory } from '@/types/financial';
 
 interface AddAssetModalProps {
   isOpen: boolean;
@@ -38,16 +38,14 @@ export default function AddAssetModal({
   const currencySymbol = getCurrencySymbol(currency);
   const [formData, setFormData] = useState<AssetFormData>(
     initialData || {
-      name: "",
-      category: "",
+      name: '',
+      category: '',
       value: 0,
     },
   );
-  const [valueInput, setValueInput] = useState(
-    initialData?.value?.toString() || "",
-  );
+  const [valueInput, setValueInput] = useState(initialData?.value?.toString() || '');
   const [categories, setCategories] = useState<UserAssetCategory[]>([]);
-  const [newCategory, setNewCategory] = useState("");
+  const [newCategory, setNewCategory] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   useEffect(() => {
@@ -56,11 +54,11 @@ export default function AddAssetModal({
       setValueInput(initialData.value.toString());
     } else {
       setFormData({
-        name: "",
-        category: "",
+        name: '',
+        category: '',
         value: 0,
       });
-      setValueInput("");
+      setValueInput('');
     }
   }, [initialData]);
 
@@ -72,13 +70,13 @@ export default function AddAssetModal({
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("/api/assets/categories");
+      const response = await fetch('/api/assets/categories');
       if (response.ok) {
         const data = await response.json();
         setCategories(data.categories || []);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error('Error fetching categories:', error);
     }
   };
 
@@ -87,29 +85,28 @@ export default function AddAssetModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Use new category if user is adding one
-    const categoryToSubmit =
-      isAddingCategory && newCategory ? newCategory : formData.category;
+    const categoryToSubmit = isAddingCategory && newCategory ? newCategory : formData.category;
     onSubmit({ ...formData, category: categoryToSubmit });
     if (!isEditing) {
       setFormData({
-        name: "",
-        category: "",
+        name: '',
+        category: '',
         value: 0,
       });
-      setValueInput("");
-      setNewCategory("");
+      setValueInput('');
+      setNewCategory('');
       setIsAddingCategory(false);
     }
   };
 
   const handleCategoryChange = (value: string) => {
-    if (value === "add_new") {
+    if (value === 'add_new') {
       setIsAddingCategory(true);
-      setFormData({ ...formData, category: "" });
+      setFormData({ ...formData, category: '' });
     } else {
       setIsAddingCategory(false);
       setFormData({ ...formData, category: value });
-      setNewCategory("");
+      setNewCategory('');
     }
   };
 
@@ -118,7 +115,7 @@ export default function AddAssetModal({
       <div className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg sm:text-xl font-semibold">
-            {isEditing ? "Edit Asset" : "Add New Asset"}
+            {isEditing ? 'Edit Asset' : 'Add New Asset'}
           </h2>
           <button
             onClick={onClose}
@@ -134,39 +131,29 @@ export default function AddAssetModal({
           {isExternalConnection && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-blue-800">
-                External connections can only have their category changed. Name
-                and value are automatically managed.
+                External connections can only have their category changed. Name and value are
+                automatically managed.
               </p>
             </div>
           )}
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Asset Name
             </label>
             <Input
               id="name"
               type="text"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Chase Checking Account"
               required
               disabled={isExternalConnection}
-              className={
-                isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""
-              }
+              className={isExternalConnection ? 'bg-gray-100 cursor-not-allowed' : ''}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
             {!isAddingCategory ? (
@@ -174,9 +161,9 @@ export default function AddAssetModal({
                 <Select
                   value={formData.category || undefined}
                   onValueChange={(value) => {
-                    if (value === "add_new") {
+                    if (value === 'add_new') {
                       setIsAddingCategory(true);
-                      setFormData({ ...formData, category: "" });
+                      setFormData({ ...formData, category: '' });
                     } else {
                       handleCategoryChange(value);
                     }
@@ -191,17 +178,14 @@ export default function AddAssetModal({
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     {categories.map((category) => (
-                      <SelectItem
-                        key={category.id}
-                        value={category.category_name}
-                      >
+                      <SelectItem key={category.id} value={category.category_name}>
                         {category.category_name}
                       </SelectItem>
                     ))}
                     <SelectItem
                       value="add_new"
                       className="font-semibold"
-                      style={{ color: "var(--secondary)" }}
+                      style={{ color: 'var(--secondary)' }}
                     >
                       + Add New Category
                     </SelectItem>
@@ -221,10 +205,10 @@ export default function AddAssetModal({
                   type="button"
                   onClick={() => {
                     setIsAddingCategory(false);
-                    setNewCategory("");
+                    setNewCategory('');
                     setFormData({
                       ...formData,
-                      category: categories[0]?.category_name || "",
+                      category: categories[0]?.category_name || '',
                     });
                   }}
                   className="text-sm text-gray-500 hover:text-gray-700"
@@ -236,10 +220,7 @@ export default function AddAssetModal({
           </div>
 
           <div>
-            <label
-              htmlFor="value"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-2">
               Current Value
             </label>
             <div className="relative">
@@ -257,7 +238,7 @@ export default function AddAssetModal({
                     value: parseFloat(e.target.value) || 0,
                   });
                 }}
-                className={`pl-8 ${isExternalConnection ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`pl-8 ${isExternalConnection ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -283,7 +264,7 @@ export default function AddAssetModal({
               className="w-full sm:flex-1 order-1 sm:order-2"
               loading={isLoading}
             >
-              {isEditing ? "Update" : "Add Asset"}
+              {isEditing ? 'Update' : 'Add Asset'}
             </Button>
           </div>
         </form>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useCurrentBudget } from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { motion } from 'framer-motion';
+import { useCurrentBudget } from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
 
 export default function BudgetGoalsDisplay() {
   const { data: budget, isLoading } = useCurrentBudget();
@@ -12,7 +12,7 @@ export default function BudgetGoalsDisplay() {
     return (
       <div
         className="bg-white rounded-xl p-4 sm:p-6 border animate-pulse"
-        style={{ borderColor: "#e5e7eb" }}
+        style={{ borderColor: '#e5e7eb' }}
       >
         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
         <div className="space-y-4">
@@ -30,10 +30,7 @@ export default function BudgetGoalsDisplay() {
 
   if (!budget || budget.goals.length === 0) {
     return (
-      <div
-        className="bg-white rounded-xl p-4 sm:p-6 border"
-        style={{ borderColor: "#e5e7eb" }}
-      >
+      <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
         <p className="text-gray-500 text-center py-8">
           Create budget goals to start tracking your spending
         </p>
@@ -42,23 +39,15 @@ export default function BudgetGoalsDisplay() {
   }
 
   return (
-    <div
-      className="bg-white rounded-xl p-4 sm:p-6 border"
-      style={{ borderColor: "#e5e7eb" }}
-    >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Budget Goals & Spending
-      </h3>
+    <div className="bg-white rounded-xl p-4 sm:p-6 border" style={{ borderColor: '#e5e7eb' }}>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Goals & Spending</h3>
 
       <div className="space-y-4">
         {budget.goals.map((goal, index) => {
           const spentAmount = Number(goal.spent_amount);
           const allocatedAmount = Number(goal.allocated_amount);
           const isOverBudget = spentAmount > allocatedAmount;
-          const progressPercentage = Math.min(
-            (spentAmount / allocatedAmount) * 100,
-            100,
-          );
+          const progressPercentage = Math.min((spentAmount / allocatedAmount) * 100, 100);
 
           return (
             <motion.div
@@ -69,9 +58,7 @@ export default function BudgetGoalsDisplay() {
               className="flex flex-col"
             >
               <div className="mb-3">
-                <h4 className="font-semibold text-gray-900">
-                  {goal.category_name}
-                </h4>
+                <h4 className="font-semibold text-gray-900">{goal.category_name}</h4>
               </div>
 
               <div className="mb-3">
@@ -79,27 +66,21 @@ export default function BudgetGoalsDisplay() {
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercentage}%` }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
                     className="h-full"
                     style={{
-                      backgroundColor: isOverBudget
-                        ? "var(--red)"
-                        : "var(--secondary)",
+                      backgroundColor: isOverBudget ? 'var(--red)' : 'var(--secondary)',
                     }}
                   />
                 </div>
                 <p className="text-sm text-gray-600 mt-2 text-center">
-                  {formatCurrency(spentAmount)} /{" "}
-                  {formatCurrency(allocatedAmount)}
+                  {formatCurrency(spentAmount)} / {formatCurrency(allocatedAmount)}
                 </p>
               </div>
 
               <div className="text-center">
                 {isOverBudget && (
-                  <p
-                    className="text-sm font-medium"
-                    style={{ color: "var(--red)" }}
-                  >
+                  <p className="text-sm font-medium" style={{ color: 'var(--red)' }}>
                     Over Budget
                   </p>
                 )}

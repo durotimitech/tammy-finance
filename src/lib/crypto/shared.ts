@@ -1,6 +1,6 @@
 // Shared crypto constants and types used by both client and server
 
-export const ALGORITHM = "AES-GCM";
+export const ALGORITHM = 'AES-GCM';
 export const KEY_LENGTH = 256; // bits
 export const IV_LENGTH = 12; // bytes for GCM
 export const SALT_LENGTH = 32; // bytes

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ArrowUp, ArrowDown, Calendar } from "lucide-react";
-import { Skeleton } from "@/components/Skeleton";
-import { useCurrentBudget } from "@/hooks/use-budget-new";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { motion } from 'framer-motion';
+import { ArrowUp, ArrowDown, Calendar } from 'lucide-react';
+import { Skeleton } from '@/components/Skeleton';
+import { useCurrentBudget } from '@/hooks/use-budget-new';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
 
 interface Transaction {
   id: string;
-  type: "income" | "expense";
+  type: 'income' | 'expense';
   name: string;
   category: string;
   amount: number;
@@ -25,7 +25,7 @@ export default function RecentTransactions() {
     budgetData.income_sources?.forEach((income) => {
       transactions.push({
         id: income.id,
-        type: "income",
+        type: 'income',
         name: income.name,
         category: income.category,
         amount: Number(income.amount),
@@ -37,7 +37,7 @@ export default function RecentTransactions() {
       goal.expenses?.forEach((expense) => {
         transactions.push({
           id: expense.id,
-          type: "expense",
+          type: 'expense',
           name: expense.name,
           category: goal.category_name,
           amount: Number(expense.amount),
@@ -54,12 +54,10 @@ export default function RecentTransactions() {
   return (
     <div
       className="bg-white rounded-xl p-4 sm:p-6 border h-full"
-      style={{ borderColor: "#e5e7eb" }}
+      style={{ borderColor: '#e5e7eb' }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          Recent Transactions
-        </h3>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Recent Transactions</h3>
       </div>
 
       {isLoading ? (
@@ -79,9 +77,7 @@ export default function RecentTransactions() {
         <div className="text-center py-12 text-gray-500">
           <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-300" />
           <p className="text-sm">No transactions yet</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Add income or expenses to see them here
-          </p>
+          <p className="text-xs text-gray-400 mt-1">Add income or expenses to see them here</p>
         </div>
       ) : (
         <div className="space-y-2 max-h-[600px] overflow-y-auto">
@@ -93,29 +89,24 @@ export default function RecentTransactions() {
               transition={{ duration: 0.2, delay: index * 0.02 }}
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              {transaction.type === "income" ? (
-                <ArrowUp
-                  className="w-5 h-5 flex-shrink-0"
-                  style={{ color: "var(--secondary)" }}
-                />
+              {transaction.type === 'income' ? (
+                <ArrowUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--secondary)' }} />
               ) : (
                 <ArrowDown
                   className="w-5 h-5 flex-shrink-0"
-                  style={{ color: "var(--secondary)" }}
+                  style={{ color: 'var(--secondary)' }}
                 />
               )}
 
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {transaction.name}
-                </p>
+                <p className="text-sm font-medium text-gray-900 truncate">{transaction.name}</p>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                   <span className="truncate">{transaction.category}</span>
                   <span>•</span>
                   <span>
-                    {new Date(transaction.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
+                    {new Date(transaction.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
                     })}
                   </span>
                 </div>
@@ -124,13 +115,10 @@ export default function RecentTransactions() {
               <p
                 className="text-sm font-semibold whitespace-nowrap"
                 style={{
-                  color:
-                    transaction.type === "income"
-                      ? "var(--green)"
-                      : "var(--red)",
+                  color: transaction.type === 'income' ? 'var(--green)' : 'var(--red)',
                 }}
               >
-                {transaction.type === "income" ? "+" : "-"}
+                {transaction.type === 'income' ? '+' : '-'}
                 {formatCurrency(transaction.amount)}
               </p>
             </motion.div>

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
-import DashboardCard from "@/components/Dashboard/DashboardCard";
-import { useCurrencyFormat } from "@/hooks/use-currency-format";
-import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { ReactNode } from 'react';
+import DashboardCard from '@/components/Dashboard/DashboardCard';
+import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 
 interface ValueCardProps {
   title: string;

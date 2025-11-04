@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   EncryptedPayload,
@@ -7,7 +7,7 @@ import {
   IV_LENGTH,
   SALT_LENGTH,
   ITERATIONS,
-} from "./shared";
+} from './shared';
 
 /**
  * Converts a string to an ArrayBuffer
@@ -18,10 +18,7 @@ function stringToArrayBuffer(str: string): ArrayBuffer {
   // Ensure we return an ArrayBuffer, not SharedArrayBuffer
   const buffer = encoded.buffer;
   if (buffer instanceof ArrayBuffer) {
-    return buffer.slice(
-      encoded.byteOffset,
-      encoded.byteOffset + encoded.byteLength,
-    );
+    return buffer.slice(encoded.byteOffset, encoded.byteOffset + encoded.byteLength);
   }
   // If it's a SharedArrayBuffer, copy to a new ArrayBuffer
   const arrayBuffer = new ArrayBuffer(encoded.byteLength);
@@ -35,7 +32,7 @@ function stringToArrayBuffer(str: string): ArrayBuffer {
  */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
-  let binary = "";
+  let binary = '';
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
@@ -59,29 +56,26 @@ async function generateIV(): Promise<ArrayBuffer> {
 /**
  * Derives an encryption key from a password and salt
  */
-async function deriveKey(
-  password: string,
-  salt: ArrayBuffer,
-): Promise<CryptoKey> {
+async function deriveKey(password: string, salt: ArrayBuffer): Promise<CryptoKey> {
   const passwordKey = await crypto.subtle.importKey(
-    "raw",
+    'raw',
     stringToArrayBuffer(password),
-    "PBKDF2",
+    'PBKDF2',
     false,
-    ["deriveBits", "deriveKey"],
+    ['deriveBits', 'deriveKey'],
   );
 
   return crypto.subtle.deriveKey(
     {
-      name: "PBKDF2",
+      name: 'PBKDF2',
       salt: salt,
       iterations: ITERATIONS,
-      hash: "SHA-256",
+      hash: 'SHA-256',
     },
     passwordKey,
     { name: ALGORITHM, length: KEY_LENGTH },
     true,
-    ["encrypt", "decrypt"],
+    ['encrypt', 'decrypt'],
   );
 }
 
@@ -91,15 +85,10 @@ async function deriveKey(
  * @param password A password derived from user data
  * @returns Encrypted payload
  */
-export async function encryptValue(
-  value: string,
-  password: string,
-): Promise<EncryptedPayload> {
+export async function encryptValue(value: string, password: string): Promise<EncryptedPayload> {
   // Check if Web Crypto API is available
   if (!crypto.subtle) {
-    throw new Error(
-      "Web Crypto API is not available. Please use a modern browser.",
-    );
+    throw new Error('Web Crypto API is not available. Please use a modern browser.');
   }
 
   try {
@@ -135,20 +124,17 @@ export async function encryptValue(
       salt: arrayBufferToBase64(salt),
       iv: arrayBufferToBase64(iv),
       authTag: arrayBufferToBase64(
-        authTag.buffer.slice(
-          authTag.byteOffset,
-          authTag.byteOffset + authTag.byteLength,
-        ),
+        authTag.buffer.slice(authTag.byteOffset, authTag.byteOffset + authTag.byteLength),
       ),
       algorithm: ALGORITHM,
       keyDerivation: {
         iterations: ITERATIONS,
-        hash: "SHA-256",
+        hash: 'SHA-256',
       },
     };
   } catch (error) {
-    console.error("Encryption error:", error);
-    throw new Error("Failed to encrypt value. Please try again.");
+    console.error('Encryption error:', error);
+    throw new Error('Failed to encrypt value. Please try again.');
   }
 }
 
@@ -156,10 +142,7 @@ export async function encryptValue(
  * Generates a client-side password from user data
  * This should be deterministic for a given user but unique per user
  */
-export function generateClientPassword(
-  userId: string,
-  timestamp: number,
-): string {
+export function generateClientPassword(userId: string, timestamp: number): string {
   // Combine user ID with timestamp to create a unique password
   // The timestamp ensures each encryption uses a different key
   return `${userId}-${timestamp}-client-encryption`;

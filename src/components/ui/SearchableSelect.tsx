@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Search, Check } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Search, Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
 interface Option {
   value: string;
@@ -22,11 +22,11 @@ export default function SearchableSelect({
   options,
   value,
   onChange,
-  placeholder = "Select an option...",
-  className = "",
+  placeholder = 'Select an option...',
+  className = '',
 }: SearchableSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,17 +40,14 @@ export default function SearchableSelect({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
-        setSearchTerm("");
+        setSearchTerm('');
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -62,7 +59,7 @@ export default function SearchableSelect({
   const handleSelect = (optionValue: string) => {
     onChange(optionValue);
     setIsOpen(false);
-    setSearchTerm("");
+    setSearchTerm('');
   };
 
   return (
@@ -73,13 +70,11 @@ export default function SearchableSelect({
         className="w-full px-4 py-3 text-left bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
       >
         <div className="flex items-center justify-between">
-          <span
-            className={`block truncate ${selectedOption ? "text-gray-900" : "text-gray-500"}`}
-          >
+          <span className={`block truncate ${selectedOption ? 'text-gray-900' : 'text-gray-500'}`}>
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           <ChevronDown
-            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "transform rotate-180" : ""}`}
+            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'transform rotate-180' : ''}`}
           />
         </div>
       </button>
@@ -109,9 +104,7 @@ export default function SearchableSelect({
 
             <div className="max-h-60 overflow-y-auto">
               {filteredOptions.length === 0 ? (
-                <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                  No options found
-                </div>
+                <div className="px-4 py-3 text-sm text-gray-500 text-center">No options found</div>
               ) : (
                 filteredOptions.map((option) => (
                   <button
@@ -121,13 +114,9 @@ export default function SearchableSelect({
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {option.label}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{option.label}</div>
                         {option.description && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            {option.description}
-                          </div>
+                          <div className="text-xs text-gray-500 mt-1">{option.description}</div>
                         )}
                       </div>
                       {value === option.value && (

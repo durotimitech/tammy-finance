@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -9,11 +9,11 @@ export async function updateSession(request: NextRequest) {
   // Check if we're in Cypress test mode
   const isCypressTest =
     // Check for Cypress environment variable
-    process.env.CYPRESS === "true" ||
+    process.env.CYPRESS === 'true' ||
     // Check for custom header that Cypress could send
-    request.headers.get("x-cypress-test") === "true" ||
+    request.headers.get('x-cypress-test') === 'true' ||
     // Check for specific test user cookie
-    request.cookies.has("cypress-test-mode");
+    request.cookies.has('cypress-test-mode');
 
   let user = null;
   let supabase: ReturnType<typeof createServerClient> | null = null;
@@ -21,8 +21,8 @@ export async function updateSession(request: NextRequest) {
   if (isCypressTest) {
     // Mock user for Cypress tests
     user = {
-      id: "test-user-id",
-      email: "test@example.com",
+      id: 'test-user-id',
+      email: 'test@example.com',
       // Add other user properties as needed
     };
   } else {
@@ -35,9 +35,7 @@ export async function updateSession(request: NextRequest) {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value),
-            );
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
             supabaseResponse = NextResponse.next({
               request,
             });
@@ -59,22 +57,20 @@ export async function updateSession(request: NextRequest) {
     user = authResult.data.user;
   }
 
-  const protectedRoutes = ["/dashboard"];
+  const protectedRoutes = ['/dashboard'];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
 
-  const authRoutes = ["/auth/login", "/auth/signup"];
-  const isAuthRoute = authRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route),
-  );
+  const authRoutes = ['/auth/login', '/auth/signup'];
+  const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
-  const onboardingRoute = "/onboarding";
+  const onboardingRoute = '/onboarding';
   const isOnboardingRoute = request.nextUrl.pathname === onboardingRoute;
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = '/auth/login';
     return NextResponse.redirect(url);
   }
 
@@ -85,9 +81,9 @@ export async function updateSession(request: NextRequest) {
     }
 
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarding_completed")
-      .eq("user_id", user.id)
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('user_id', user.id)
       .single();
 
     return profile?.onboarding_completed ?? false;
@@ -105,7 +101,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useQueryClient } from "@tanstack/react-query";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { apiClient } from "@/lib/api-client";
+import { useQueryClient } from '@tanstack/react-query';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiClient } from '@/lib/api-client';
 
 interface CurrencyContextType {
   currency: string;
@@ -10,13 +10,11 @@ interface CurrencyContextType {
   isLoading: boolean;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(
-  undefined,
-);
+const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
-  const [currency, setCurrencyState] = useState<string>("EUR");
+  const [currency, setCurrencyState] = useState<string>('EUR');
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch profile to get currency
@@ -28,7 +26,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
           setCurrencyState(profile.currency);
         }
       } catch (error) {
-        console.error("Error fetching currency:", error);
+        console.error('Error fetching currency:', error);
       } finally {
         setIsLoading(false);
       }
@@ -39,7 +37,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   // Listen for profile updates
   useEffect(() => {
     const handleProfileUpdate = () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       apiClient.profiles.get().then((profile) => {
         if (profile?.currency) {
           setCurrencyState(profile.currency);
@@ -47,9 +45,9 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       });
     };
 
-    window.addEventListener("profile-updated", handleProfileUpdate);
+    window.addEventListener('profile-updated', handleProfileUpdate);
     return () => {
-      window.removeEventListener("profile-updated", handleProfileUpdate);
+      window.removeEventListener('profile-updated', handleProfileUpdate);
     };
   }, [queryClient]);
 
@@ -60,11 +58,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     try {
       await apiClient.profiles.update({ currency: newCurrency });
       // Invalidate all queries that might depend on currency
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["fire-calculation"] });
-      queryClient.invalidateQueries({ queryKey: ["networth"] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['fire-calculation'] });
+      queryClient.invalidateQueries({ queryKey: ['networth'] });
     } catch (error) {
-      console.error("Error updating currency:", error);
+      console.error('Error updating currency:', error);
       // Revert on error
       setCurrencyState(previousCurrency);
       throw error;
@@ -81,7 +79,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 export function useCurrency() {
   const context = useContext(CurrencyContext);
   if (context === undefined) {
-    throw new Error("useCurrency must be used within a CurrencyProvider");
+    throw new Error('useCurrency must be used within a CurrencyProvider');
   }
   return context;
 }

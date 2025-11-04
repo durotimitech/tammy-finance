@@ -1,8 +1,8 @@
 export const queryKeys = {
-  assets: ["assets"] as const,
-  liabilities: ["liabilities"] as const,
-  networth: ["networth"] as const,
-  history: ["history"] as const,
+  assets: ['assets'] as const,
+  liabilities: ['liabilities'] as const,
+  networth: ['networth'] as const,
+  history: ['history'] as const,
 };
 
 export const useNetWorth = jest.fn(() => ({
