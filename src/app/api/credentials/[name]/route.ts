@@ -1,68 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { decryptApiKey, encryptApiKey, generateUserSecret } from '@/lib/crypto';
+import { encryptApiKey, generateUserSecret } from '@/lib/crypto';
 import { EncryptedPayload } from '@/lib/crypto/shared';
 import { createClient } from '@/lib/supabase/server';
-
-export async function GET(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
-  try {
-    const supabase = await createClient();
-    const { name } = await params;
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Fetch credential from database
-    const { data: credential, error: fetchError } = await supabase
-      .from('encrypted_credentials')
-      .select('encrypted_value, salt, iv, auth_tag')
-      .eq('user_id', user.id)
-      .eq('name', name)
-      .single();
-
-    if (fetchError || !credential) {
-      return NextResponse.json({ error: 'Credential not found' }, { status: 404 });
-    }
-
-    // Generate user secret
-    const encryptionSecret = process.env.ENCRYPTION_SECRET;
-    if (!encryptionSecret) {
-      console.error('ENCRYPTION_SECRET not configured');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-    }
-
-    const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
-
-    // Decrypt the API key
-    try {
-      const decryptedValue = decryptApiKey(
-        {
-          encryptedValue: credential.encrypted_value,
-          salt: credential.salt,
-          iv: credential.iv,
-          authTag: credential.auth_tag,
-        },
-        userSecret,
-      );
-
-      // IMPORTANT: This endpoint should only be used internally by other API routes
-      // Never expose decrypted values to the client directly
-      return NextResponse.json({ value: decryptedValue });
-    } catch (decryptError) {
-      console.error('Decryption failed:', decryptError);
-      return NextResponse.json({ error: 'Failed to decrypt credential' }, { status: 500 });
-    }
-  } catch (error) {
-    console.error('Error in GET /api/credentials/[name]:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
