@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import type { Session } from '@supabase/supabase-js';
-import { Menu, X } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { createClient } from '@/lib/supabase/client';
+import type { Session } from "@supabase/supabase-js";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LandingHeader() {
   const supabase = createClient();
@@ -14,9 +14,11 @@ export default function LandingHeader() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
     return () => {
       listener.subscription.unsubscribe();
     };
@@ -26,7 +28,9 @@ export default function LandingHeader() {
     <nav className="w-full px-6 lg:px-12 py-5 bg-white border-b border-gray-100">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">tammy</span>
+          <span className="text-2xl font-bold text-[#2D2D2D] font-pirata">
+            tammy
+          </span>
         </Link>
 
         <div className="hidden lg:flex items-center gap-8">
@@ -43,8 +47,15 @@ export default function LandingHeader() {
           )}
         </div>
 
-        <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        <button
+          className="lg:hidden"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </div>
 

@@ -5,10 +5,10 @@
 /**
  * Custom command to check if an element is in the viewport
  */
-Cypress.Commands.add('isInViewport', { prevSubject: true }, (subject) => {
+Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
   const rect = subject[0].getBoundingClientRect();
-  const windowHeight = Cypress.config('viewportHeight');
-  const windowWidth = Cypress.config('viewportWidth');
+  const windowHeight = Cypress.config("viewportHeight");
+  const windowWidth = Cypress.config("viewportWidth");
 
   expect(rect.top).to.be.lessThan(windowHeight);
   expect(rect.bottom).to.be.greaterThan(0);
@@ -21,13 +21,14 @@ Cypress.Commands.add('isInViewport', { prevSubject: true }, (subject) => {
 /**
  * Custom command to check if an element has CSS animations or transitions
  */
-Cypress.Commands.add('hasAnimation', { prevSubject: true }, (subject) => {
+Cypress.Commands.add("hasAnimation", { prevSubject: true }, (subject) => {
   cy.wrap(subject).should(($el) => {
-    const transition = $el.css('transition');
-    const animation = $el.css('animation');
+    const transition = $el.css("transition");
+    const animation = $el.css("animation");
 
     expect(
-      transition !== 'all 0s ease 0s' || animation !== 'none 0s ease 0s normal none running none',
+      transition !== "all 0s ease 0s" ||
+        animation !== "none 0s ease 0s normal none running none",
     ).to.be.true;
   });
 
@@ -37,8 +38,8 @@ Cypress.Commands.add('hasAnimation', { prevSubject: true }, (subject) => {
 /**
  * Add command to tab through elements (keyboard navigation)
  */
-Cypress.Commands.add('tab', { prevSubject: 'optional' }, (subject) => {
-  cy.wrap(subject).trigger('keydown', { keyCode: 9, which: 9, key: 'Tab' });
+Cypress.Commands.add("tab", { prevSubject: "optional" }, (subject) => {
+  cy.wrap(subject).trigger("keydown", { keyCode: 9, which: 9, key: "Tab" });
   return cy.focused();
 });
 

@@ -1,5 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -7,15 +7,16 @@ export async function updateSession(request: NextRequest) {
   });
 
   // Strict check for test mode - only allow in non-production environments
-  const isCypressTest = process.env.NODE_ENV !== 'production' && process.env.CYPRESS === 'true';
+  const isCypressTest =
+    process.env.NODE_ENV !== "production" && process.env.CYPRESS === "true";
 
   // Add production safety check
-  if (process.env.NODE_ENV === 'production' && process.env.CYPRESS === 'true') {
+  if (process.env.NODE_ENV === "production" && process.env.CYPRESS === "true") {
     console.error(
-      '[SECURITY] CYPRESS environment variable detected in production! Disabling test mode.',
+      "[SECURITY] CYPRESS environment variable detected in production! Disabling test mode.",
     );
     throw new Error(
-      'CYPRESS environment variable detected in production! Check your deployment configuration.',
+      "CYPRESS environment variable detected in production! Check your deployment configuration.",
     );
   }
 
@@ -24,26 +25,31 @@ export async function updateSession(request: NextRequest) {
 
   if (isCypressTest) {
     // Verify request origin is localhost
-    const origin = request.headers.get('origin') || '';
-    const host = request.headers.get('host') || '';
+    const origin = request.headers.get("origin") || "";
+    const host = request.headers.get("host") || "";
     const isLocalhost =
-      origin.includes('localhost') ||
-      origin.includes('127.0.0.1') ||
-      host.includes('localhost') ||
-      host.includes('127.0.0.1');
+      origin.includes("localhost") ||
+      origin.includes("127.0.0.1") ||
+      host.includes("localhost") ||
+      host.includes("127.0.0.1");
 
     if (!isLocalhost) {
       // Reject test bypass from non-localhost origins
-      console.error('[SECURITY] Test mode requested from non-localhost origin:', origin || host);
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      console.error(
+        "[SECURITY] Test mode requested from non-localhost origin:",
+        origin || host,
+      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    console.warn('[TEST MODE] Authentication bypassed for Cypress tests from localhost');
+    console.warn(
+      "[TEST MODE] Authentication bypassed for Cypress tests from localhost",
+    );
 
     // Mock user for Cypress tests
     user = {
-      id: 'test-user-id',
-      email: 'test@example.com',
+      id: "test-user-id",
+      email: "test@example.com",
       // Add other user properties as needed
     };
   } else {
@@ -56,7 +62,9 @@ export async function updateSession(request: NextRequest) {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value),
+            );
             supabaseResponse = NextResponse.next({
               request,
             });
@@ -78,20 +86,22 @@ export async function updateSession(request: NextRequest) {
     user = authResult.data.user;
   }
 
-  const protectedRoutes = ['/dashboard'];
+  const protectedRoutes = ["/dashboard"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
 
-  const authRoutes = ['/auth/login', '/auth/signup'];
-  const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
+  const authRoutes = ["/auth/login", "/auth/signup"];
+  const isAuthRoute = authRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route),
+  );
 
-  const onboardingRoute = '/onboarding';
+  const onboardingRoute = "/onboarding";
   const isOnboardingRoute = request.nextUrl.pathname === onboardingRoute;
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
+    url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
@@ -102,9 +112,9 @@ export async function updateSession(request: NextRequest) {
     }
 
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("onboarding_completed")
+      .eq("user_id", user.id)
       .single();
 
     return profile?.onboarding_completed ?? false;
@@ -122,7 +132,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

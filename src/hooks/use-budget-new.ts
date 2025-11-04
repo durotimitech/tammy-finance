@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   BudgetMonthWithDetails,
   IncomeSource,
@@ -11,53 +11,55 @@ import {
   UpdateBudgetGoalDto,
   CreateBudgetExpenseDto,
   UpdateBudgetExpenseDto,
-} from '@/types/budget-new';
+} from "@/types/budget-new";
 
 // Query keys
 export const budgetKeys = {
-  current: ['budget-current'] as const,
-  history: ['budget-history'] as const,
-  income: ['budget-income'] as const,
-  goals: ['budget-goals'] as const,
-  expenses: ['budget-expenses'] as const,
+  current: ["budget-current"] as const,
+  history: ["budget-history"] as const,
+  income: ["budget-income"] as const,
+  goals: ["budget-goals"] as const,
+  expenses: ["budget-expenses"] as const,
 };
 
 // Fetch current month's budget
 const fetchCurrentBudget = async (): Promise<BudgetMonthWithDetails> => {
-  const response = await fetch('/api/budgets/current');
+  const response = await fetch("/api/budgets/current");
   if (!response.ok) {
-    throw new Error('Failed to fetch current budget');
+    throw new Error("Failed to fetch current budget");
   }
   return response.json();
 };
 
 // Fetch budget history
 const fetchBudgetHistory = async (): Promise<BudgetHistorySummary[]> => {
-  const response = await fetch('/api/budgets/history');
+  const response = await fetch("/api/budgets/history");
   if (!response.ok) {
-    throw new Error('Failed to fetch budget history');
+    throw new Error("Failed to fetch budget history");
   }
   return response.json();
 };
 
 // Income sources
 const fetchIncomeSources = async (): Promise<IncomeSource[]> => {
-  const response = await fetch('/api/budgets/income');
+  const response = await fetch("/api/budgets/income");
   if (!response.ok) {
-    throw new Error('Failed to fetch income sources');
+    throw new Error("Failed to fetch income sources");
   }
   return response.json();
 };
 
-const createIncomeSource = async (data: CreateIncomeSourceDto): Promise<IncomeSource> => {
-  const response = await fetch('/api/budgets/income', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+const createIncomeSource = async (
+  data: CreateIncomeSourceDto,
+): Promise<IncomeSource> => {
+  const response = await fetch("/api/budgets/income", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to create income source');
+    throw new Error(error.error || "Failed to create income source");
   }
   return response.json();
 };
@@ -70,45 +72,47 @@ const updateIncomeSource = async ({
   data: UpdateIncomeSourceDto;
 }): Promise<IncomeSource> => {
   const response = await fetch(`/api/budgets/income/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to update income source');
+    throw new Error(error.error || "Failed to update income source");
   }
   return response.json();
 };
 
 const deleteIncomeSource = async (id: string): Promise<void> => {
   const response = await fetch(`/api/budgets/income/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to delete income source');
+    throw new Error(error.error || "Failed to delete income source");
   }
 };
 
 // Budget goals
 const fetchBudgetGoals = async (): Promise<BudgetGoal[]> => {
-  const response = await fetch('/api/budgets/goals');
+  const response = await fetch("/api/budgets/goals");
   if (!response.ok) {
-    throw new Error('Failed to fetch budget goals');
+    throw new Error("Failed to fetch budget goals");
   }
   return response.json();
 };
 
-const createBudgetGoal = async (data: CreateBudgetGoalDto): Promise<BudgetGoal> => {
-  const response = await fetch('/api/budgets/goals', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+const createBudgetGoal = async (
+  data: CreateBudgetGoalDto,
+): Promise<BudgetGoal> => {
+  const response = await fetch("/api/budgets/goals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to create budget goal');
+    throw new Error(error.error || "Failed to create budget goal");
   }
   return response.json();
 };
@@ -121,45 +125,47 @@ const updateBudgetGoal = async ({
   data: UpdateBudgetGoalDto;
 }): Promise<BudgetGoal> => {
   const response = await fetch(`/api/budgets/goals/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to update budget goal');
+    throw new Error(error.error || "Failed to update budget goal");
   }
   return response.json();
 };
 
 const deleteBudgetGoal = async (id: string): Promise<void> => {
   const response = await fetch(`/api/budgets/goals/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to delete budget goal');
+    throw new Error(error.error || "Failed to delete budget goal");
   }
 };
 
 // Budget expenses
 const fetchBudgetExpenses = async (): Promise<BudgetExpense[]> => {
-  const response = await fetch('/api/budgets/expenses');
+  const response = await fetch("/api/budgets/expenses");
   if (!response.ok) {
-    throw new Error('Failed to fetch expenses');
+    throw new Error("Failed to fetch expenses");
   }
   return response.json();
 };
 
-const createBudgetExpense = async (data: CreateBudgetExpenseDto): Promise<BudgetExpense> => {
-  const response = await fetch('/api/budgets/expenses', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+const createBudgetExpense = async (
+  data: CreateBudgetExpenseDto,
+): Promise<BudgetExpense> => {
+  const response = await fetch("/api/budgets/expenses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to create expense');
+    throw new Error(error.error || "Failed to create expense");
   }
   return response.json();
 };
@@ -172,24 +178,24 @@ const updateBudgetExpense = async ({
   data: UpdateBudgetExpenseDto;
 }): Promise<BudgetExpense> => {
   const response = await fetch(`/api/budgets/expenses/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to update expense');
+    throw new Error(error.error || "Failed to update expense");
   }
   return response.json();
 };
 
 const deleteBudgetExpense = async (id: string): Promise<void> => {
   const response = await fetch(`/api/budgets/expenses/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to delete expense');
+    throw new Error(error.error || "Failed to delete expense");
   }
 };
 

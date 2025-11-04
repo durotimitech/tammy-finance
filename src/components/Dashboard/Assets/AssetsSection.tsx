@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { useState } from 'react';
-import AddAssetModal from './AddAssetModal';
-import { Skeleton } from '@/components/Skeleton';
-import { Button } from '@/components/ui/Button';
-import ConfirmationModal from '@/components/ui/ConfirmationModal';
-import FinancialAccordion from '@/components/ui/FinancialAccordion';
-import { useCurrencyFormat } from '@/hooks/use-currency-format';
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import AddAssetModal from "./AddAssetModal";
+import { Skeleton } from "@/components/Skeleton";
+import { Button } from "@/components/ui/Button";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import FinancialAccordion from "@/components/ui/FinancialAccordion";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
 import {
   useAssets,
   useCreateAsset,
   useUpdateAsset,
   useDeleteAsset,
-} from '@/hooks/use-financial-data';
-import { groupBy, calculateSubtotals } from '@/lib/utils';
-import { Asset, AssetFormData } from '@/types/financial';
+} from "@/hooks/use-financial-data";
+import { groupBy, calculateSubtotals } from "@/lib/utils";
+import { Asset, AssetFormData } from "@/types/financial";
 
 export default function AssetsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function AssetsSection() {
       await createAssetMutation.mutateAsync(data);
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error adding asset:', error);
+      console.error("Error adding asset:", error);
     }
   };
 
@@ -49,7 +49,7 @@ export default function AssetsSection() {
       setIsModalOpen(false);
       setEditingAsset(null);
     } catch (error) {
-      console.error('Error updating asset:', error);
+      console.error("Error updating asset:", error);
     }
   };
 
@@ -78,7 +78,7 @@ export default function AssetsSection() {
       await deleteAssetMutation.mutateAsync(deleteConfirmation.assetId);
       setDeleteConfirmation({ isOpen: false, assetId: null });
     } catch (error) {
-      console.error('Error deleting asset:', error);
+      console.error("Error deleting asset:", error);
     }
   };
 
@@ -89,17 +89,20 @@ export default function AssetsSection() {
   const totalValue = assets.reduce((sum, asset) => sum + asset.value, 0);
 
   // Group assets by category
-  const assetsByCategory = groupBy(assets, 'category');
+  const assetsByCategory = groupBy(assets, "category");
 
   // Calculate subtotals for each category
-  const categorySubtotals = calculateSubtotals(assetsByCategory, 'value');
+  const categorySubtotals = calculateSubtotals(assetsByCategory, "value");
 
   // Get all category names for default open state
   const allCategories = Object.keys(assetsByCategory);
 
   return (
     <>
-      <div className="bg-white rounded-xl p-6 border" style={{ borderColor: '#e5e7eb' }}>
+      <div
+        className="bg-white rounded-xl p-6 border"
+        style={{ borderColor: "#e5e7eb" }}
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Assets</h2>
           <Button
@@ -116,7 +119,9 @@ export default function AssetsSection() {
         <div className="mb-4 p-4 bg-gray-50 rounded-lg">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">Total Value</span>
-            <span className="text-xl font-semibold">{formatCurrency(totalValue)}</span>
+            <span className="text-xl font-semibold">
+              {formatCurrency(totalValue)}
+            </span>
           </div>
         </div>
 
@@ -163,7 +168,9 @@ export default function AssetsSection() {
             : undefined
         }
         isEditing={!!editingAsset}
-        isLoading={createAssetMutation.isPending || updateAssetMutation.isPending}
+        isLoading={
+          createAssetMutation.isPending || updateAssetMutation.isPending
+        }
       />
 
       <ConfirmationModal

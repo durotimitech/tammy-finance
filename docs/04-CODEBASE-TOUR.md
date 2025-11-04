@@ -257,9 +257,12 @@ src/lib/
 // All API calls use this client
 export const apiClient = {
   assets: {
-    getAll: () => fetchWithAuth<Asset[]>('/api/assets'),
+    getAll: () => fetchWithAuth<Asset[]>("/api/assets"),
     create: (data) =>
-      fetchWithAuth<Asset>('/api/assets', { method: 'POST', body: JSON.stringify(data) }),
+      fetchWithAuth<Asset>("/api/assets", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     // ... other methods
   },
   liabilities: {
@@ -276,7 +279,10 @@ export const apiClient = {
 
 ```typescript
 // Calculate FIRE Number: Annual Expenses × (100 / Withdrawal Rate)
-export function calculateFIRENumber(annualExpenses: number, withdrawalRate: number): number {
+export function calculateFIRENumber(
+  annualExpenses: number,
+  withdrawalRate: number,
+): number {
   return annualExpenses * (100 / withdrawalRate);
 }
 
@@ -493,10 +499,10 @@ The project uses TypeScript path aliases configured in `tsconfig.json`:
 
 ```typescript
 // Instead of:
-import { Asset } from '../../../types/financial';
+import { Asset } from "../../../types/financial";
 
 // Use:
-import { Asset } from '@/types/financial';
+import { Asset } from "@/types/financial";
 ```
 
 **Alias**: `@/*` maps to `src/*`

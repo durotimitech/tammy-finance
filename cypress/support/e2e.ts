@@ -2,28 +2,28 @@
 // This file is processed and loaded automatically before test files
 
 // Import commands
-import './commands';
+import "./commands";
 
 // Prevent TypeScript errors
 /// <reference types="cypress" />
 
 // Global configuration
-Cypress.on('uncaught:exception', (err) => {
+Cypress.on("uncaught:exception", (err) => {
   // Returning false here prevents Cypress from failing the test on uncaught exceptions
   // This is useful for handling expected errors in the application
 
   // Allow Next.js hydration errors during development
-  if (err.message.includes('Hydration')) {
+  if (err.message.includes("Hydration")) {
     return false;
   }
 
   // Allow Framer Motion animation errors (common in tests)
-  if (err.message.includes('framer-motion')) {
+  if (err.message.includes("framer-motion")) {
     return false;
   }
 
   // Allow ResizeObserver loop limit exceeded (common in responsive tests)
-  if (err.message.includes('ResizeObserver loop limit exceeded')) {
+  if (err.message.includes("ResizeObserver loop limit exceeded")) {
     return false;
   }
 

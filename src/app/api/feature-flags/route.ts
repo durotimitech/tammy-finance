@@ -1,22 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { ErrorResponses } from '@/lib/api-errors';
-import { createClient } from '@/lib/supabase/server';
-import { Environment, FeatureFlagMap } from '@/types/feature-flags';
+import { ErrorResponses } from "@/lib/api-errors";
+import { createClient } from "@/lib/supabase/server";
+import { Environment, FeatureFlagMap } from "@/types/feature-flags";
 
 export async function GET() {
   try {
     const supabase = await createClient();
 
     // Get the current environment from env variable
-    const environment = (process.env.NEXT_PUBLIC_APP_ENV || 'dev') as Environment;
+    const environment = (process.env.NEXT_PUBLIC_APP_ENV ||
+      "dev") as Environment;
 
     // Fetch all feature flags
-    const { data: flags, error } = await supabase.from('feature_flags').select('*');
+    const { data: flags, error } = await supabase
+      .from("feature_flags")
+      .select("*");
 
     if (error) {
-      console.error('Error fetching feature flags:', error);
-      return ErrorResponses.databaseError('Failed to fetch feature flags');
+      console.error("Error fetching feature flags:", error);
+      return ErrorResponses.databaseError("Failed to fetch feature flags");
     }
 
     // Convert to a map of flag name -> boolean based on current environment
@@ -30,7 +33,7 @@ export async function GET() {
 
     return NextResponse.json(featureFlagMap);
   } catch (error) {
-    console.error('Unexpected error in feature flags API:', error);
+    console.error("Unexpected error in feature flags API:", error);
     return ErrorResponses.internalError();
   }
 }

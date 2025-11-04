@@ -1,6 +1,6 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,60 +11,60 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-    'plugin:@typescript-eslint/recommended',
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:@typescript-eslint/recommended",
     // "plugin:tailwindcss/recommended", // Removed due to Tailwind v4 incompatibility
-    'plugin:jsx-a11y/recommended',
+    "plugin:jsx-a11y/recommended",
     // "plugin:prettier/recommended", // Removed, use eslint-config-prettier only
-    'prettier',
+    "prettier",
   ),
   {
     rules: {
       // Example: allow .tsx for JSX
-      'react/jsx-filename-extension': [1, { extensions: ['.tsx'] }],
+      "react/jsx-filename-extension": [1, { extensions: [".tsx"] }],
       // Example: enforce consistent import order
-      'import/order': ['error', { alphabetize: { order: 'asc' } }],
+      "import/order": ["error", { alphabetize: { order: "asc" } }],
       // Add more rules as needed
     },
   },
   {
     // Override for Cypress files
-    files: ['cypress/**/*.ts'],
+    files: ["cypress/**/*.ts"],
     rules: {
-      '@typescript-eslint/no-namespace': 'off', // Required for Cypress type declarations
-      '@typescript-eslint/no-unused-expressions': 'off', // Required for Chai assertions (expect().to.be.true)
+      "@typescript-eslint/no-namespace": "off", // Required for Cypress type declarations
+      "@typescript-eslint/no-unused-expressions": "off", // Required for Chai assertions (expect().to.be.true)
     },
   },
   {
     // Override for test files
     files: [
-      'tests/**/*.test.ts',
-      'tests/**/*.test.tsx',
-      'tests/**/*.spec.ts',
-      'tests/**/*.spec.tsx',
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
+      "tests/**/*.test.ts",
+      "tests/**/*.test.tsx",
+      "tests/**/*.spec.ts",
+      "tests/**/*.spec.tsx",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
     ],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
-      '@typescript-eslint/no-unused-vars': 'off', // Allow unused vars in tests
-      '@typescript-eslint/no-require-imports': 'off', // Allow require in tests
-      'react/display-name': 'off', // Not needed in tests
+      "@typescript-eslint/no-explicit-any": "off", // Allow any in tests
+      "@typescript-eslint/no-unused-vars": "off", // Allow unused vars in tests
+      "@typescript-eslint/no-require-imports": "off", // Allow require in tests
+      "react/display-name": "off", // Not needed in tests
     },
   },
   {
     // Override for jest setup file
-    files: ['jest.setup.tsx'],
+    files: ["jest.setup.tsx"],
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off', // Allow unused vars in jest setup mocks
+      "@typescript-eslint/no-unused-vars": "off", // Allow unused vars in jest setup mocks
     },
   },
   {
     // Ignore patterns using flat config ignores
-    ignores: ['.next/**'],
+    ignores: [".next/**"],
   },
 ];
 

@@ -1,39 +1,39 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useCreateBudget } from '@/hooks/useBudgets';
-import { BudgetCategory, BudgetPeriod } from '@/types/budget';
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { useCreateBudget } from "@/hooks/useBudgets";
+import { BudgetCategory, BudgetPeriod } from "@/types/budget";
 
 interface BudgetFormProps {
   onClose: () => void;
 }
 
 const categories: BudgetCategory[] = [
-  'housing',
-  'transportation',
-  'food',
-  'utilities',
-  'healthcare',
-  'entertainment',
-  'shopping',
-  'education',
-  'savings',
-  'other',
+  "housing",
+  "transportation",
+  "food",
+  "utilities",
+  "healthcare",
+  "entertainment",
+  "shopping",
+  "education",
+  "savings",
+  "other",
 ];
 
-const periods: BudgetPeriod[] = ['weekly', 'monthly', 'yearly'];
+const periods: BudgetPeriod[] = ["weekly", "monthly", "yearly"];
 
 export default function BudgetForm({ onClose }: BudgetFormProps) {
   const createBudget = useCreateBudget();
   const [formData, setFormData] = useState({
-    name: '',
-    amount: '',
-    category: 'other' as BudgetCategory,
-    period: 'monthly' as BudgetPeriod,
+    name: "",
+    amount: "",
+    category: "other" as BudgetCategory,
+    period: "monthly" as BudgetPeriod,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,7 +48,7 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
       });
       onClose();
     } catch (error) {
-      console.error('Error creating budget:', error);
+      console.error("Error creating budget:", error);
     }
   };
 
@@ -81,7 +81,10 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Budget Name
               </label>
               <Input
@@ -89,13 +92,18 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                 id="name"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="e.g., Monthly Groceries"
               />
             </div>
 
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="amount"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Amount
               </label>
               <Input
@@ -105,13 +113,18 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
                 step="0.01"
                 min="0"
                 value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
                 placeholder="0.00"
               />
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Category
               </label>
               <select
@@ -134,7 +147,10 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
             </div>
 
             <div>
-              <label htmlFor="period" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="period"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Period
               </label>
               <select
@@ -157,10 +173,19 @@ export default function BudgetForm({ onClose }: BudgetFormProps) {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={createBudget.isPending} className="flex-1">
-                {createBudget.isPending ? 'Creating...' : 'Create Budget'}
+              <Button
+                type="submit"
+                disabled={createBudget.isPending}
+                className="flex-1"
+              >
+                {createBudget.isPending ? "Creating..." : "Create Budget"}
               </Button>
-              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onClose}
+                className="flex-1"
+              >
                 Cancel
               </Button>
             </div>

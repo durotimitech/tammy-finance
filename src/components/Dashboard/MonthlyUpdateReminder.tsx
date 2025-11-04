@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, X } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertCircle, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const STORAGE_KEY = 'monthly-update-reminder-dismissed';
+const STORAGE_KEY = "monthly-update-reminder-dismissed";
 
 /**
  * Check if we should show the monthly update reminder
@@ -68,18 +68,21 @@ export default function MonthlyUpdateReminder() {
         <Alert
           className="relative"
           style={{
-            backgroundColor: 'var(--secondary)',
-            borderColor: 'var(--secondary)',
+            backgroundColor: "var(--secondary)",
+            borderColor: "var(--secondary)",
           }}
         >
           <AlertCircle className="h-4 w-4 text-white" />
           <div className="relative">
             <div className="flex items-start justify-between gap-4 pr-8">
               <div className="flex-1">
-                <AlertTitle className="text-white">Monthly Balance Update Reminder</AlertTitle>
+                <AlertTitle className="text-white">
+                  Monthly Balance Update Reminder
+                </AlertTitle>
                 <AlertDescription className="text-white/90">
-                  It&apos;s the beginning of the month! Take a moment to update your asset and
-                  liability balances to keep your net worth tracking accurate.
+                  It&apos;s the beginning of the month! Take a moment to update
+                  your asset and liability balances to keep your net worth
+                  tracking accurate.
                 </AlertDescription>
                 <div className="flex gap-3 mt-3">
                   <Link href="/dashboard/assets">
@@ -87,7 +90,7 @@ export default function MonthlyUpdateReminder() {
                       variant="secondary"
                       size="sm"
                       className="bg-white hover:bg-white/90"
-                      style={{ color: 'var(--secondary)' }}
+                      style={{ color: "var(--secondary)" }}
                     >
                       Update Assets
                     </Button>
@@ -97,7 +100,7 @@ export default function MonthlyUpdateReminder() {
                       variant="secondary"
                       size="sm"
                       className="bg-white hover:bg-white/90"
-                      style={{ color: 'var(--secondary)' }}
+                      style={{ color: "var(--secondary)" }}
                     >
                       Update Liabilities
                     </Button>

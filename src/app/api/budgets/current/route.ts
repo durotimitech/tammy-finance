@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
-import { getOrCreateCurrentBudgetMonth } from '@/lib/budget-helpers';
-import { createClient } from '@/lib/supabase/server';
-import { BudgetMonthWithDetails, BudgetGoalWithExpenses } from '@/types/budget-new';
+import { NextResponse } from "next/server";
+import { getOrCreateCurrentBudgetMonth } from "@/lib/budget-helpers";
+import { createClient } from "@/lib/supabase/server";
+import {
+  BudgetMonthWithDetails,
+  BudgetGoalWithExpenses,
+} from "@/types/budget-new";
 
 // GET current month's budget with all details
 export async function GET() {
@@ -14,7 +17,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get or create current budget month using atomic upsert
@@ -24,11 +27,11 @@ export async function GET() {
     const budgetError = result.error;
 
     if (budgetError || !budgetMonthId) {
-      console.error('Failed to get or create budget month:', budgetError);
+      console.error("Failed to get or create budget month:", budgetError);
       return NextResponse.json(
         {
-          error: 'Failed to get or create budget month. Please try again.',
-          details: budgetError?.message || 'Unknown error',
+          error: "Failed to get or create budget month. Please try again.",
+          details: budgetError?.message || "Unknown error",
         },
         { status: 500 },
       );
@@ -41,35 +44,44 @@ export async function GET() {
 
     // Fetch budget month
     const { data: budgetMonth, error: monthError } = await supabase
-      .from('budget_months')
-      .select('*')
-      .eq('id', budgetMonthId)
+      .from("budget_months")
+      .select("*")
+      .eq("id", budgetMonthId)
       .single();
 
     if (monthError) {
-      return NextResponse.json({ error: 'Failed to fetch budget month' }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch budget month" },
+        { status: 500 },
+      );
     }
 
     // Fetch income sources
     const { data: incomeSources, error: incomeError } = await supabase
-      .from('income_sources')
-      .select('*')
-      .eq('budget_month_id', budgetMonthId)
-      .order('created_at', { ascending: true });
+      .from("income_sources")
+      .select("*")
+      .eq("budget_month_id", budgetMonthId)
+      .order("created_at", { ascending: true });
 
     if (incomeError) {
-      return NextResponse.json({ error: 'Failed to fetch income sources' }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch income sources" },
+        { status: 500 },
+      );
     }
 
     // Fetch goals
     const { data: goals, error: goalsError } = await supabase
-      .from('budget_goals')
-      .select('*')
-      .eq('budget_month_id', budgetMonthId)
-      .order('created_at', { ascending: true });
+      .from("budget_goals")
+      .select("*")
+      .eq("budget_month_id", budgetMonthId)
+      .order("created_at", { ascending: true });
 
     if (goalsError) {
-      return NextResponse.json({ error: 'Failed to fetch budget goals' }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch budget goals" },
+        { status: 500 },
+      );
     }
 
     // Fetch expenses for each goal and calculate spending
@@ -80,20 +92,22 @@ export async function GET() {
     const goalsWithExpenses: BudgetGoalWithExpenses[] = await Promise.all(
       (goals || []).map(async (goal) => {
         const { data: expenses, error: expensesError } = await supabase
-          .from('budget_expenses')
-          .select('*')
-          .eq('goal_id', goal.id)
-          .gte('expense_date', currentMonthStart.toISOString().split('T')[0])
-          .lte('expense_date', currentMonthEnd.toISOString().split('T')[0])
-          .order('expense_date', { ascending: false });
+          .from("budget_expenses")
+          .select("*")
+          .eq("goal_id", goal.id)
+          .gte("expense_date", currentMonthStart.toISOString().split("T")[0])
+          .lte("expense_date", currentMonthEnd.toISOString().split("T")[0])
+          .order("expense_date", { ascending: false });
 
         if (expensesError) {
-          console.error('Error fetching expenses for goal:', expensesError);
+          console.error("Error fetching expenses for goal:", expensesError);
         }
 
-        const spentAmount = expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
+        const spentAmount =
+          expenses?.reduce((sum, exp) => sum + Number(exp.amount), 0) || 0;
         const allocatedAmount = Number(goal.allocated_amount);
-        const spentPercentage = allocatedAmount > 0 ? (spentAmount / allocatedAmount) * 100 : 0;
+        const spentPercentage =
+          allocatedAmount > 0 ? (spentAmount / allocatedAmount) * 100 : 0;
         const remainingAmount = Math.max(0, allocatedAmount - spentAmount);
 
         return {
@@ -114,7 +128,10 @@ export async function GET() {
 
     return NextResponse.json(budgetWithDetails);
   } catch (error) {
-    console.error('Error in GET /api/budgets/current:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/budgets/current:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -166,7 +166,7 @@ Before creating new UI elements (buttons, inputs, cards, modals):
 ✅ **Correct:**
 
 ```tsx
-import { Button } from '@/components/ui/Button';
+import { Button } from "@/components/ui/Button";
 
 <Button variant="default" size="lg">
   Save Changes
@@ -222,7 +222,7 @@ export const fadeInUp = {
 ### Example Implementation
 
 ```tsx
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 <motion.div
   initial={{ opacity: 0, y: 20 }}
@@ -333,7 +333,7 @@ Use when appropriate:
   animate={{ opacity: 1 }}
   transition={{
     duration: 0.5,
-    ease: 'easeOut',
+    ease: "easeOut",
   }}
   // Respect user preference via CSS
 />
@@ -385,15 +385,15 @@ The middleware handles route protection automatically:
 
 ```typescript
 // src/lib/supabase/middleware.ts
-const protectedRoutes = ['/dashboard'];
-const authRoutes = ['/auth/login', '/auth/signup'];
+const protectedRoutes = ["/dashboard"];
+const authRoutes = ["/auth/login", "/auth/signup"];
 
 if (!user && isProtectedRoute) {
-  return NextResponse.redirect('/auth/login');
+  return NextResponse.redirect("/auth/login");
 }
 
 if (user && isAuthRoute) {
-  return NextResponse.redirect('/dashboard');
+  return NextResponse.redirect("/dashboard");
 }
 ```
 
@@ -413,11 +413,11 @@ const {
 } = await supabase.auth.getUser();
 
 if (!user) {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 // RLS policies automatically filter by user_id
-const { data } = await supabase.from('assets').select('*');
+const { data } = await supabase.from("assets").select("*");
 // User only sees their own assets due to RLS
 ```
 
@@ -426,16 +426,16 @@ const { data } = await supabase.from('assets').select('*');
 #### Cypress Tests for Protected Routes
 
 ```typescript
-describe('Route Protection', () => {
-  it('should redirect unauthenticated users from /dashboard', () => {
-    cy.visit('/dashboard');
-    cy.url().should('include', '/auth/login');
+describe("Route Protection", () => {
+  it("should redirect unauthenticated users from /dashboard", () => {
+    cy.visit("/dashboard");
+    cy.url().should("include", "/auth/login");
   });
 
-  it('should allow authenticated users to access /dashboard', () => {
+  it("should allow authenticated users to access /dashboard", () => {
     cy.login甥(); // Custom Cypress command
-    cy.visit('/dashboard');
-    cy.url().should('include', '/dashboard');
+    cy.visit("/dashboard");
+    cy.url().should("include", "/dashboard");
   });
 });
 ```
@@ -512,17 +512,19 @@ All Cypress tests must follow best practices to minimize execution time and maxi
 
 ```javascript
 cy.wait(5000); // Arbitrary wait
-cy.get('.submit-button').click();
+cy.get(".submit-button").click();
 ```
 
 ✅ **Correct:**
 
 ```javascript
-cy.get('[data-cy="submit-btn"]', { timeout: 10000 }).should('be.visible').click();
+cy.get('[data-cy="submit-btn"]', { timeout: 10000 })
+  .should("be.visible")
+  .click();
 // Or wait for specific network requests
-cy.intercept('POST', '/api/assets').as('createAsset');
+cy.intercept("POST", "/api/assets").as("createAsset");
 cy.get('[data-cy="submit-btn"]').click();
-cy.wait('@createAsset');
+cy.wait("@createAsset");
 ```
 
 #### 2. Efficient Element Selection
@@ -546,9 +548,9 @@ cy.get('[data-cy="submit-btn"]').click();
 Always intercept and alias network requests:
 
 ```javascript
-cy.intercept('GET', '/api/assets').as('getAssets');
-cy.visit('/dashboard/assets');
-cy.wait('@getAssets').its('response.statusCode').should('eq', 200);
+cy.intercept("GET", "/api/assets").as("getAssets");
+cy.visit("/dashboard/assets");
+cy.wait("@getAssets").its("response.statusCode").should("eq", 200);
 ```
 
 #### 4. Conditional Testing
@@ -557,11 +559,11 @@ Use proper assertions instead of conditional logic:
 
 ```javascript
 // Check if element exists before interacting
-cy.get('.modal').should('exist').find('.close-btn').click();
+cy.get(".modal").should("exist").find(".close-btn").click();
 
 // Handle optional elements
-cy.get('body').then(($body) => {
-  if ($body.find('.cookie-banner').length > 0) {
+cy.get("body").then(($body) => {
+  if ($body.find(".cookie-banner").length > 0) {
     cy.get('[data-cy="cookie-accept"]').click();
   }
 });
@@ -577,7 +579,7 @@ cy.get('body').then(($body) => {
 beforeEach(() => {
   cy.clearLocalStorage();
   cy.clearCookies();
-  cy.visit('/');
+  cy.visit("/");
 });
 
 afterEach(() => {
@@ -591,15 +593,15 @@ Create reusable commands for common operations:
 
 ```javascript
 // cypress/support/commands.js
-Cypress.Commands.add('login', (email, password) => {
+Cypress.Commands.add("login", (email, password) => {
   cy.get('[data-cy="email"]').type(email);
   cy.get('[data-cy="password"]').type(password);
   cy.get('[data-cy="login-btn"]').click();
-  cy.url().should('include', '/dashboard');
+  cy.url().should("include", "/dashboard");
 });
 
 // In test
-cy.login('user@example.com', 'password123');
+cy.login("user@example.com", "password123");
 ```
 
 #### 7. Assertions Best Practices
@@ -608,9 +610,9 @@ Chain assertions for better readability:
 
 ```javascript
 cy.get('[data-cy="asset-name"]')
-  .should('be.visible')
-  .and('have.value', 'Savings Account')
-  .and('not.be.disabled');
+  .should("be.visible")
+  .and("have.value", "Savings Account")
+  .and("not.be.disabled");
 ```
 
 ### Test Organization
@@ -618,21 +620,21 @@ cy.get('[data-cy="asset-name"]')
 #### Structure
 
 ```javascript
-describe('Feature: Asset Management', () => {
+describe("Feature: Asset Management", () => {
   beforeEach(() => {
-    cy.login('user@example.com', 'password123');
-    cy.visit('/dashboard/assets');
+    cy.login("user@example.com", "password123");
+    cy.visit("/dashboard/assets");
   });
 
-  it('should create a new asset successfully', () => {
+  it("should create a new asset successfully", () => {
     cy.get('[data-cy="add-asset-btn"]').click();
-    cy.get('[data-cy="asset-name"]').type('Investment Portfolio');
-    cy.get('[data-cy="asset-value"]').type('50000');
-    cy.get('[data-cy="asset-category"]').select('Investments');
+    cy.get('[data-cy="asset-name"]').type("Investment Portfolio");
+    cy.get('[data-cy="asset-value"]').type("50000");
+    cy.get('[data-cy="asset-category"]').select("Investments");
     cy.get('[data-cy="submit-btn"]').click();
 
-    cy.get('[data-cy="success-message"]').should('be.visible');
-    cy.get('[data-cy="asset-list"]').should('contain', 'Investment Portfolio');
+    cy.get('[data-cy="success-message"]').should("be.visible");
+    cy.get('[data-cy="asset-list"]').should("contain", "Investment Portfolio");
   });
 });
 ```
@@ -653,12 +655,12 @@ describe('Feature: Asset Management', () => {
 
 ```javascript
 // Cache login session
-cy.session('user-session', () => {
-  cy.visit('/auth/login');
-  cy.get('[data-cy="email"]').type('user@example.com');
-  cy.get('[data-cy="password"]').type('password123');
+cy.session("user-session", () => {
+  cy.visit("/auth/login");
+  cy.get('[data-cy="email"]').type("user@example.com");
+  cy.get('[data-cy="password"]').type("password123");
   cy.get('[data-cy="login-btn"]').click();
-  cy.url().should('include', '/dashboard');
+  cy.url().should("include", "/dashboard");
 });
 ```
 
@@ -667,23 +669,23 @@ cy.session('user-session', () => {
 #### Waiting for API Responses
 
 ```javascript
-cy.intercept('GET', '/api/assets').as('getAssets');
-cy.visit('/dashboard/assets');
-cy.wait('@getAssets').then((interception) => {
+cy.intercept("GET", "/api/assets").as("getAssets");
+cy.visit("/dashboard/assets");
+cy.wait("@getAssets").then((interception) => {
   expect(interception.response.statusCode).to.equal(200);
-  expect(interception.response.body).to.have.property('data');
+  expect(interception.response.body).to.have.property("data");
 });
 ```
 
 #### Form Submissions
 
 ```javascript
-cy.intercept('POST', '/api/assets').as('createAsset');
-cy.get('[data-cy="asset-name"]').type('Savings');
-cy.get('[data-cy="asset-value"]').type('10000');
+cy.intercept("POST", "/api/assets").as("createAsset");
+cy.get('[data-cy="asset-name"]').type("Savings");
+cy.get('[data-cy="asset-value"]').type("10000");
 cy.get('[data-cy="submit"]').click();
-cy.wait('@createAsset');
-cy.get('[data-cy="success-message"]').should('be.visible');
+cy.wait("@createAsset");
+cy.get('[data-cy="success-message"]').should("be.visible");
 ```
 
 ### Debugging Tips

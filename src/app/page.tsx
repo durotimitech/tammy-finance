@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
@@ -13,12 +13,12 @@ import {
   Clock,
   Calculator,
   X as XIcon,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import LandingFooter from '@/components/LandingFooter';
-import LandingHeader from '@/components/LandingHeader';
-import { Button } from '@/components/ui/Button';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import LandingFooter from "@/components/LandingFooter";
+import LandingHeader from "@/components/LandingHeader";
+import { Button } from "@/components/ui/Button";
 
 export default function Home() {
   return (
@@ -40,9 +40,12 @@ export default function Home() {
               </h1>
 
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Stop juggling spreadsheets and disconnected apps. See exactly{' '}
-                <span className="font-semibold text-[#2D2D2D]">when you can retire</span> and
-                understand how every financial decision impacts your time to freedom.
+                Stop juggling spreadsheets and disconnected apps. See exactly{" "}
+                <span className="font-semibold text-[#2D2D2D]">
+                  when you can retire
+                </span>{" "}
+                and understand how every financial decision impacts your time to
+                freedom.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-12">
@@ -92,8 +95,9 @@ export default function Home() {
               <br /> of Your Finances
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Manage your finances with Tammy Finance. Monitor expenses, track net worth, and reach
-              financial independence. All within a user-friendly app.
+              Manage your finances with Tammy Finance. Monitor expenses, track
+              net worth, and reach financial independence. All within a
+              user-friendly app.
             </p>
           </div>
 
@@ -102,15 +106,17 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="mb-6">
                 <Target className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">FIRE Calculator</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                FIRE Calculator
+              </h3>
               <p className="text-[#6B6B6B] mb-6">
-                Calculate your path to Financial Independence, Retire Early (FIRE) with personalized
-                projections and milestone tracking.
+                Calculate your path to Financial Independence, Retire Early
+                (FIRE) with personalized projections and milestone tracking.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -126,15 +132,17 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="mb-6">
                 <BarChart3 className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Net Worth Tracking</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                Net Worth Tracking
+              </h3>
               <p className="text-[#6B6B6B] mb-6">
-                Monitor your complete financial picture by tracking assets, liabilities, and
-                calculating your net worth in real-time.
+                Monitor your complete financial picture by tracking assets,
+                liabilities, and calculating your net worth in real-time.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -150,15 +158,17 @@ export default function Home() {
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="mb-6">
                 <FileText className="w-7 h-7 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Expense Tracking</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                Expense Tracking
+              </h3>
               <p className="text-[#6B6B6B] mb-6">
-                Easily track your daily, weekly, and monthly expenses to stay in control of where
-                your money goes.
+                Easily track your daily, weekly, and monthly expenses to stay in
+                control of where your money goes.
               </p>
               <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
@@ -187,7 +197,8 @@ export default function Home() {
               Your Path to Financial Freedom
             </h2>
             <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
-              Three simple steps that connect your daily finances to your ultimate goal: freedom
+              Three simple steps that connect your daily finances to your
+              ultimate goal: freedom
             </p>
           </div>
 
@@ -195,7 +206,7 @@ export default function Home() {
             <motion.div
               className="relative bg-gray-50 rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
                 1
@@ -203,17 +214,20 @@ export default function Home() {
               <div className="mb-6 mt-4">
                 <Calculator className="w-10 h-10 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Track Everything</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                Track Everything
+              </h3>
               <p className="text-[#6B6B6B]">
-                Add your assets, liabilities, income, and expenses. Track your complete financial
-                picture in one place, no spreadsheet required.
+                Add your assets, liabilities, income, and expenses. Track your
+                complete financial picture in one place, no spreadsheet
+                required.
               </p>
             </motion.div>
 
             <motion.div
               className="relative bg-gray-50 rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
                 2
@@ -221,17 +235,19 @@ export default function Home() {
               <div className="mb-6 mt-4">
                 <TrendingUp className="w-10 h-10 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">See Your Progress</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                See Your Progress
+              </h3>
               <p className="text-[#6B6B6B]">
-                Watch your net worth grow over time. Calculate your FIRE number and see exactly how
-                close you are to financial independence.
+                Watch your net worth grow over time. Calculate your FIRE number
+                and see exactly how close you are to financial independence.
               </p>
             </motion.div>
 
             <motion.div
               className="relative bg-gray-50 rounded-3xl p-8"
               whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
                 3
@@ -239,10 +255,13 @@ export default function Home() {
               <div className="mb-6 mt-4">
                 <Clock className="w-10 h-10 text-[#2D2D2D]" />
               </div>
-              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Reach Freedom</h3>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
+                Reach Freedom
+              </h3>
               <p className="text-[#6B6B6B]">
-                Make informed decisions knowing exactly how they impact your retirement date. Every
-                saved dollar brings you closer to your goal.
+                Make informed decisions knowing exactly how they impact your
+                retirement date. Every saved dollar brings you closer to your
+                goal.
               </p>
             </motion.div>
           </div>
@@ -274,9 +293,13 @@ export default function Home() {
                   <XIcon className="w-8 h-8 text-[#2D2D2D]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Other Apps</h3>
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">
+                    Other Apps
+                  </h3>
                   <ul className="space-y-2 text-[#6B6B6B]">
-                    <li>• Fragmented tools that don&apos;t talk to each other</li>
+                    <li>
+                      • Fragmented tools that don&apos;t talk to each other
+                    </li>
                     <li>• Complex spreadsheets that break easily</li>
                     <li>• Generic budgeting with no FIRE focus</li>
                     <li>• Sell your data or push wealth management</li>
@@ -292,7 +315,9 @@ export default function Home() {
                   <Check className="w-8 h-8 text-[#2D2D2D]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Tammy Finance</h3>
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">
+                    Tammy Finance
+                  </h3>
                   <ul className="space-y-2 text-[#6B6B6B]">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
@@ -300,7 +325,9 @@ export default function Home() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
-                      <span>Every data point connected to your freedom date</span>
+                      <span>
+                        Every data point connected to your freedom date
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
@@ -337,8 +364,9 @@ export default function Home() {
                   Your Financial Data is Sacred
                 </h2>
                 <p className="text-xl text-gray-300 mb-8">
-                  Unlike &quot;free&quot; apps that sell your data or push aggressive upsells, Tammy
-                  Finance operates on a simple principle: you pay us, we serve you.
+                  Unlike &quot;free&quot; apps that sell your data or push
+                  aggressive upsells, Tammy Finance operates on a simple
+                  principle: you pay us, we serve you.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
@@ -346,7 +374,9 @@ export default function Home() {
                       <Check className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg mb-1">No Ads, Ever</h3>
+                      <h3 className="font-semibold text-lg mb-1">
+                        No Ads, Ever
+                      </h3>
                       <p className="text-gray-300">
                         Your attention belongs to your goals, not advertisers.
                       </p>
@@ -357,9 +387,12 @@ export default function Home() {
                       <Check className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg mb-1">Your Data Stays Private</h3>
+                      <h3 className="font-semibold text-lg mb-1">
+                        Your Data Stays Private
+                      </h3>
                       <p className="text-gray-300">
-                        We never sell or share your financial information with third parties.
+                        We never sell or share your financial information with
+                        third parties.
                       </p>
                     </div>
                   </div>
@@ -368,9 +401,12 @@ export default function Home() {
                       <Check className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg mb-1">Bank-Level Security</h3>
+                      <h3 className="font-semibold text-lg mb-1">
+                        Bank-Level Security
+                      </h3>
                       <p className="text-gray-300">
-                        Encrypted at rest and in transit with industry-leading standards.
+                        Encrypted at rest and in transit with industry-leading
+                        standards.
                       </p>
                     </div>
                   </div>
@@ -400,8 +436,9 @@ export default function Home() {
             Ready to Calculate Your Path to Freedom?
           </h2>
           <p className="text-xl text-[#6B6B6B] mb-8 max-w-2xl mx-auto">
-            Join others who have ditched their messy spreadsheets and taken control of their FIRE
-            journey. Start tracking for free, no credit card required.
+            Join others who have ditched their messy spreadsheets and taken
+            control of their FIRE journey. Start tracking for free, no credit
+            card required.
           </p>
           <Link href="/auth/signup">
             <Button size="sm" variant="secondary">
@@ -437,7 +474,8 @@ export default function Home() {
                 />
                 <div className="mt-8 text-center lg:text-left">
                   <p className="text-sm text-[#6B6B6B] mb-4">
-                    If you want to follow along with my journey, here is my TikTok.
+                    If you want to follow along with my journey, here is my
+                    TikTok.
                   </p>
                   <div className="flex gap-4 justify-center lg:justify-start">
                     {/* <a
@@ -462,19 +500,23 @@ export default function Home() {
 
               <div>
                 <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
-                  Hello, my name is Timmy and I built Tammy because I needed a way to track my
-                  journey to Financial Independence.
+                  Hello, my name is Timmy and I built Tammy because I needed a
+                  way to track my journey to Financial Independence.
                 </p>
                 <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
-                  As it turns out, there are other things that need to be tracked in order to have a
-                  complete view of your FIRE target. Things like budgets, networth and so on.
+                  As it turns out, there are other things that need to be
+                  tracked in order to have a complete view of your FIRE target.
+                  Things like budgets, networth and so on.
                 </p>
                 <p className="text-lg text-[#6B6B6B] mb-6 leading-relaxed">
-                  My goal with this app is that it assists your financial journey like it has done
-                  to mine. I spend a lot of time actually using the app personally because progress
-                  can be addicting and I hope you enjoy using it as much as me.
+                  My goal with this app is that it assists your financial
+                  journey like it has done to mine. I spend a lot of time
+                  actually using the app personally because progress can be
+                  addicting and I hope you enjoy using it as much as me.
                 </p>
-                <p className="text-lg font-semibold text-[#2D2D2D]">- Timmy Mejabi</p>
+                <p className="text-lg font-semibold text-[#2D2D2D]">
+                  - Timmy Mejabi
+                </p>
               </div>
             </div>
           </div>
