@@ -72,3 +72,7 @@ Ensure to follow the rules in RULES.md for each iteration
 [ ] Native iOS/Android applications
 [ ] Advanced DeFi/non-custodial crypto wallet tracking
 
+
+[ ] Add a section on the landing page showing a video of how I use the app. 
+[ ] Add a section showing a gif of doing crucial things on the app (add some animation here
+[ ] As time goes on build a FAQs

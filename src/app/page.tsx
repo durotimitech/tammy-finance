@@ -42,16 +42,12 @@ export default function Home() {
             {session ? (
               <div className="flex items-center gap-4">
                 <Link href="/dashboard">
-                  <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6">
-                    Dashboard
-                  </Button>
+                  <Button variant="secondary">Dashboard</Button>
                 </Link>
               </div>
             ) : (
               <Link href="/auth/login">
-                <Button className="bg-[#2D2D2D] text-white hover:bg-[#1D1D1D] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6">
-                  Login
-                </Button>
+                <Button variant="secondary">Login</Button>
               </Link>
             )}
           </div>
@@ -105,22 +101,19 @@ export default function Home() {
         >
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-[#2D2D2D] mb-6 leading-tight">
+              <h1 className="text-3xl lg:text-5xl font-bold text-[#2D2D2D] mb-6 leading-tight">
                 Take Control of Your Financial Future
               </h1>
 
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Track your net worth, manage assets and liabilities, track your
-                budgets and reach your financial independence goals. All in one
-                easy-to-use app.
+                Know and track your FIRE journey with access to your net worth,
+                assets and liabilities, track your budgets and reach your
+                financial independence goals. All in one easy-to-use app.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-12">
                 <Link href="/auth/signup">
-                  <Button
-                    size="sm"
-                    className="bg-secondary text-white hover:bg-[#8B5CF6] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6 py-4 text-base font-medium"
-                  >
+                  <Button size="sm" variant="secondary">
                     Get started for free
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -129,9 +122,9 @@ export default function Home() {
             </div>
 
             {/* Phone Mockups */}
-            <div className="relative">
+            <div className="relative flex justify-center lg:justify-start">
               <motion.div
-                className="relative"
+                className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[500px]"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -141,7 +134,7 @@ export default function Home() {
                   alt="Dashboard"
                   width={500}
                   height={500}
-                  className="w-full h-auto rounded-lg shadow-2xl"
+                  className="w-full h-auto"
                   priority
                 />
               </motion.div>
@@ -172,28 +165,28 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {/* Expense Tracking */}
+            {/* FIRE Calculator */}
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center mb-6">
-                <FileText className="w-7 h-7 text-white" />
+              <div className="mb-6">
+                <Target className="w-7 h-7 text-[#2D2D2D]" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
-                Expense Tracking
+                FIRE Calculator
               </h3>
               <p className="text-[#6B6B6B] mb-6">
-                Easily track your daily, weekly, and monthly expenses to stay in
-                control of where your money goes.
+                Calculate your path to Financial Independence, Retire Early
+                (FIRE) with personalized projections and milestone tracking.
               </p>
-              <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[300px]">
+              <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
-                  src="/features/budget_tracker.png"
-                  alt="Expense Tracking"
+                  src="/features/fire.png"
+                  alt="FIRE Calculator"
                   fill
-                  className="object-cover object-top scale-110"
+                  className="object-contain"
                 />
               </div>
             </motion.div>
@@ -204,8 +197,8 @@ export default function Home() {
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center mb-6">
-                <BarChart3 className="w-7 h-7 text-white" />
+              <div className="mb-6">
+                <BarChart3 className="w-7 h-7 text-[#2D2D2D]" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
                 Net Worth Tracking
@@ -214,7 +207,7 @@ export default function Home() {
                 Monitor your complete financial picture by tracking assets,
                 liabilities, and calculating your net worth in real-time.
               </p>
-              <div className="flex-1 -mx-8 -mb-8 absolute inset-0 rounded-b-3xl relative min-h-[200px]">
+              <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
                   src="/features/networth.png"
                   alt="Net Worth Tracking"
@@ -224,40 +217,31 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* FIRE Calculator */}
+            {/* Expense Tracking */}
             <motion.div
               className="bg-[#FFF] rounded-3xl p-8 pb-0 flex flex-col overflow-hidden"
               whileHover={{ y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center mb-6">
-                <Target className="w-7 h-7 text-white" />
+              <div className="mb-6">
+                <FileText className="w-7 h-7 text-[#2D2D2D]" />
               </div>
               <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">
-                FIRE Calculator
+                Expense Tracking
               </h3>
               <p className="text-[#6B6B6B] mb-6">
-                Calculate your path to Financial Independence, Retire Early
-                (FIRE) with personalized projections and milestone tracking.
+                Easily track your daily, weekly, and monthly expenses to stay in
+                control of where your money goes.
               </p>
-              <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[300px]">
+              <div className="flex-1 -mx-8 -mb-8 overflow-hidden rounded-b-3xl relative min-h-[250px] sm:min-h-[280px] md:min-h-[300px]">
                 <Image
-                  src="/features/fire.png"
-                  alt="FIRE Calculator"
+                  src="/features/budget_tracker.png"
+                  alt="Expense Tracking"
                   fill
-                  className="object-cover object-top scale-110"
+                  className="object-contain"
                 />
               </div>
             </motion.div>
-          </div>
-
-          <div className="text-center">
-            <Link href="#features">
-              <Button className="bg-secondary text-white hover:bg-[#8B5CF6] border-2 !border-secondary hover:!border-secondary focus:!border-secondary rounded-full px-6 py-4">
-                Explore All Features
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
           </div>
         </motion.div>
       </section>
