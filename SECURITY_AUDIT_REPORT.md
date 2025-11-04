@@ -13,11 +13,11 @@
 The Net Worth Tracker application demonstrates **solid security fundamentals** with proper authentication, encryption, and database-level security (RLS). Several **critical and high-severity vulnerabilities** were identified, with the **2 CRITICAL issues now RESOLVED**:
 
 - **0 Critical** vulnerabilities ✅ **RESOLVED** (exposed credential endpoint removed, secrets removed from Git)
-- **5 High** severity issues (missing authentication, rate limiting, dependency vulnerabilities)
+- **4 High** severity issues ⬇️ (rate limiting, dependency vulnerabilities, hardcoded credentials, public feature flags)
 - **7 Medium** severity issues (input validation, error disclosure, authorization)
 - **10 Low** severity issues (logging, standardization, configuration)
 
-**Overall Security Score: 7.5/10** ⬆️ (improved from 6.5/10 after fixing critical issues)
+**Overall Security Score: 8.0/10** ⬆️ (improved from 7.5/10 after fixing unauthenticated Trading 212 validation)
 
 ---
 
@@ -160,15 +160,22 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
 ---
 
-## **[HIGH]** - **Unauthenticated Trading 212 API Key Validation**
+## ✅ **[HIGH - RESOLVED]** - **Unauthenticated Trading 212 API Key Validation**
 
-- **Description:** The `/api/trading212/portfolio` endpoint accepts API keys via header (`X-Trading212-ApiKey`) and validates them without requiring user authentication. Attackers could use this as an API key validation service for stolen Trading 212 credentials or conduct brute-force attacks.
+- **Status:** **FIXED** ✅
+- **Date Resolved:** 2025-11-04
+
+- **Description:** The `/api/trading212/portfolio` endpoint accepted API keys via header (`X-Trading212-ApiKey`) and validated them without requiring user authentication. Attackers could use this as an API key validation service for stolen Trading 212 credentials or conduct brute-force attacks.
 
 - **Location(s):**
-  - `src/app/api/trading212/portfolio/route.ts` (Lines 10-27)
+  - ~~`src/app/api/trading212/portfolio/route.ts` (Lines 10-27)~~ **FIXED**
 
-- **Recommended Fix:** Require authentication before allowing API key validation.
+- **Fix Applied:**
+  1. Moved authentication check to the beginning of the GET function
+  2. Now requires user authentication before allowing any API key validation
+  3. API key validation via header is only available to authenticated users
   - **Bad Code:**
+
     ```typescript
     export async function GET(request: NextRequest) {
       const headerApiKey = request.headers.get('X-Trading212-ApiKey');
@@ -187,7 +194,9 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
       // ...
     }
     ```
+
   - **Good Code:**
+
     ```typescript
     export async function GET(request: NextRequest) {
       const supabase = await createClient();
@@ -337,6 +346,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
 - **Recommended Fix:** Add authentication or document this as intentionally public.
   - **Bad Code:**
+
     ```typescript
     export async function GET() {
       const supabase = await createClient();
@@ -347,7 +357,9 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
       return NextResponse.json({ flags: flags || [] });
     }
     ```
+
   - **Good Code:**
+
     ```typescript
     export async function GET() {
       const supabase = await createClient();
@@ -780,6 +792,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
     }
     ```
   - **Good Code:**
+
     ```typescript
     export async function POST(request: NextRequest) {
       // ✅ Validate Content-Type
@@ -1466,9 +1479,9 @@ The following security practices are **correctly implemented**:
 
 | Category                   | Count               |
 | -------------------------- | ------------------- |
-| **Total Vulnerabilities**  | **22** (2 resolved) |
+| **Total Vulnerabilities**  | **21** (3 resolved) |
 | Critical                   | ~~2~~ **0** ✅      |
-| High                       | 5                   |
+| High                       | ~~5~~ **4** ✅      |
 | Medium                     | 7                   |
 | Low                        | 10                  |
 | **Files Reviewed**         | **150+**            |
@@ -1500,37 +1513,37 @@ The following security practices are **correctly implemented**:
 
 1. ✅ ~~Remove `/api/credentials/[name]` GET endpoint~~ **COMPLETED**
 2. ✅ ~~Remove `cypress.env.json` from Git~~ **COMPLETED** - **User should rotate anon key and clean Git history**
-3. Update vulnerable dependencies (axios, next, eslint)
-4. Add authentication to Trading 212 validation endpoint
+3. ✅ ~~Add authentication to Trading 212 validation endpoint~~ **COMPLETED**
+4. Update vulnerable dependencies (axios, next, eslint)
 5. Remove hardcoded credentials from `cypress.config.ts`
 
 ### Phase 2: HIGH PRIORITY (Within 2 Weeks)
 
-6. Implement rate limiting on all API routes
-7. Add authentication to feature flags endpoint
-8. Fix input validation on query parameters
-9. Add explicit authorization checks in DELETE operations
-10. Implement proper error sanitization
+4. Implement rate limiting on all API routes
+5. Add authentication to feature flags endpoint
+6. Fix input validation on query parameters
+7. Add explicit authorization checks in DELETE operations
+8. Implement proper error sanitization
 
 ### Phase 3: MEDIUM PRIORITY (Within 1 Month)
 
-11. Replace JavaScript Number with Decimal.js for financials
-12. Add Content-Type validation on all POST/PUT routes
-13. Implement request body size limits
-14. Standardize error response format
-15. Add URL parameter validation on error page
-16. Fix mass assignment vulnerabilities
+9. Replace JavaScript Number with Decimal.js for financials
+10. Add Content-Type validation on all POST/PUT routes
+11. Implement request body size limits
+12. Standardize error response format
+13. Add URL parameter validation on error page
+14. Fix mass assignment vulnerabilities
 
 ### Phase 4: LOW PRIORITY (Within 2 Months)
 
-17. Implement structured logging and audit trail
-18. Add security headers in Next.js config
-19. Strengthen client-side encryption password
-20. Add date validation in budget operations
-21. Secure testing backdoor in middleware
-22. Implement distributed locking for concurrent operations
-23. Add CORS configuration if needed
-24. Replace console.log with structured logger
+15. Implement structured logging and audit trail
+16. Add security headers in Next.js config
+17. Strengthen client-side encryption password
+18. Add date validation in budget operations
+19. Secure testing backdoor in middleware
+20. Implement distributed locking for concurrent operations
+21. Add CORS configuration if needed
+22. Replace console.log with structured logger
 
 ---
 
@@ -1603,6 +1616,12 @@ The Net Worth Tracker demonstrates **solid security fundamentals** but has sever
 - Removed `cypress.env.json` from Git tracking
 - Added `cypress.env.json` to `.gitignore`
 - Created `cypress.env.json.example` template
+
+**Issue 3: Unauthenticated Trading 212 API Key Validation** ✅
+
+- Fixed authentication bypass in Trading 212 portfolio endpoint
+- Moved authentication check to beginning of GET function
+- API key validation now requires authenticated user session
 
 **Remaining Actions for User:**
 

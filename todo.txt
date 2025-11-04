@@ -75,4 +75,4 @@ Ensure to follow the rules in RULES.md for each iteration
 [ ] Add a section showing a gif of doing crucial things on the app (add some animation here)
 [ ] As time goes on build a FAQs
 
-
+look at the @SECURITY_AUDIT_REPORT.md and fix the  Missing Rate Limiting on All API Routes issue and update the doc

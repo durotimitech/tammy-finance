@@ -6,11 +6,24 @@ import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
 
 export async function GET(request: NextRequest) {
   try {
+    // Require authentication first
+    const supabase = await createClient();
+
+    // Check if user is authenticated
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Check if API key is provided in header for validation
     const headerApiKey = request.headers.get('X-Trading212-ApiKey');
 
     if (headerApiKey) {
-      // This is a validation request
+      // This is a validation request - only allow authenticated users
       try {
         const portfolioData = await fetchPortfolio(headerApiKey);
         if (!portfolioData) {
@@ -24,19 +37,6 @@ export async function GET(request: NextRequest) {
         console.error('API key validation error:', error);
         return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
       }
-    }
-
-    // Normal authenticated request
-    const supabase = await createClient();
-
-    // Check if user is authenticated
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Fetch Trading 212 credentials
