@@ -1,7 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, BarChart3, FileText, Target } from 'lucide-react';
+import {
+  ArrowRight,
+  BarChart3,
+  FileText,
+  Target,
+  Shield,
+  Zap,
+  TrendingUp,
+  Check,
+  Clock,
+  Calculator,
+  X as XIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import LandingFooter from '@/components/LandingFooter';
@@ -28,9 +40,9 @@ export default function Home() {
               </h1>
 
               <p className="text-xl text-[#6B6B6B] mb-8 max-w-lg">
-                Know and track your FIRE journey with access to your net worth, assets and
-                liabilities, track your budgets and reach your financial independence goals. All in
-                one easy-to-use app.
+                Stop juggling spreadsheets and disconnected apps. See exactly{' '}
+                <span className="font-semibold text-[#2D2D2D]">when you can retire</span> and
+                understand how every financial decision impacts your time to freedom.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-12">
@@ -158,6 +170,248 @@ export default function Home() {
               </div>
             </motion.div>
           </div>
+        </motion.div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-24 px-6 lg:px-12 bg-white">
+        <motion.div
+          className="max-w-7xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">
+              Your Path to Financial Freedom
+            </h2>
+            <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
+              Three simple steps that connect your daily finances to your ultimate goal: freedom
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              className="relative bg-gray-50 rounded-3xl p-8"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
+                1
+              </div>
+              <div className="mb-6 mt-4">
+                <Calculator className="w-10 h-10 text-[#2D2D2D]" />
+              </div>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Track Everything</h3>
+              <p className="text-[#6B6B6B]">
+                Add your assets, liabilities, income, and expenses. Track your complete financial
+                picture in one place, no spreadsheet required.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="relative bg-gray-50 rounded-3xl p-8"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
+                2
+              </div>
+              <div className="mb-6 mt-4">
+                <TrendingUp className="w-10 h-10 text-[#2D2D2D]" />
+              </div>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">See Your Progress</h3>
+              <p className="text-[#6B6B6B]">
+                Watch your net worth grow over time. Calculate your FIRE number and see exactly how
+                close you are to financial independence.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="relative bg-gray-50 rounded-3xl p-8"
+              whileHover={{ y: -5 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#2D2D2D] text-white rounded-full flex items-center justify-center text-xl font-bold">
+                3
+              </div>
+              <div className="mb-6 mt-4">
+                <Clock className="w-10 h-10 text-[#2D2D2D]" />
+              </div>
+              <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-3">Reach Freedom</h3>
+              <p className="text-[#6B6B6B]">
+                Make informed decisions knowing exactly how they impact your retirement date. Every
+                saved dollar brings you closer to your goal.
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Why Tammy is Different Section */}
+      <section className="py-24 px-6 lg:px-12 bg-gray-50">
+        <motion.div
+          className="max-w-7xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-4">
+              Why Tammy is Different
+            </h2>
+            <p className="text-xl text-[#6B6B6B] max-w-3xl mx-auto">
+              Built specifically for FIRE seekers, not general budgeters
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white rounded-3xl p-8">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0">
+                  <XIcon className="w-8 h-8 text-[#2D2D2D]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Other Apps</h3>
+                  <ul className="space-y-2 text-[#6B6B6B]">
+                    <li>• Fragmented tools that don&apos;t talk to each other</li>
+                    <li>• Complex spreadsheets that break easily</li>
+                    <li>• Generic budgeting with no FIRE focus</li>
+                    <li>• Sell your data or push wealth management</li>
+                    <li>• Can&apos;t answer: &quot;When can I retire?&quot;</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl p-8 border-2 border-[#2f2f2f]">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0">
+                  <Check className="w-8 h-8 text-[#2D2D2D]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Tammy Finance</h3>
+                  <ul className="space-y-2 text-[#6B6B6B]">
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
+                      <span>All-in-one FIRE-focused platform</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
+                      <span>Every data point connected to your freedom date</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
+                      <span>Privacy-first, no ads, no data selling</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-[#2D2D2D] flex-shrink-0" />
+                      <span>Clear answer: See exactly when you can retire</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Privacy & Security Section */}
+      <section className="py-24 px-6 lg:px-12 bg-white">
+        <motion.div
+          className="max-w-7xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <div className="bg-[#2D2D2D] text-white rounded-3xl p-8 md:p-12 lg:p-16">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="mb-6">
+                  <Shield className="w-16 h-16 text-white" />
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  Your Financial Data is Sacred
+                </h2>
+                <p className="text-xl text-gray-300 mb-8">
+                  Unlike &quot;free&quot; apps that sell your data or push aggressive upsells, Tammy
+                  Finance operates on a simple principle: you pay us, we serve you.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <Check className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-1">No Ads, Ever</h3>
+                      <p className="text-gray-300">
+                        Your attention belongs to your goals, not advertisers.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <Check className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-1">Your Data Stays Private</h3>
+                      <p className="text-gray-300">
+                        We never sell or share your financial information with third parties.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <Check className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-1">Bank-Level Security</h3>
+                      <p className="text-gray-300">
+                        Encrypted at rest and in transit with industry-leading standards.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white/10 rounded-full blur-3xl"></div>
+                  <Zap className="relative w-48 h-48 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-24 px-6 lg:px-12 bg-gray-50">
+        <motion.div
+          className="max-w-4xl mx-auto text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl lg:text-5xl font-bold text-[#2D2D2D] mb-6">
+            Ready to Calculate Your Path to Freedom?
+          </h2>
+          <p className="text-xl text-[#6B6B6B] mb-8 max-w-2xl mx-auto">
+            Join others who have ditched their messy spreadsheets and taken control of their FIRE
+            journey. Start tracking for free, no credit card required.
+          </p>
+          <Link href="/auth/signup">
+            <Button size="sm" variant="secondary">
+              Start Your FIRE Journey
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </Link>
+          <p className="text-sm text-[#6B6B6B] mt-4">
+            Free forever. Upgrade when you&apos;re ready for automation.
+          </p>
         </motion.div>
       </section>
 

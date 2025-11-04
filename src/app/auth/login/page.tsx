@@ -36,7 +36,7 @@ export default function LoginPage() {
       {/* Left side - Orange Background with Centered Image */}
       <motion.div
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
-        style={{ backgroundColor: '#ff5722' }}
+        style={{ backgroundColor: 'var(--secondary)' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -47,14 +47,13 @@ export default function LoginPage() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="relative w-full max-w-2xl"
+            className="relative w-full max-w-4xl"
           >
             <Image
               src="/auth_hero.png"
               alt="Net Worth Tracker Dashboard"
               width={800}
               height={600}
-              className="w-full h-auto rounded-lg shadow-2xl"
               priority
             />
           </motion.div>
