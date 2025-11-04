@@ -1,32 +1,83 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Lato, Pirata_One } from 'next/font/google';
 import './globals.css';
 import AnimatedLayout from './AnimatedLayout';
 import { Providers } from './providers';
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#FF7F50',
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL('https://networthtracker.com'),
   title: {
     template: '%s | Tammy',
-    default: 'Tammy | Track Your Financial Journey',
+    default: 'Tammy | Track Your Financial Journey to FIRE',
   },
   description:
-    'Transform your financial future one asset at a time. Track net worth, monitor investments, and celebrate every milestone with our intuitive wealth tracking app.',
+    'All-in-one FIRE tracking app for financial independence. Track net worth, calculate retirement timeline, manage budgets, and reach your freedom goals faster.',
+  keywords: [
+    'FIRE calculator',
+    'financial independence',
+    'net worth tracker',
+    'retirement calculator',
+    'budget tracker',
+    'wealth management',
+    'asset tracking',
+    'personal finance app',
+    'early retirement',
+    'financial freedom',
+  ],
+  authors: [{ name: 'Timmy Mejabi' }],
+  creator: 'Timmy Mejabi',
+  publisher: 'Tammy Finance',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: '/favicon.png',
+    apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Tammy | Track Your Financial Journey',
-    description: 'Transform your financial future one asset at a time.',
+    title: 'Tammy | Track Your Financial Journey to FIRE',
+    description:
+      'All-in-one FIRE tracking app. Calculate retirement timeline, track net worth, manage budgets, and reach financial independence.',
     url: 'https://networthtracker.com',
     siteName: 'Tammy',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Tammy - FIRE and Net Worth Tracking',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Tammy| Track Your Financial Journey',
-    description: 'Transform your financial future one asset at a time.',
+    title: 'Tammy | Track Your Financial Journey to FIRE',
+    description:
+      'All-in-one FIRE tracking app. Calculate retirement timeline, track net worth, and reach financial independence.',
+    creator: '@createdbytimmy',
+    images: ['/og-image.png'],
   },
+  alternates: {
+    canonical: 'https://networthtracker.com',
+  },
+  category: 'Finance',
 };
 
 const lato = Lato({
@@ -65,19 +116,39 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'SoftwareApplication',
               name: 'Tammy',
+              alternateName: 'Tammy Finance',
               applicationCategory: 'FinanceApplication',
-              operatingSystem: 'Android, iOS',
+              operatingSystem: 'Web, Android, iOS',
+              url: 'https://networthtracker.com',
+              description:
+                'All-in-one FIRE tracking app for financial independence. Track net worth, calculate retirement timeline, manage budgets, and reach your freedom goals faster.',
+              author: {
+                '@type': 'Person',
+                name: 'Timmy Mejabi',
+                url: 'https://tiktok.com/@createdbytimmy',
+              },
               offers: {
                 '@type': 'Offer',
                 price: '0',
                 priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
               },
               aggregateRating: {
                 '@type': 'AggregateRating',
                 ratingValue: '4.8',
                 ratingCount: '2500',
+                bestRating: '5',
+                worstRating: '1',
               },
-              description: 'Track your financial journey with our intuitive net worth tracking app',
+              featureList: [
+                'FIRE Calculator',
+                'Net Worth Tracking',
+                'Budget Management',
+                'Asset Tracking',
+                'Liability Management',
+                'Financial Independence Timeline',
+                'Multi-currency Support',
+              ],
             }),
           }}
         />

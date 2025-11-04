@@ -1,36 +1,32 @@
 import { MetadataRoute } from 'next';
-// import { getAllPosts } from '@/lib/blog'; // You need to implement this function
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // const posts = await getAllPosts();
-
-  // const postEntries: MetadataRoute.Sitemap = posts.map((post: { slug: string; date: string }) => ({
-  //     url: `https://mejabidurotimi.com/blog/${post.slug}`,
-  //     lastModified: new Date(post.date),
-  //     changeFrequency: 'monthly',
-  //     priority: 0.8,
-  // }));
+  const baseUrl = 'https://networthtracker.com';
 
   return [
     {
-      url: 'https://mejabidurotimi.com',
+      url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: 'https://mejabidurotimi.com/about',
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: 'https://mejabidurotimi.com/contact',
+      url: `${baseUrl}/auth/login`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.5,
+      priority: 0.8,
     },
-    // Add other static pages as needed
-    // ...postEntries,
+    {
+      url: `${baseUrl}/auth/signup`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
   ];
 }

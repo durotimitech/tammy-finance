@@ -1,5 +1,16 @@
+import type { Metadata } from 'next';
 import LandingFooter from '@/components/LandingFooter';
 import LandingHeader from '@/components/LandingHeader';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description:
+    'Learn how Tammy protects your financial data. No ads, no data selling, bank-level security. Your privacy is our priority.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function PrivacyPage() {
   return (
