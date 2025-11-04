@@ -57,7 +57,7 @@ describe("Middleware", () => {
       const { config } = require("@/middleware");
 
       expect(config.matcher).toEqual([
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        "/((?!_next/static|_next/image|favicon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
       ]);
     });
   });

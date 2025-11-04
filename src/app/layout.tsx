@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   },
   description:
     "Transform your financial future one asset at a time. Track net worth, monitor investments, and celebrate every milestone with our intuitive wealth tracking app.",
+  icons: {
+    icon: "/favicon.png",
+  },
   openGraph: {
     title: "Tammy | Track Your Financial Journey",
     description: "Transform your financial future one asset at a time.",
