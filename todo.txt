@@ -82,6 +82,7 @@ Ensure to follow the rules in RULES.md for each iteration
 [] Signup page
 [] Privacy policy page
 [] Dashboard
+[] Add various FIRE scenarios (Coast etc)
 [] Reviews
 On the dashboard, I want to have a section where     │
 │   users can drop feature requests. So, create a new    │

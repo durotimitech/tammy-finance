@@ -60,9 +60,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await parseJsonBody<{ name: string; category: string; amount_owed: number }>(
-      request,
-    );
+    const body = await parseJsonBody<{
+      name: string;
+      category: string;
+      amount_owed: number;
+    }>(request);
     if (body instanceof NextResponse) {
       return body;
     }

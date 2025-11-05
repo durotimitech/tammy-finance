@@ -22,7 +22,9 @@ export function validateBodySize(
     const size = parseInt(contentLength, 10);
     if (size > maxSize) {
       return NextResponse.json(
-        { error: `Request body too large. Maximum size is ${Math.floor(maxSize / 1024)}KB.` },
+        {
+          error: `Request body too large. Maximum size is ${Math.floor(maxSize / 1024)}KB.`,
+        },
         { status: 413 },
       );
     }

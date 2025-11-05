@@ -84,7 +84,9 @@ export async function GET(request: NextRequest) {
     if (!apiKey) {
       console.error('[SECURITY] API key decryption returned null for user:', user.id);
       return NextResponse.json(
-        { error: 'Unable to retrieve credentials. Please reconnect your account.' },
+        {
+          error: 'Unable to retrieve credentials. Please reconnect your account.',
+        },
         { status: 500 },
       );
     }

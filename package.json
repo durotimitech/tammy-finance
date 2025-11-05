@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "preview": "next start -p 8080",
     "lint": "next lint",
     "test": "jest --passWithNoTests",
     "test:unit:e2e": "jest --config jest.e2e.config.js",

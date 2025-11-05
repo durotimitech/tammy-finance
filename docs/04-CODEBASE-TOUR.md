@@ -259,7 +259,10 @@ export const apiClient = {
   assets: {
     getAll: () => fetchWithAuth<Asset[]>('/api/assets'),
     create: (data) =>
-      fetchWithAuth<Asset>('/api/assets', { method: 'POST', body: JSON.stringify(data) }),
+      fetchWithAuth<Asset>('/api/assets', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     // ... other methods
   },
   liabilities: {

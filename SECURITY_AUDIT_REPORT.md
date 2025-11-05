@@ -300,7 +300,12 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
         }
 
         if (entry.count >= maxRequests) {
-          return { success: false, limit: maxRequests, remaining: 0, reset: entry.resetAt };
+          return {
+            success: false,
+            limit: maxRequests,
+            remaining: 0,
+            reset: entry.resetAt,
+          };
         }
 
         entry.count++;
@@ -747,7 +752,9 @@ npm audit --audit-level=high
       });
 
       return NextResponse.json(
-        { error: 'Unable to retrieve credentials. Please reconnect your account.' },
+        {
+          error: 'Unable to retrieve credentials. Please reconnect your account.',
+        },
         { status: 500 },
       );
     }
