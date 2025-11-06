@@ -9,6 +9,7 @@ import {
   X,
   Flame,
   Calculator,
+  Lightbulb,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,6 +20,11 @@ const navigation = [
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
   { name: 'Liabilities', href: '/dashboard/liabilities', icon: CreditCard },
   { name: 'Budget', href: '/dashboard/budgets', icon: Calculator },
+  {
+    name: 'Feature Requests',
+    href: '/dashboard/feature-requests',
+    icon: Lightbulb,
+  },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
