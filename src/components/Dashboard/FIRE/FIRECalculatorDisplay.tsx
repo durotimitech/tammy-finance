@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import FIREMetrics from './FIREMetrics';
 import FIREProgress from './FIREProgress';
+import FIRETypes from './FIRETypes';
 import { useFIRECalculation } from '@/hooks/use-fire-data';
 
 export default function FIRECalculatorDisplay() {
@@ -73,6 +74,7 @@ export default function FIRECalculatorDisplay() {
     <div className="space-y-4 sm:space-y-6">
       <FIREMetrics calculation={calculation} />
       <FIREProgress calculation={calculation} />
+      <FIRETypes calculation={calculation} />
     </div>
   );
 }

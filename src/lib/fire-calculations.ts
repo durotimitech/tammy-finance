@@ -108,3 +108,67 @@ export function calculateYearsToFIRE(
     return fire.minus(netWorth).dividedBy(savings).toNumber();
   }
 }
+
+/**
+ * Calculate Lean FIRE Number: Based on minimalist lifestyle (70% of current expenses)
+ */
+export function calculateLeanFIRENumber(annualExpenses: number, withdrawalRate: number): number {
+  const leanExpenses = new Decimal(annualExpenses).times(0.7);
+  return calculateFIRENumber(leanExpenses.toNumber(), withdrawalRate);
+}
+
+/**
+ * Calculate Fat FIRE Number: Based on luxurious lifestyle (200% of current expenses)
+ */
+export function calculateFatFIRENumber(annualExpenses: number, withdrawalRate: number): number {
+  const fatExpenses = new Decimal(annualExpenses).times(2.0);
+  return calculateFIRENumber(fatExpenses.toNumber(), withdrawalRate);
+}
+
+/**
+ * Calculate Barista FIRE Number: Based on reduced expenses (70% of current) with part-time income
+ * Assumes ~$20k/year part-time income to supplement
+ */
+export function calculateBaristaFIRENumber(
+  annualExpenses: number,
+  withdrawalRate: number,
+  partTimeIncome: number = 20000,
+): number {
+  const reducedExpenses = new Decimal(annualExpenses).times(0.7);
+  // Barista FIRE needs to cover expenses minus part-time income
+  const netExpenses = Math.max(0, reducedExpenses.minus(partTimeIncome).toNumber());
+  return calculateFIRENumber(netExpenses, withdrawalRate);
+}
+
+/**
+ * Calculate Coast FIRE Amount: The amount needed now to "coast" to full FIRE by retirement age
+ * Uses reverse compound interest: PV = FV / (1+r)^t
+ * Where FV is the full FIRE number and t is years until retirement age (assumed 65)
+ */
+export function calculateCoastFIREAmount(
+  fireNumber: number,
+  currentAge: number | null,
+  annualReturn: number, // as decimal (e.g., 0.07 for 7%)
+  retirementAge: number = 65,
+): number {
+  if (!currentAge || currentAge >= retirementAge) {
+    return fireNumber; // Already at or past retirement age
+  }
+
+  const yearsUntilRetirement = retirementAge - currentAge;
+  if (yearsUntilRetirement <= 0) {
+    return fireNumber;
+  }
+
+  if (annualReturn > 0) {
+    // PV = FV / (1+r)^t
+    const fire = new Decimal(fireNumber);
+    const returnRate = new Decimal(annualReturn);
+    const years = new Decimal(yearsUntilRetirement);
+    const presentValue = fire.dividedBy(returnRate.plus(1).pow(years));
+    return Math.max(0, presentValue.toNumber());
+  } else {
+    // Without returns, need the full amount now
+    return fireNumber;
+  }
+}
