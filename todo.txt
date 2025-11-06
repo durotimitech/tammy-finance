@@ -1,43 +1,5 @@
 # PRD Implementation Tracking
 
-Ensure to follow the rules in RULES.md for each iteration
-
-## Epic 1: Core App & Onboarding
-[✅] Email/password authentication
-[✅] 3-step onboarding wizard (collects DOB, target retirement age, monthly expenses, monthly savings)
-
-## Epic 2: FIRE Dashboard (Free Tier)
-[✅] Manual input of core vitals (via FIREForm)
-[✅] FIRE Number calculation (Annual Expenses * 25)
-[✅] FI Percentage calculation
-[✅] Savings Rate calculation
-[✅] "Path to FI" line chart - Project net worth growth over time to FIRE Number (PathToFIChart on dashboard)
-[✅] Settings panel for global assumptions:
-  [✅] Expected Investment Return % (editable in FIREForm, default 7%)
-  [✅] Inflation % (editable in FIREForm, default 3%)
-  [✅] Safe Withdrawal Rate % (editable in FIREForm)
-
-## Epic 3: Net Worth (Free Tier)
-[✅] Manual asset account creation (unlimited)
-[✅] Manual liability account creation (unlimited)
-[✅] Manual balance updates
-[✅] Monthly update reminder (prompt on 1st of month to update balances) - MonthlyUpdateReminder component
-[✅] Historical net worth line chart (NetWorthChart)
-[✅] Asset/Liability pie charts (AssetDistributionChart, LiabilitiesDistributionChart)
-
-## Epic 4: Budget (Free Tier) - NEW BUDGET TRACKER SYSTEM
-[✅] Removed old transaction system (migration 008_remove_transactions_table.sql)
-[✅] New budget schema (migration 009_create_new_budget_system.sql) - budget_months, income_sources, budget_goals, budget_expenses
-[✅] Income section - Add multiple income sources (name, category, amount) - IncomeSection component
-[✅] Goals section - User-defined budget categories (needs, wants, savings, etc.) with percentage allocation - GoalsSection component
-[✅] Expenses section - Link expenses to goal categories - ExpensesSection component
-[✅] Display spending per goal category (amount and percentage with over-budget indicators) - BudgetGoalsDisplay component
-[✅] Pie charts for expense distribution - ExpenseDistributionChart component
-[✅] Monthly reset functionality (auto-reset expenses on 1st, copies income/goals from previous month)
-[✅] Budget history view (shows totals for previous months) - BudgetHistory component
-[✅] API routes for full CRUD operations (income, goals, expenses, current budget, history)
-[✅] React Query hooks for budget data management - use-budget-new.ts
-[✅] Comprehensive unit tests (48 tests passing) covering calculations, API routes, and components
 
 ## Premium Tier Features (Future)
 ### Epic 2: FIRE Dashboard (Premium Tier)
@@ -84,14 +46,3 @@ Ensure to follow the rules in RULES.md for each iteration
 [] Dashboard
 [] Add various FIRE scenarios (Coast etc)
 [] Reviews
-On the dashboard, I want to have a section where     │
-│   users can drop feature requests. So, create a new    │
-│   page under the dashboard and link it to the side     │
-│   menu.                                                │
-│                                                        │
-│   Now, on this page, I want it to be a list of all     │
-│   the feature requests in this application. Ideally,   │
-│   they should be stored in the database, and there     │
-│   should be the ability to upvote particular features  │
-│   and on the list show the features by highest votes   │
-│   to the list votes.
