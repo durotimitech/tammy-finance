@@ -61,7 +61,7 @@ All must pass before commits are allowed.
 All API calls use the centralized `apiClient` (`src/lib/api-client.ts`):
 
 ```typescript
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from "@/lib/api-client";
 
 // Usage
 const assets = await apiClient.assets.getAll();
@@ -182,7 +182,7 @@ All financial types defined in `src/types/financial.ts`:
 7. **Standardized error responses**: All API routes must use the centralized error handling pattern
 
    ```typescript
-   import { ErrorResponses } from '@/lib/api-errors';
+   import { ErrorResponses } from "@/lib/api-errors";
 
    // Authentication errors
    if (!user) {
@@ -191,18 +191,18 @@ All financial types defined in `src/types/financial.ts`:
 
    // Validation errors with field details
    if (!body.name) {
-     return ErrorResponses.validationError('Name is required', 'name');
+     return ErrorResponses.validationError("Name is required", "name");
    }
 
    // Database errors
    if (error) {
-     console.error('Database operation failed:', error);
-     return ErrorResponses.databaseError('Failed to create asset');
+     console.error("Database operation failed:", error);
+     return ErrorResponses.databaseError("Failed to create asset");
    }
 
    // Other error types
-   return ErrorResponses.notFound('Asset');
-   return ErrorResponses.internalError('Unexpected error occurred');
+   return ErrorResponses.notFound("Asset");
+   return ErrorResponses.internalError("Unexpected error occurred");
    ```
 
    **Available error helpers**:

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   LayoutDashboard,
@@ -10,22 +10,22 @@ import {
   Flame,
   Calculator,
   Lightbulb,
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'FIRE', href: '/dashboard/fire', icon: Flame },
-  { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
-  { name: 'Liabilities', href: '/dashboard/liabilities', icon: CreditCard },
-  { name: 'Budget', href: '/dashboard/budgets', icon: Calculator },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "FIRE", href: "/dashboard/fire", icon: Flame },
+  { name: "Assets", href: "/dashboard/assets", icon: Wallet },
+  { name: "Liabilities", href: "/dashboard/liabilities", icon: CreditCard },
+  { name: "Budget", href: "/dashboard/budgets", icon: Calculator },
   {
-    name: 'Feature Requests',
-    href: '/dashboard/feature-requests',
+    name: "Feature Requests",
+    href: "/dashboard/feature-requests",
     icon: Lightbulb,
   },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 interface SidebarProps {
@@ -38,14 +38,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
   const handleLogout = async () => {
     try {
       // Call the logout API route
-      await fetch('/api/auth/logout', {
-        method: 'POST',
+      await fetch("/api/auth/logout", {
+        method: "POST",
       });
 
       // Force a hard refresh to clear all client-side state and cookies
-      window.location.href = '/auth/login';
+      window.location.href = "/auth/login";
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -54,7 +54,9 @@ export default function Sidebar({ onClose }: SidebarProps) {
       {/* Logo */}
       <div className="p-6">
         <div className="flex items-center justify-between">
-          <span className="text-xl font-semibold font-pirata text-secondary">tammy</span>
+          <span className="text-xl font-semibold font-pirata text-secondary">
+            tammy
+          </span>
           {onClose && (
             <button
               onClick={onClose}
@@ -79,10 +81,12 @@ export default function Sidebar({ onClose }: SidebarProps) {
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive
-                      ? 'text-white font-medium'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? "text-white font-medium"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
-                  style={isActive ? { backgroundColor: 'var(--secondary)' } : {}}
+                  style={
+                    isActive ? { backgroundColor: "var(--secondary)" } : {}
+                  }
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>

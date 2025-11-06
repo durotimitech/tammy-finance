@@ -1,10 +1,14 @@
-import Decimal from 'decimal.js';
-import { NextResponse } from 'next/server';
+import Decimal from "decimal.js";
+import { NextResponse } from "next/server";
 
-import { ErrorResponses } from '@/lib/api-errors';
-import { calculateAge, calculateYearsToFIRE, calculateFIRENumber } from '@/lib/fire-calculations';
-import { createClient } from '@/lib/supabase/server';
-import { FIRECalculation } from '@/types/financial';
+import { ErrorResponses } from "@/lib/api-errors";
+import {
+  calculateAge,
+  calculateYearsToFIRE,
+  calculateFIRENumber,
+} from "@/lib/fire-calculations";
+import { createClient } from "@/lib/supabase/server";
+import { FIRECalculation } from "@/types/financial";
 
 export async function GET() {
   try {
@@ -22,14 +26,14 @@ export async function GET() {
 
     // Fetch user profile for all FIRE calculation data
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
       .single();
 
-    if (profileError && profileError.code !== 'PGRST116') {
-      console.error('Error fetching profile:', profileError);
-      return ErrorResponses.databaseError('Failed to fetch profile');
+    if (profileError && profileError.code !== "PGRST116") {
+      console.error("Error fetching profile:", profileError);
+      return ErrorResponses.databaseError("Failed to fetch profile");
     }
 
     // Use profile data with defaults if profile doesn't exist
@@ -39,28 +43,30 @@ export async function GET() {
     const investmentReturn = profile?.investment_return || 7.0;
 
     // Get age and target retirement age from profile
-    const currentAge = profile?.date_of_birth ? calculateAge(profile.date_of_birth) : null;
+    const currentAge = profile?.date_of_birth
+      ? calculateAge(profile.date_of_birth)
+      : null;
     const targetRetirementAge = profile?.target_retirement_age || null;
 
     // Fetch current net worth
     const { data: assets, error: assetsError } = await supabase
-      .from('assets')
-      .select('value')
-      .eq('user_id', user.id);
+      .from("assets")
+      .select("value")
+      .eq("user_id", user.id);
 
     if (assetsError) {
-      console.error('Error fetching assets:', assetsError);
-      return ErrorResponses.databaseError('Failed to fetch assets');
+      console.error("Error fetching assets:", assetsError);
+      return ErrorResponses.databaseError("Failed to fetch assets");
     }
 
     const { data: liabilities, error: liabilitiesError } = await supabase
-      .from('liabilities')
-      .select('amount_owed')
-      .eq('user_id', user.id);
+      .from("liabilities")
+      .select("amount_owed")
+      .eq("user_id", user.id);
 
     if (liabilitiesError) {
-      console.error('Error fetching liabilities:', liabilitiesError);
-      return ErrorResponses.databaseError('Failed to fetch liabilities');
+      console.error("Error fetching liabilities:", liabilitiesError);
+      return ErrorResponses.databaseError("Failed to fetch liabilities");
     }
 
     // Calculate net worth using Decimal for precision
@@ -111,7 +117,13 @@ export async function GET() {
     // Calculate progress percentage using Decimal for precision
     const progressPercentage =
       fireNumber > 0
-        ? Math.min(new Decimal(currentNetWorth).dividedBy(fireNumber).times(100).toNumber(), 100)
+        ? Math.min(
+            new Decimal(currentNetWorth)
+              .dividedBy(fireNumber)
+              .times(100)
+              .toNumber(),
+            100,
+          )
         : 0;
 
     const fireCalculation: FIRECalculation = {
@@ -130,7 +142,7 @@ export async function GET() {
 
     return NextResponse.json(fireCalculation);
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
     return ErrorResponses.internalError();
   }
 }

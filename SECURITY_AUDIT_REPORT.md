@@ -58,8 +58,8 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
     // Instead, decrypt credentials directly in server components:
 
     // src/lib/credentials.ts (new file)
-    import { createClient } from '@/lib/supabase/server';
-    import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
+    import { createClient } from "@/lib/supabase/server";
+    import { decryptApiKey, generateUserSecret } from "@/lib/crypto";
 
     export async function getDecryptedCredential(
       userId: string,
@@ -72,20 +72,21 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
         data: { user },
       } = await supabase.auth.getUser();
       if (!user || user.id !== userId) {
-        throw new Error('Unauthorized');
+        throw new Error("Unauthorized");
       }
 
       const { data: credential } = await supabase
-        .from('encrypted_credentials')
-        .select('encrypted_value, salt, iv, auth_tag')
-        .eq('user_id', userId)
-        .eq('name', credentialName)
+        .from("encrypted_credentials")
+        .select("encrypted_value, salt, iv, auth_tag")
+        .eq("user_id", userId)
+        .eq("name", credentialName)
         .single();
 
       if (!credential) return null;
 
       const encryptionSecret = process.env.ENCRYPTION_SECRET;
-      if (!encryptionSecret) throw new Error('ENCRYPTION_SECRET not configured');
+      if (!encryptionSecret)
+        throw new Error("ENCRYPTION_SECRET not configured");
 
       const userSecret = generateUserSecret(userId, userId, encryptionSecret);
       return decryptApiKey(credential, userSecret);
@@ -146,7 +147,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
     ```javascript
     // cypress.config.ts - Read from environment variables ✅
-    import { defineConfig } from 'cypress';
+    import { defineConfig } from "cypress";
 
     export default defineConfig({
       env: {
@@ -178,11 +179,12 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
     ```typescript
     export async function GET(request: NextRequest) {
-      const headerApiKey = request.headers.get('X-Trading212-ApiKey');
+      const headerApiKey = request.headers.get("X-Trading212-ApiKey");
 
       if (headerApiKey) {
         // ❌ No authentication check!
-        const { data: portfolio, error: portfolioError } = await fetchPortfolio(headerApiKey);
+        const { data: portfolio, error: portfolioError } =
+          await fetchPortfolio(headerApiKey);
 
         if (!portfolioError && portfolio) {
           return NextResponse.json({
@@ -207,14 +209,15 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
         error: authError,
       } = await supabase.auth.getUser();
       if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-      const headerApiKey = request.headers.get('X-Trading212-ApiKey');
+      const headerApiKey = request.headers.get("X-Trading212-ApiKey");
 
       if (headerApiKey) {
         // Only allow authenticated users to validate API keys
-        const { data: portfolio, error: portfolioError } = await fetchPortfolio(headerApiKey);
+        const { data: portfolio, error: portfolioError } =
+          await fetchPortfolio(headerApiKey);
 
         if (!portfolioError && portfolio) {
           return NextResponse.json({
@@ -223,7 +226,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
           });
         }
 
-        return NextResponse.json({ error: 'Invalid API key' }, { status: 401 });
+        return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
       }
 
       // ... rest of authenticated endpoint logic
@@ -256,8 +259,8 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
     ```typescript
     // src/middleware.ts (current - no rate limiting) ❌
-    import { type NextRequest } from 'next/server';
-    import { updateSession } from './lib/supabase/middleware';
+    import { type NextRequest } from "next/server";
+    import { updateSession } from "./lib/supabase/middleware";
 
     export async function middleware(request: NextRequest) {
       return await updateSession(request);
@@ -321,44 +324,47 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
     export const ratelimit = {
       auth: (ip: string) => rateLimiter.limit(`auth:${ip}`, 5, 15 * 60 * 1000),
       api: (ip: string) => rateLimiter.limit(`api:${ip}`, 100, 60 * 1000),
-      expensive: (ip: string) => rateLimiter.limit(`expensive:${ip}`, 10, 60 * 1000),
+      expensive: (ip: string) =>
+        rateLimiter.limit(`expensive:${ip}`, 10, 60 * 1000),
     };
     ```
 
     ```typescript
     // src/middleware.ts (updated) ✅
-    import { type NextRequest, NextResponse } from 'next/server';
-    import { updateSession } from './lib/supabase/middleware';
-    import { ratelimit } from './lib/rate-limit';
+    import { type NextRequest, NextResponse } from "next/server";
+    import { updateSession } from "./lib/supabase/middleware";
+    import { ratelimit } from "./lib/rate-limit";
 
     export async function middleware(request: NextRequest) {
-      const ip = request.ip ?? request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+      const ip =
+        request.ip ?? request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
       // Apply rate limiting based on route
-      if (request.nextUrl.pathname.startsWith('/api/auth')) {
+      if (request.nextUrl.pathname.startsWith("/api/auth")) {
         const { success, limit, reset, remaining } = await ratelimit.auth(ip);
 
         if (!success) {
           return NextResponse.json(
-            { error: 'Too many requests. Please try again later.' },
+            { error: "Too many requests. Please try again later." },
             {
               status: 429,
               headers: {
-                'X-RateLimit-Limit': limit.toString(),
-                'X-RateLimit-Remaining': remaining.toString(),
-                'X-RateLimit-Reset': new Date(reset).toISOString(),
+                "X-RateLimit-Limit": limit.toString(),
+                "X-RateLimit-Remaining": remaining.toString(),
+                "X-RateLimit-Reset": new Date(reset).toISOString(),
               },
             },
           );
         }
       } else if (
-        request.nextUrl.pathname.startsWith('/api/trading212') ||
-        request.nextUrl.pathname.startsWith('/api/history')
+        request.nextUrl.pathname.startsWith("/api/trading212") ||
+        request.nextUrl.pathname.startsWith("/api/history")
       ) {
-        const { success, limit, remaining, reset } = await ratelimit.expensive(ip);
+        const { success, limit, remaining, reset } =
+          await ratelimit.expensive(ip);
         if (!success) {
           return NextResponse.json(
-            { error: 'Rate limit exceeded. Please try again later.' },
+            { error: "Rate limit exceeded. Please try again later." },
             {
               status: 429,
               headers: {
@@ -367,11 +373,11 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
             },
           );
         }
-      } else if (request.nextUrl.pathname.startsWith('/api/')) {
+      } else if (request.nextUrl.pathname.startsWith("/api/")) {
         const { success, limit, remaining, reset } = await ratelimit.api(ip);
         if (!success) {
           return NextResponse.json(
-            { error: 'Rate limit exceeded. Please try again later.' },
+            { error: "Rate limit exceeded. Please try again later." },
             {
               status: 429,
               headers: {
@@ -405,7 +411,9 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
       const supabase = await createClient();
       // ❌ No authentication check
 
-      const { data: flags, error } = await supabase.from('feature_flags').select('*');
+      const { data: flags, error } = await supabase
+        .from("feature_flags")
+        .select("*");
 
       return NextResponse.json({ flags: flags || [] });
     }
@@ -423,18 +431,21 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
         error: authError,
       } = await supabase.auth.getUser();
       if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
       // Only return public flags or flags for authenticated users
       const { data: flags, error } = await supabase
-        .from('feature_flags')
-        .select('*')
-        .eq('is_public', true); // Add is_public column to feature_flags table
+        .from("feature_flags")
+        .select("*")
+        .eq("is_public", true); // Add is_public column to feature_flags table
 
       if (error) {
-        console.error('Error fetching feature flags:', error);
-        return NextResponse.json({ error: 'Failed to fetch feature flags' }, { status: 500 });
+        console.error("Error fetching feature flags:", error);
+        return NextResponse.json(
+          { error: "Failed to fetch feature flags" },
+          { status: 500 },
+        );
       }
 
       return NextResponse.json({ flags: flags || [] });
@@ -456,8 +467,8 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
     // cypress.config.ts ❌
     export default defineConfig({
       env: {
-        testUserEmail: 'timmy.mejabi+cypresstest@toasttab.com', // ❌ Exposed
-        testUserPassword: '11111111', // ❌ Exposed
+        testUserEmail: "timmy.mejabi+cypresstest@toasttab.com", // ❌ Exposed
+        testUserPassword: "11111111", // ❌ Exposed
       },
     });
     ```
@@ -465,7 +476,7 @@ The Net Worth Tracker application demonstrates **solid security fundamentals** w
 
     ```typescript
     // cypress.config.ts ✅
-    import { defineConfig } from 'cypress';
+    import { defineConfig } from "cypress";
 
     export default defineConfig({
       env: {
@@ -568,13 +579,15 @@ npm audit --audit-level=high
 
     ```typescript
     // ❌ No validation or bounds
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 365;
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : 365;
 
     const { data: history, error } = await supabase
-      .from('networth_history')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
+      .from("networth_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false })
       .limit(limit); // Could be any value
     ```
 
@@ -582,7 +595,7 @@ npm audit --audit-level=high
 
     ```typescript
     // ✅ Proper validation with bounds
-    const rawLimit = searchParams.get('limit');
+    const rawLimit = searchParams.get("limit");
     let limit = 365; // Default
 
     if (rawLimit) {
@@ -591,7 +604,7 @@ npm audit --audit-level=high
       // Validate: must be positive integer between 1 and 1000
       if (isNaN(parsedLimit) || parsedLimit < 1) {
         return NextResponse.json(
-          { error: 'Invalid limit parameter. Must be a positive integer.' },
+          { error: "Invalid limit parameter. Must be a positive integer." },
           { status: 400 },
         );
       }
@@ -601,10 +614,10 @@ npm audit --audit-level=high
     }
 
     const { data: history, error } = await supabase
-      .from('networth_history')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
+      .from("networth_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false })
       .limit(limit);
     ```
 
@@ -637,7 +650,7 @@ npm audit --audit-level=high
     const body: CreateBudgetDto = await request.json();
 
     const { data, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .insert({
         ...body, // Could contain admin: true, amount: 99999999, etc.
         user_id: user.id,
@@ -653,26 +666,32 @@ npm audit --audit-level=high
     const body = await request.json();
 
     // Define allowed fields
-    const allowedFields = ['name', 'month', 'year', 'total_income', 'total_expenses'];
+    const allowedFields = [
+      "name",
+      "month",
+      "year",
+      "total_income",
+      "total_expenses",
+    ];
 
     // Validate required fields
     if (!body.name || !body.month || !body.year) {
       return NextResponse.json(
-        { error: 'Missing required fields: name, month, year' },
+        { error: "Missing required fields: name, month, year" },
         { status: 400 },
       );
     }
 
     // Validate data types and ranges
-    if (typeof body.month !== 'number' || body.month < 1 || body.month > 12) {
+    if (typeof body.month !== "number" || body.month < 1 || body.month > 12) {
       return NextResponse.json(
-        { error: 'Invalid month. Must be between 1 and 12.' },
+        { error: "Invalid month. Must be between 1 and 12." },
         { status: 400 },
       );
     }
 
-    if (typeof body.year !== 'number' || body.year < 2000 || body.year > 2100) {
-      return NextResponse.json({ error: 'Invalid year.' }, { status: 400 });
+    if (typeof body.year !== "number" || body.year < 2000 || body.year > 2100) {
+      return NextResponse.json({ error: "Invalid year." }, { status: 400 });
     }
 
     // Only insert whitelisted fields
@@ -685,7 +704,7 @@ npm audit --audit-level=high
     };
 
     const { data, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .insert({
         ...budgetData,
         user_id: user.id,
@@ -720,11 +739,14 @@ npm audit --audit-level=high
     ```typescript
     // ❌ Exposes configuration details
     if (!encryptionSecret) {
-      return NextResponse.json({ error: 'ENCRYPTION_SECRET is not configured' }, { status: 500 });
+      return NextResponse.json(
+        { error: "ENCRYPTION_SECRET is not configured" },
+        { status: 500 },
+      );
     }
 
     // ❌ Exposes internal structure
-    console.error('Invalid credential data:', {
+    console.error("Invalid credential data:", {
       hasEncryptedValue: !!credential.encrypted_value,
       hasSalt: !!credential.salt,
       hasIv: !!credential.iv,
@@ -737,23 +759,38 @@ npm audit --audit-level=high
     ```typescript
     // ✅ Generic error for client, detailed log server-side
     if (!encryptionSecret) {
-      console.error('[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.');
-      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+      console.error(
+        "[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.",
+      );
+      return NextResponse.json(
+        { error: "Service temporarily unavailable" },
+        { status: 503 },
+      );
     }
 
     // ✅ Log details server-side only, generic error to client
-    if (!credential.encrypted_value || !credential.salt || !credential.iv || !credential.auth_tag) {
-      console.error('[SECURITY] Invalid credential structure for user:', user.id, {
-        credentialId: credential.id,
-        hasEncryptedValue: !!credential.encrypted_value,
-        hasSalt: !!credential.salt,
-        hasIv: !!credential.iv,
-        hasAuthTag: !!credential.auth_tag,
-      });
+    if (
+      !credential.encrypted_value ||
+      !credential.salt ||
+      !credential.iv ||
+      !credential.auth_tag
+    ) {
+      console.error(
+        "[SECURITY] Invalid credential structure for user:",
+        user.id,
+        {
+          credentialId: credential.id,
+          hasEncryptedValue: !!credential.encrypted_value,
+          hasSalt: !!credential.salt,
+          hasIv: !!credential.iv,
+          hasAuthTag: !!credential.auth_tag,
+        },
+      );
 
       return NextResponse.json(
         {
-          error: 'Unable to retrieve credentials. Please reconnect your account.',
+          error:
+            "Unable to retrieve credentials. Please reconnect your account.",
         },
         { status: 500 },
       );
@@ -787,26 +824,32 @@ npm audit --audit-level=high
   - **Bad Code:**
     ```typescript
     // ❌ Missing user_id check (relies on RLS only)
-    const { error } = await supabase.from('budget_expenses').delete().eq('id', id); // No user_id check
+    const { error } = await supabase
+      .from("budget_expenses")
+      .delete()
+      .eq("id", id); // No user_id check
     ```
   - **Good Code:**
 
     ```typescript
     // ✅ Explicit user_id check for defense-in-depth
     const { error, count } = await supabase
-      .from('budget_expenses')
-      .delete({ count: 'exact' })
-      .eq('id', id)
-      .eq('user_id', user.id); // Explicit ownership check
+      .from("budget_expenses")
+      .delete({ count: "exact" })
+      .eq("id", id)
+      .eq("user_id", user.id); // Explicit ownership check
 
     if (error) {
-      console.error('Error deleting expense:', error);
-      return NextResponse.json({ error: 'Failed to delete expense' }, { status: 500 });
+      console.error("Error deleting expense:", error);
+      return NextResponse.json(
+        { error: "Failed to delete expense" },
+        { status: 500 },
+      );
     }
 
     // Check if any rows were actually deleted
     if (count === 0) {
-      return NextResponse.json({ error: 'Expense not found' }, { status: 404 });
+      return NextResponse.json({ error: "Expense not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -841,7 +884,10 @@ npm audit --audit-level=high
 
     ```typescript
     // ❌ JavaScript Number has precision issues
-    const totalAssets = (assets || []).reduce((sum, asset) => sum + (Number(asset.value) || 0), 0);
+    const totalAssets = (assets || []).reduce(
+      (sum, asset) => sum + (Number(asset.value) || 0),
+      0,
+    );
 
     const totalLiabilities = (liabilities || []).reduce(
       (sum, liability) => sum + (Number(liability.amount_owed) || 0),
@@ -861,7 +907,7 @@ npm audit --audit-level=high
 
     ```typescript
     // ✅ Use Decimal for precise financial calculations
-    import { Decimal } from 'decimal.js';
+    import { Decimal } from "decimal.js";
 
     // Configure Decimal.js for financial calculations
     Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
@@ -922,10 +968,10 @@ npm audit --audit-level=high
     ```typescript
     export async function POST(request: NextRequest) {
       // ✅ Validate Content-Type
-      const contentType = request.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
+      const contentType = request.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
         return NextResponse.json(
-          { error: 'Invalid Content-Type. Expected application/json' },
+          { error: "Invalid Content-Type. Expected application/json" },
           { status: 415 }, // 415 Unsupported Media Type
         );
       }
@@ -934,7 +980,10 @@ npm audit --audit-level=high
         const body = await request.json();
         // ... rest of endpoint logic
       } catch (error) {
-        return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid JSON in request body" },
+          { status: 400 },
+        );
       }
     }
     ```
@@ -976,7 +1025,7 @@ npm audit --audit-level=high
     const nextConfig: NextConfig = {
       api: {
         bodyParser: {
-          sizeLimit: '1mb', // Limit request body to 1MB
+          sizeLimit: "1mb", // Limit request body to 1MB
         },
       },
     };
@@ -987,12 +1036,15 @@ npm audit --audit-level=high
     ```typescript
     // Or add middleware check in API routes:
     export async function POST(request: NextRequest) {
-      const contentLength = parseInt(request.headers.get('content-length') || '0', 10);
+      const contentLength = parseInt(
+        request.headers.get("content-length") || "0",
+        10,
+      );
       const MAX_BODY_SIZE = 1048576; // 1MB in bytes
 
       if (contentLength > MAX_BODY_SIZE) {
         return NextResponse.json(
-          { error: 'Request body too large. Maximum size is 1MB.' },
+          { error: "Request body too large. Maximum size is 1MB." },
           { status: 413 }, // 413 Payload Too Large
         );
       }
@@ -1080,7 +1132,10 @@ npm audit --audit-level=high
   - **Bad Code:**
     ```typescript
     // ❌ Predictable pattern
-    export function generateClientPassword(userId: string, timestamp: number): string {
+    export function generateClientPassword(
+      userId: string,
+      timestamp: number,
+    ): string {
       return `${userId}-${timestamp}-client-encryption`;
     }
     ```
@@ -1088,13 +1143,16 @@ npm audit --audit-level=high
 
     ```typescript
     // ✅ Add cryptographic randomness
-    export function generateClientPassword(userId: string, timestamp: number): string {
+    export function generateClientPassword(
+      userId: string,
+      timestamp: number,
+    ): string {
       // Generate cryptographically secure random bytes
       const randomBytes = new Uint8Array(32);
       crypto.getRandomValues(randomBytes);
       const randomHex = Array.from(randomBytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
       // Combine user ID, timestamp, and random data
       // The random bytes provide high entropy, making the password unpredictable
@@ -1148,30 +1206,30 @@ npm audit --audit-level=high
       async headers() {
         return [
           {
-            source: '/(.*)',
+            source: "/(.*)",
             headers: [
               {
-                key: 'X-Frame-Options',
-                value: 'DENY',
+                key: "X-Frame-Options",
+                value: "DENY",
               },
               {
-                key: 'X-Content-Type-Options',
-                value: 'nosniff',
+                key: "X-Content-Type-Options",
+                value: "nosniff",
               },
               {
-                key: 'X-XSS-Protection',
-                value: '1; mode=block',
+                key: "X-XSS-Protection",
+                value: "1; mode=block",
               },
               {
-                key: 'Referrer-Policy',
-                value: 'strict-origin-when-cross-origin',
+                key: "Referrer-Policy",
+                value: "strict-origin-when-cross-origin",
               },
               {
-                key: 'Permissions-Policy',
-                value: 'geolocation=(), microphone=(), camera=()',
+                key: "Permissions-Policy",
+                value: "geolocation=(), microphone=(), camera=()",
               },
               {
-                key: 'Content-Security-Policy',
+                key: "Content-Security-Policy",
                 value: [
                   "default-src 'self'",
                   "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net",
@@ -1180,7 +1238,7 @@ npm audit --audit-level=high
                   "img-src 'self' data: https:",
                   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
                   "frame-ancestors 'none'",
-                ].join('; '),
+                ].join("; "),
               },
             ],
           },
@@ -1242,7 +1300,7 @@ npm audit --audit-level=high
 
     // Use upsert to handle concurrent requests
     const { data, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .upsert(
         {
           user_id: user.id,
@@ -1252,17 +1310,20 @@ npm audit --audit-level=high
           created_at: new Date().toISOString(),
         },
         {
-          onConflict: 'user_id,month,year', // Unique constraint columns
+          onConflict: "user_id,month,year", // Unique constraint columns
           ignoreDuplicates: false, // Return existing if duplicate
         },
       )
       .select()
       .single();
 
-    if (error && error.code !== '23505') {
+    if (error && error.code !== "23505") {
       // 23505 = unique constraint violation
-      console.error('Error creating budget month:', error);
-      return NextResponse.json({ error: 'Failed to create budget month' }, { status: 500 });
+      console.error("Error creating budget month:", error);
+      return NextResponse.json(
+        { error: "Failed to create budget month" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(data);
@@ -1297,9 +1358,12 @@ npm audit --audit-level=high
   - **Bad Code:**
     ```typescript
     // Different error formats across routes ❌
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    return NextResponse.json({ message: 'Failed to fetch' }, { status: 500 });
-    return NextResponse.json({ success: false, error: 'Invalid input' }, { status: 400 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: "Failed to fetch" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Invalid input" },
+      { status: 400 },
+    );
     ```
   - **Good Code:**
 
@@ -1332,16 +1396,25 @@ npm audit --audit-level=high
     }
 
     // Usage in API routes:
-    import { createErrorResponse } from '@/lib/api-errors';
+    import { createErrorResponse } from "@/lib/api-errors";
 
     if (!user) {
-      return createErrorResponse('Authentication required', 'UNAUTHORIZED', 401);
+      return createErrorResponse(
+        "Authentication required",
+        "UNAUTHORIZED",
+        401,
+      );
     }
 
     if (!body.name) {
-      return createErrorResponse('Missing required field: name', 'VALIDATION_ERROR', 400, {
-        field: 'name',
-      });
+      return createErrorResponse(
+        "Missing required field: name",
+        "VALIDATION_ERROR",
+        400,
+        {
+          field: "name",
+        },
+      );
     }
     ```
 
@@ -1369,11 +1442,11 @@ npm audit --audit-level=high
     // src/lib/logger.ts (new file) ✅
     export interface SecurityEvent {
       type:
-        | 'auth_success'
-        | 'auth_failure'
-        | 'authorization_failure'
-        | 'data_access'
-        | 'data_modification';
+        | "auth_success"
+        | "auth_failure"
+        | "authorization_failure"
+        | "data_access"
+        | "data_modification";
       userId?: string;
       ip: string;
       userAgent: string;
@@ -1387,31 +1460,32 @@ npm audit --audit-level=high
       // In production, send to logging service (DataDog, Sentry, CloudWatch, etc.)
       console.log(
         JSON.stringify({
-          level: 'security',
+          level: "security",
           ...event,
         }),
       );
 
       // For critical events, also send alerts
-      if (event.type === 'authorization_failure') {
+      if (event.type === "authorization_failure") {
         // Alert on repeated authorization failures
       }
     }
 
     // src/middleware.ts (updated) ✅
-    import { logSecurityEvent } from '@/lib/logger';
+    import { logSecurityEvent } from "@/lib/logger";
 
     export async function middleware(request: NextRequest) {
       const startTime = Date.now();
-      const ip = request.ip ?? request.headers.get('x-forwarded-for') ?? '127.0.0.1';
-      const userAgent = request.headers.get('user-agent') ?? 'unknown';
+      const ip =
+        request.ip ?? request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+      const userAgent = request.headers.get("user-agent") ?? "unknown";
 
       const response = await updateSession(request);
 
       // Log all API requests
-      if (request.nextUrl.pathname.startsWith('/api/')) {
+      if (request.nextUrl.pathname.startsWith("/api/")) {
         logSecurityEvent({
-          type: 'data_access',
+          type: "data_access",
           ip,
           userAgent,
           path: request.nextUrl.pathname,
@@ -1430,15 +1504,15 @@ npm audit --audit-level=high
     // Usage in API routes for sensitive operations:
     if (authError || !user) {
       logSecurityEvent({
-        type: 'auth_failure',
-        ip: request.ip ?? 'unknown',
-        userAgent: request.headers.get('user-agent') ?? 'unknown',
+        type: "auth_failure",
+        ip: request.ip ?? "unknown",
+        userAgent: request.headers.get("user-agent") ?? "unknown",
         path: request.nextUrl.pathname,
         method: request.method,
         timestamp: new Date().toISOString(),
       });
 
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     ```
 
@@ -1455,9 +1529,9 @@ npm audit --audit-level=high
   - **Bad Code:**
     ```typescript
     // ❌ Direct console usage everywhere
-    console.error('Error fetching assets:', error);
-    console.log('User logged in:', user.id);
-    console.warn('Trading 212 API key invalid');
+    console.error("Error fetching assets:", error);
+    console.log("User logged in:", user.id);
+    console.warn("Trading 212 API key invalid");
     ```
   - **Good Code:**
 
@@ -1474,8 +1548,9 @@ npm audit --audit-level=high
       private minLevel: LogLevel;
 
       constructor() {
-        const envLevel = process.env.LOG_LEVEL || 'INFO';
-        this.minLevel = LogLevel[envLevel as keyof typeof LogLevel] || LogLevel.INFO;
+        const envLevel = process.env.LOG_LEVEL || "INFO";
+        this.minLevel =
+          LogLevel[envLevel as keyof typeof LogLevel] || LogLevel.INFO;
       }
 
       private shouldLog(level: LogLevel): boolean {
@@ -1484,32 +1559,38 @@ npm audit --audit-level=high
 
       debug(message: string, data?: unknown): void {
         if (this.shouldLog(LogLevel.DEBUG)) {
-          console.log(`[DEBUG] ${message}`, data || '');
+          console.log(`[DEBUG] ${message}`, data || "");
         }
       }
 
       info(message: string, data?: unknown): void {
         if (this.shouldLog(LogLevel.INFO)) {
-          console.log(`[INFO] ${message}`, data || '');
+          console.log(`[INFO] ${message}`, data || "");
         }
       }
 
       warn(message: string, data?: unknown): void {
         if (this.shouldLog(LogLevel.WARN)) {
-          console.warn(`[WARN] ${message}`, data || '');
+          console.warn(`[WARN] ${message}`, data || "");
         }
       }
 
       error(message: string, error?: unknown): void {
         if (this.shouldLog(LogLevel.ERROR)) {
-          console.error(`[ERROR] ${message}`, error || '');
+          console.error(`[ERROR] ${message}`, error || "");
           // In production, send to error tracking (Sentry, etc.)
         }
       }
 
       // Sanitize before logging
       private sanitize(data: unknown): unknown {
-        const sensitiveKeys = ['password', 'api_key', 'secret', 'token', 'credential'];
+        const sensitiveKeys = [
+          "password",
+          "api_key",
+          "secret",
+          "token",
+          "credential",
+        ];
         // Implement sanitization logic
         return data;
       }
@@ -1518,11 +1599,11 @@ npm audit --audit-level=high
     export const logger = new Logger();
 
     // Usage:
-    import { logger } from '@/lib/logger';
+    import { logger } from "@/lib/logger";
 
-    logger.error('Error fetching assets', error);
-    logger.info('User authenticated', { userId: user.id });
-    logger.warn('Trading 212 API key validation failed');
+    logger.error("Error fetching assets", error);
+    logger.info("User authenticated", { userId: user.id });
+    logger.warn("Trading 212 API key validation failed");
     ```
 
 ---
@@ -1552,9 +1633,10 @@ npm audit --audit-level=high
 
     ```typescript
     // ❌ No date validation
-    const expense_date = body.expense_date || new Date().toISOString().split('T')[0];
+    const expense_date =
+      body.expense_date || new Date().toISOString().split("T")[0];
 
-    const { data, error } = await supabase.from('budget_expenses').insert({
+    const { data, error } = await supabase.from("budget_expenses").insert({
       // ... other fields
       expense_date, // Could be any string
     });
@@ -1571,7 +1653,7 @@ npm audit --audit-level=high
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dateRegex.test(body.expense_date)) {
         return NextResponse.json(
-          { error: 'Invalid date format. Use YYYY-MM-DD.' },
+          { error: "Invalid date format. Use YYYY-MM-DD." },
           { status: 400 },
         );
       }
@@ -1579,27 +1661,30 @@ npm audit --audit-level=high
       // Parse and validate date
       const parsedDate = new Date(body.expense_date);
       if (isNaN(parsedDate.getTime())) {
-        return NextResponse.json({ error: 'Invalid date value.' }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid date value." },
+          { status: 400 },
+        );
       }
 
       // Validate date range (not in future, not before year 2000)
-      const minDate = new Date('2000-01-01');
+      const minDate = new Date("2000-01-01");
       const maxDate = new Date();
       maxDate.setHours(23, 59, 59, 999); // End of today
 
       if (parsedDate < minDate || parsedDate > maxDate) {
         return NextResponse.json(
-          { error: 'Date must be between 2000-01-01 and today.' },
+          { error: "Date must be between 2000-01-01 and today." },
           { status: 400 },
         );
       }
 
       expense_date = body.expense_date;
     } else {
-      expense_date = new Date().toISOString().split('T')[0];
+      expense_date = new Date().toISOString().split("T")[0];
     }
 
-    const { data, error } = await supabase.from('budget_expenses').insert({
+    const { data, error } = await supabase.from("budget_expenses").insert({
       // ... other fields
       expense_date,
     });
@@ -1629,15 +1714,15 @@ npm audit --audit-level=high
     ```typescript
     // ❌ Testing bypass could be exploited via multiple methods
     const isCypressTest =
-      process.env.CYPRESS === 'true' ||
-      request.headers.get('x-cypress-test') === 'true' ||
-      request.cookies.has('cypress-test-mode');
+      process.env.CYPRESS === "true" ||
+      request.headers.get("x-cypress-test") === "true" ||
+      request.cookies.has("cypress-test-mode");
 
     if (isCypressTest) {
       // Bypass all authentication
       user = {
-        id: 'test-user-id',
-        email: 'test@example.com',
+        id: "test-user-id",
+        email: "test@example.com",
       };
     }
     ```
@@ -1646,39 +1731,48 @@ npm audit --audit-level=high
 
     ```typescript
     // ✅ Strict environment check and secure bypass
-    const isCypressTest = process.env.NODE_ENV !== 'production' && process.env.CYPRESS === 'true';
+    const isCypressTest =
+      process.env.NODE_ENV !== "production" && process.env.CYPRESS === "true";
 
     // Add production safety check
-    if (process.env.NODE_ENV === 'production' && process.env.CYPRESS === 'true') {
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.CYPRESS === "true"
+    ) {
       console.error(
-        '[SECURITY] CYPRESS environment variable detected in production! Disabling test mode.',
+        "[SECURITY] CYPRESS environment variable detected in production! Disabling test mode.",
       );
       throw new Error(
-        'CYPRESS environment variable detected in production! Check your deployment configuration.',
+        "CYPRESS environment variable detected in production! Check your deployment configuration.",
       );
     }
 
     if (isCypressTest) {
       // Verify request origin is localhost
-      const origin = request.headers.get('origin') || '';
-      const host = request.headers.get('host') || '';
+      const origin = request.headers.get("origin") || "";
+      const host = request.headers.get("host") || "";
       const isLocalhost =
-        origin.includes('localhost') ||
-        origin.includes('127.0.0.1') ||
-        host.includes('localhost') ||
-        host.includes('127.0.0.1');
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1") ||
+        host.includes("localhost") ||
+        host.includes("127.0.0.1");
 
       if (!isLocalhost) {
         // Reject test bypass from non-localhost origins
-        console.error('[SECURITY] Test mode requested from non-localhost origin:', origin || host);
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        console.error(
+          "[SECURITY] Test mode requested from non-localhost origin:",
+          origin || host,
+        );
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
-      console.warn('[TEST MODE] Authentication bypassed for Cypress tests from localhost');
+      console.warn(
+        "[TEST MODE] Authentication bypassed for Cypress tests from localhost",
+      );
 
       user = {
-        id: 'test-user-id',
-        email: 'test@example.com',
+        id: "test-user-id",
+        email: "test@example.com",
       };
     }
     ```

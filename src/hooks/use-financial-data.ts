@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
-import { apiClient } from '@/lib/api-client';
-import { Asset, Liability } from '@/types/financial';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { apiClient } from "@/lib/api-client";
+import { Asset, Liability } from "@/types/financial";
 
 // Query keys
 export const queryKeys = {
-  assets: ['assets'] as const,
-  liabilities: ['liabilities'] as const,
-  networth: ['networth'] as const,
-  history: ['history'] as const,
+  assets: ["assets"] as const,
+  liabilities: ["liabilities"] as const,
+  networth: ["networth"] as const,
+  history: ["history"] as const,
 };
 
 // Assets hooks
@@ -38,7 +38,7 @@ export function useCreateAsset() {
 
       // Create/update snapshot for today
       apiClient.history.captureSnapshot().catch((error) => {
-        console.error('Error capturing snapshot after asset update:', error);
+        console.error("Error capturing snapshot after asset update:", error);
       });
     },
   });
@@ -60,7 +60,11 @@ export function useUpdateAsset() {
     onSuccess: (updatedAsset) => {
       // Optimistically update the cache
       queryClient.setQueryData<Asset[]>(queryKeys.assets, (old) => {
-        return old ? old.map((asset) => (asset.id === updatedAsset.id ? updatedAsset : asset)) : [];
+        return old
+          ? old.map((asset) =>
+              asset.id === updatedAsset.id ? updatedAsset : asset,
+            )
+          : [];
       });
       // Invalidate to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.assets });
@@ -80,7 +84,9 @@ export function useDeleteAsset() {
       await queryClient.cancelQueries({ queryKey: queryKeys.assets });
 
       // Snapshot the previous value
-      const previousAssets = queryClient.getQueryData<Asset[]>(queryKeys.assets);
+      const previousAssets = queryClient.getQueryData<Asset[]>(
+        queryKeys.assets,
+      );
 
       // Optimistically update
       queryClient.setQueryData<Asset[]>(queryKeys.assets, (old) => {
@@ -129,7 +135,10 @@ export function useCreateLiability() {
 
       // Create/update snapshot for today
       apiClient.history.captureSnapshot().catch((error) => {
-        console.error('Error capturing snapshot after liability update:', error);
+        console.error(
+          "Error capturing snapshot after liability update:",
+          error,
+        );
       });
     },
   });
@@ -153,7 +162,9 @@ export function useUpdateLiability() {
       queryClient.setQueryData<Liability[]>(queryKeys.liabilities, (old) => {
         return old
           ? old.map((liability) =>
-              liability.id === updatedLiability.id ? updatedLiability : liability,
+              liability.id === updatedLiability.id
+                ? updatedLiability
+                : liability,
             )
           : [];
       });
@@ -164,7 +175,10 @@ export function useUpdateLiability() {
 
       // Create/update snapshot for today (async, don't wait)
       apiClient.history.captureSnapshot().catch((error) => {
-        console.error('Error capturing snapshot after liability update:', error);
+        console.error(
+          "Error capturing snapshot after liability update:",
+          error,
+        );
       });
     },
   });
@@ -180,11 +194,15 @@ export function useDeleteLiability() {
       await queryClient.cancelQueries({ queryKey: queryKeys.liabilities });
 
       // Snapshot the previous value
-      const previousLiabilities = queryClient.getQueryData<Liability[]>(queryKeys.liabilities);
+      const previousLiabilities = queryClient.getQueryData<Liability[]>(
+        queryKeys.liabilities,
+      );
 
       // Optimistically update
       queryClient.setQueryData<Liability[]>(queryKeys.liabilities, (old) => {
-        return old ? old.filter((liability) => liability.id !== liabilityId) : [];
+        return old
+          ? old.filter((liability) => liability.id !== liabilityId)
+          : [];
       });
 
       return { previousLiabilities };
@@ -192,7 +210,10 @@ export function useDeleteLiability() {
     onError: (err, liabilityId, context) => {
       // Rollback on error
       if (context?.previousLiabilities) {
-        queryClient.setQueryData(queryKeys.liabilities, context.previousLiabilities);
+        queryClient.setQueryData(
+          queryKeys.liabilities,
+          context.previousLiabilities,
+        );
       }
     },
     onSettled: () => {
@@ -213,7 +234,10 @@ export function useNetWorth() {
   const calculatedNetWorth = useMemo(() => {
     if (!assets || !liabilities) return null;
 
-    const totalAssets = assets.reduce((sum, asset) => sum + Number(asset.value), 0);
+    const totalAssets = assets.reduce(
+      (sum, asset) => sum + Number(asset.value),
+      0,
+    );
     const totalLiabilities = liabilities.reduce(
       (sum, liability) => sum + Number(liability.amount_owed),
       0,

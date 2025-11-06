@@ -82,11 +82,14 @@ npm run test:cypress
 **File**: `tests/lib/fire-calculations.test.ts`
 
 ```typescript
-import { calculateFIRENumber, calculateYearsToFIRE } from '@/lib/fire-calculations';
+import {
+  calculateFIRENumber,
+  calculateYearsToFIRE,
+} from "@/lib/fire-calculations";
 
-describe('FIRE Calculations', () => {
-  describe('calculateFIRENumber', () => {
-    it('calculates FIRE number with 4% withdrawal rate', () => {
+describe("FIRE Calculations", () => {
+  describe("calculateFIRENumber", () => {
+    it("calculates FIRE number with 4% withdrawal rate", () => {
       const annualExpenses = 40000;
       const withdrawalRate = 4;
 
@@ -95,7 +98,7 @@ describe('FIRE Calculations', () => {
       expect(result).toBe(1000000); // 40000 * 25 = 1,000,000
     });
 
-    it('calculates FIRE number with 3% withdrawal rate', () => {
+    it("calculates FIRE number with 3% withdrawal rate", () => {
       const annualExpenses = 30000;
       const withdrawalRate = 3;
 
@@ -105,19 +108,24 @@ describe('FIRE Calculations', () => {
     });
   });
 
-  describe('calculateYearsToFIRE', () => {
-    it('returns 0 when already at FIRE number', () => {
+  describe("calculateYearsToFIRE", () => {
+    it("returns 0 when already at FIRE number", () => {
       const result = calculateYearsToFIRE(1000000, 1000000, 30000, 0.07);
       expect(result).toBe(0);
     });
 
-    it('calculates years with compound interest', () => {
+    it("calculates years with compound interest", () => {
       const currentNetWorth = 100000;
       const fireNumber = 1000000;
       const annualSavings = 30000;
       const annualReturn = 0.07;
 
-      const result = calculateYearsToFIRE(currentNetWorth, fireNumber, annualSavings, annualReturn);
+      const result = calculateYearsToFIRE(
+        currentNetWorth,
+        fireNumber,
+        annualSavings,
+        annualReturn,
+      );
 
       expect(result).toBeGreaterThan(10);
       expect(result).toBeLessThan(20);
@@ -188,26 +196,30 @@ describe('NetWorthSummary', () => {
 **File**: `tests/app/api/assets/route.test.ts`
 
 ```typescript
-import { GET, POST } from '@/app/api/assets/route';
-import { createClient } from '@/lib/supabase/server';
+import { GET, POST } from "@/app/api/assets/route";
+import { createClient } from "@/lib/supabase/server";
 
 // Mock Supabase client
-jest.mock('@/lib/supabase/server');
+jest.mock("@/lib/supabase/server");
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
+const mockCreateClient = createClient as jest.MockedFunction<
+  typeof createClient
+>;
 
-describe('/api/assets', () => {
+describe("/api/assets", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('returns assets for authenticated user', async () => {
-    const mockAssets = [{ id: '1', name: 'Savings', category: 'Banking', value: 5000 }];
+  it("returns assets for authenticated user", async () => {
+    const mockAssets = [
+      { id: "1", name: "Savings", category: "Banking", value: 5000 },
+    ];
 
     mockCreateClient.mockResolvedValue({
       auth: {
         getUser: jest.fn().resolvedValue({
-          data: { user: { id: 'user-123' } },
+          data: { user: { id: "user-123" } },
           error: null,
         }),
       },
@@ -219,7 +231,7 @@ describe('/api/assets', () => {
       }),
     } as any);
 
-    const request = new Request('http://localhost:3000/api/assets');
+    const request = new Request("http://localhost:3000/api/assets");
     const response = await GET(request);
     const data = await response.json();
 
@@ -227,17 +239,17 @@ describe('/api/assets', () => {
     expect(data).toEqual(mockAssets);
   });
 
-  it('returns 401 for unauthenticated requests', async () => {
+  it("returns 401 for unauthenticated requests", async () => {
     mockCreateClient.mockResolvedValue({
       auth: {
         getUser: jest.fn().resolvedValue({
           data: { user: null },
-          error: new Error('Unauthorized'),
+          error: new Error("Unauthorized"),
         }),
       },
     } as any);
 
-    const request = new Request('http://localhost:3000/api/assets');
+    const request = new Request("http://localhost:3000/api/assets");
     const response = await GET(request);
 
     expect(response.status).toBe(401);
@@ -251,29 +263,36 @@ describe('/api/assets', () => {
 
 ```javascript
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.tsx'],
-  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.tsx"],
+  testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1', // Path aliases
+    "^@/(.*)$": "<rootDir>/src/$1", // Path aliases
   },
-  testMatch: ['tests/**/*.(test|spec).(ts|tsx|js)', '**/*.(test|spec).(ts|tsx|js)'],
-  collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts', '!src/**/__tests__/**'],
+  testMatch: [
+    "tests/**/*.(test|spec).(ts|tsx|js)",
+    "**/*.(test|spec).(ts|tsx|js)",
+  ],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/__tests__/**",
+  ],
 };
 ```
 
 **Jest Setup**: `jest.setup.tsx`
 
 ```typescript
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Mock Next.js router
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
   }),
-  usePathname: () => '/',
+  usePathname: () => "/",
 }));
 ```
 
@@ -294,9 +313,9 @@ export const useDeleteAsset = jest.fn();
 **Usage in tests**:
 
 ```typescript
-import { useAssets } from '@/hooks/use-financial-data';
+import { useAssets } from "@/hooks/use-financial-data";
 
-jest.mock('@/hooks/use-financial-data');
+jest.mock("@/hooks/use-financial-data");
 
 const mockUseAssets = useAssets as jest.MockedFunction<typeof useAssets>;
 mockUseAssets.mockReturnValue({ data: [], isLoading: false });
@@ -346,16 +365,16 @@ npm run lint -- src/components/Dashboard/NetWorthSummary.tsx
 
 ```typescript
 // ✅ Correct: Alphabetical order
-import { Asset } from '@/types/financial';
-import { apiClient } from '@/lib/api-client';
-import { useAssets } from '@/hooks/use-financial-data';
-import { Button } from '@/components/ui/Button';
+import { Asset } from "@/types/financial";
+import { apiClient } from "@/lib/api-client";
+import { useAssets } from "@/hooks/use-financial-data";
+import { Button } from "@/components/ui/Button";
 
 // ❌ Incorrect: Random order
-import { Button } from '@/components/ui/Button';
-import { Asset } from '@/types/financial';
-import { useAssets } from '@/hooks/use-financial-data';
-import { apiClient } from '@/lib/api-client';
+import { Button } from "@/components/ui/Button";
+import { Asset } from "@/types/financial";
+import { useAssets } from "@/hooks/use-financial-data";
+import { apiClient } from "@/lib/api-client";
 ```
 
 ### Prettier
@@ -392,16 +411,28 @@ npx prettier --write src/components/Dashboard/NetWorthSummary.tsx
 
 ```typescript
 // ✅ Correct formatting
-const calculateNetWorth = (assets: Asset[], liabilities: Liability[]): number => {
+const calculateNetWorth = (
+  assets: Asset[],
+  liabilities: Liability[],
+): number => {
   const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount_owed, 0);
+  const totalLiabilities = liabilities.reduce(
+    (sum, liability) => sum + liability.amount_owed,
+    0,
+  );
   return totalAssets - totalLiabilities;
 };
 
 // ❌ Incorrect formatting (will be auto-fixed)
-const calculateNetWorth = (assets: Asset[], liabilities: Liability[]): number => {
+const calculateNetWorth = (
+  assets: Asset[],
+  liabilities: Liability[],
+): number => {
   const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.amount_owed, 0);
+  const totalLiabilities = liabilities.reduce(
+    (sum, liability) => sum + liability.amount_owed,
+    0,
+  );
   return totalAssets - totalLiabilities;
 };
 ```
@@ -432,11 +463,11 @@ const handleSubmit = (data) => {
 
 ```typescript
 // ✅ Correct: Import types explicitly
-import type { Asset, Liability } from '@/types/financial';
-import { apiClient } from '@/lib/api-client';
+import type { Asset, Liability } from "@/types/financial";
+import { apiClient } from "@/lib/api-client";
 
 // ❌ Incorrect: Mixed imports
-import { Asset, Liability, apiClient } from '@/lib/api-client';
+import { Asset, Liability, apiClient } from "@/lib/api-client";
 ```
 
 #### 3. Avoid `any`
@@ -444,7 +475,7 @@ import { Asset, Liability, apiClient } from '@/lib/api-client';
 ```typescript
 // ✅ Correct: Use specific types or unknown
 const processData = (data: unknown): void => {
-  if (typeof data === 'object' && data !== null) {
+  if (typeof data === "object" && data !== null) {
     // Type guard
   }
 };
@@ -518,21 +549,21 @@ export function getNetWorth() {
 ```typescript
 // ✅ Correct: Import organization
 // 1. React imports
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 
 // 2. Third-party imports
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 // 3. Internal imports (alphabetical)
-import { apiClient } from '@/lib/api-client';
-import { Asset } from '@/types/financial';
-import { useAssets } from '@/hooks/use-financial-data';
+import { apiClient } from "@/lib/api-client";
+import { Asset } from "@/types/financial";
+import { useAssets } from "@/hooks/use-financial-data";
 
 // 4. Relative imports
-import { Button } from './Button';
+import { Button } from "./Button";
 
 // 5. Types
-import type { NetWorthSummary } from '@/types/financial';
+import type { NetWorthSummary } from "@/types/financial";
 ```
 
 ---

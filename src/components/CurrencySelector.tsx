@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Globe, Loader2 } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
+import { Globe, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { CURRENCIES, getCurrencySymbol } from '@/lib/currency';
+} from "@/components/ui/dropdown-menu";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { CURRENCIES, getCurrencySymbol } from "@/lib/currency";
 
 export default function CurrencySelector() {
   const { currency, setCurrency, isLoading } = useCurrency();
@@ -28,7 +28,7 @@ export default function CurrencySelector() {
     try {
       await setCurrency(newCurrency);
     } catch (error) {
-      console.error('Failed to update currency:', error);
+      console.error("Failed to update currency:", error);
       // Error is already handled in context (reverts state)
     } finally {
       setIsUpdating(false);
@@ -58,7 +58,10 @@ export default function CurrencySelector() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuRadioGroup value={currency} onValueChange={handleCurrencyChange}>
+        <DropdownMenuRadioGroup
+          value={currency}
+          onValueChange={handleCurrencyChange}
+        >
           {CURRENCIES.map((curr) => (
             <DropdownMenuRadioItem
               key={curr.code}

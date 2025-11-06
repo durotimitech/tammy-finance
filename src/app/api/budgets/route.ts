@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-import { ErrorResponses } from '@/lib/api-errors';
-import { createClient } from '@/lib/supabase/server';
-import { CreateBudgetDto } from '@/types/budget';
+import { ErrorResponses } from "@/lib/api-errors";
+import { createClient } from "@/lib/supabase/server";
+import { CreateBudgetDto } from "@/types/budget";
 
 export async function GET() {
   try {
@@ -17,10 +17,10 @@ export async function GET() {
     }
 
     const { data, error } = await supabase
-      .from('budgets')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .from("budgets")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
       throw error;
@@ -28,8 +28,8 @@ export async function GET() {
 
     return NextResponse.json(data || []);
   } catch (error) {
-    console.error('Error fetching budgets:', error);
-    return ErrorResponses.internalError('Failed to fetch budgets');
+    console.error("Error fetching budgets:", error);
+    return ErrorResponses.internalError("Failed to fetch budgets");
   }
 }
 
@@ -48,42 +48,52 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.name || typeof body.name !== 'string') {
-      return ErrorResponses.validationError('Missing or invalid required field: name', 'name');
-    }
-
-    if (body.amount === undefined || typeof body.amount !== 'number' || body.amount < 0) {
+    if (!body.name || typeof body.name !== "string") {
       return ErrorResponses.validationError(
-        'Invalid amount. Must be a non-negative number.',
-        'amount',
+        "Missing or invalid required field: name",
+        "name",
       );
     }
 
-    if (!body.period || !['weekly', 'monthly', 'yearly'].includes(body.period)) {
+    if (
+      body.amount === undefined ||
+      typeof body.amount !== "number" ||
+      body.amount < 0
+    ) {
       return ErrorResponses.validationError(
-        'Invalid period. Must be weekly, monthly, or yearly.',
-        'period',
+        "Invalid amount. Must be a non-negative number.",
+        "amount",
+      );
+    }
+
+    if (
+      !body.period ||
+      !["weekly", "monthly", "yearly"].includes(body.period)
+    ) {
+      return ErrorResponses.validationError(
+        "Invalid period. Must be weekly, monthly, or yearly.",
+        "period",
       );
     }
 
     if (
       !body.category ||
       ![
-        'housing',
-        'transportation',
-        'food',
-        'utilities',
-        'healthcare',
-        'entertainment',
-        'shopping',
-        'education',
-        'savings',
-        'other',
+        "housing",
+        "transportation",
+        "food",
+        "utilities",
+        "healthcare",
+        "entertainment",
+        "shopping",
+        "education",
+        "savings",
+        "other",
       ].includes(body.category)
     ) {
       return ErrorResponses.validationError(
-        'Invalid category. Must be one of: housing, transportation, food, utilities, healthcare, entertainment, shopping, education, savings, other.',
-        'category',
+        "Invalid category. Must be one of: housing, transportation, food, utilities, healthcare, entertainment, shopping, education, savings, other.",
+        "category",
       );
     }
 
@@ -96,7 +106,7 @@ export async function POST(request: NextRequest) {
     };
 
     const { data, error } = await supabase
-      .from('budgets')
+      .from("budgets")
       .insert({
         ...budgetData,
         user_id: user.id,
@@ -110,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Error creating budget:', error);
-    return ErrorResponses.internalError('Failed to create budget');
+    console.error("Error creating budget:", error);
+    return ErrorResponses.internalError("Failed to create budget");
   }
 }

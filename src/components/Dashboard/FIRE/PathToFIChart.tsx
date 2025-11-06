@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { useMemo } from 'react';
+import { motion } from "framer-motion";
+import { useMemo } from "react";
 import {
   XAxis,
   YAxis,
@@ -11,10 +11,18 @@ import {
   Line,
   LineChart,
   ReferenceLine,
-} from 'recharts';
-import { Skeleton } from '@/components/Skeleton';
-import { useCurrencyFormat } from '@/hooks/use-currency-format';
-import { useFIRECalculation, useUserPreferences } from '@/hooks/use-fire-data';
+} from "recharts";
+import { Skeleton } from "@/components/Skeleton";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { useFIRECalculation, useUserPreferences } from "@/hooks/use-fire-data";
+import { useProfile } from "@/hooks/use-profile";
+import {
+  calculateBaristaFIRENumber,
+  calculateCoastFIREAmount,
+  calculateFatFIRENumber,
+  calculateLeanFIRENumber,
+  calculateAge,
+} from "@/lib/fire-calculations";
 
 interface ChartDataPoint {
   month: number;
@@ -42,7 +50,8 @@ function calculateProjectedNetWorth(
   if (monthlyReturn > 0) {
     const futureValue =
       currentNetWorth * Math.pow(1 + monthlyReturn, months) +
-      monthlySavings * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
+      monthlySavings *
+        ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn);
     return futureValue;
   } else {
     // Simple calculation without returns
@@ -53,13 +62,50 @@ function calculateProjectedNetWorth(
 export default function PathToFIChart() {
   const { data: fireData, isLoading: isFireLoading } = useFIRECalculation();
   const { data: preferences, isLoading: isPrefsLoading } = useUserPreferences();
+  const { data: profile } = useProfile();
   const { formatCurrency, formatCompactNumber } = useCurrencyFormat();
 
-  // Calculate different FIRE types based on regular FIRE number
-  const coastFIRE = fireData ? fireData.fireNumber * 0.5 : 0; // 50% of regular FIRE
-  const leanFIRE = fireData ? fireData.fireNumber * 0.75 : 0; // 75% of regular FIRE
-  const regularFIRE = fireData?.fireNumber || 0; // Current FIRE (100%)
-  const fatFIRE = fireData ? fireData.fireNumber * 1.5 : 0; // 150% of regular FIRE
+  // Calculate different FIRE types using proper calculation functions (same as FIRETypes component)
+  const coastFIRE = useMemo(() => {
+    if (!fireData || !profile) return 0;
+    const currentAge = profile.date_of_birth
+      ? calculateAge(profile.date_of_birth)
+      : null;
+    const investmentReturn = (profile?.investment_return || 7.0) / 100;
+    const targetRetirementAge = profile?.target_retirement_age || 65;
+    return calculateCoastFIREAmount(
+      fireData.fireNumber,
+      currentAge,
+      investmentReturn,
+      targetRetirementAge,
+    );
+  }, [fireData, profile]);
+
+  const leanFIRE = useMemo(() => {
+    if (!fireData) return 0;
+    return calculateLeanFIRENumber(
+      fireData.annualExpenses,
+      fireData.withdrawalRate,
+    );
+  }, [fireData]);
+
+  const baristaFIRE = useMemo(() => {
+    if (!fireData) return 0;
+    return calculateBaristaFIRENumber(
+      fireData.annualExpenses,
+      fireData.withdrawalRate,
+    );
+  }, [fireData]);
+
+  const regularFIRE = fireData?.fireNumber || 0;
+
+  const fatFIRE = useMemo(() => {
+    if (!fireData) return 0;
+    return calculateFatFIRENumber(
+      fireData.annualExpenses,
+      fireData.withdrawalRate,
+    );
+  }, [fireData]);
 
   // Calculate when each FIRE type is reached
   const calculateMonthsToFIRE = useMemo(() => {
@@ -94,29 +140,39 @@ export default function PathToFIChart() {
 
     return {
       coastFIRE: calculateMonths(coastFIRE),
+      baristaFIRE: calculateMonths(baristaFIRE),
       leanFIRE: calculateMonths(leanFIRE),
       regularFIRE: calculateMonths(regularFIRE),
       fatFIRE: calculateMonths(fatFIRE),
     };
-  }, [fireData, preferences, coastFIRE, leanFIRE, regularFIRE, fatFIRE]);
+  }, [
+    fireData,
+    preferences,
+    coastFIRE,
+    baristaFIRE,
+    leanFIRE,
+    regularFIRE,
+    fatFIRE,
+  ]);
 
   const chartData = useMemo<ChartDataPoint[]>(() => {
     if (!fireData || !preferences) return [];
 
-    const { currentNetWorth, fireNumber, monthsToFIRE, annualSavings } = fireData;
+    const { currentNetWorth, fireNumber, monthsToFIRE, annualSavings } =
+      fireData;
     const investmentReturn = preferences.investment_return || 7.0;
     const monthlyReturn = investmentReturn / 100 / 12; // Convert annual to monthly
     const monthlySavings = annualSavings / 12;
 
     // Generate data points to cover all FIRE types (use Fat FIRE as max)
-    const maxFIREAmount = Math.max(regularFIRE, fatFIRE);
+    const maxFIREAmount = Math.max(regularFIRE, fatFIRE, baristaFIRE);
     const maxMonths = Math.min(monthsToFIRE * 1.5, 600); // Cap at 50 years (600 months) or 1.5x regular FIRE time
     const dataPoints: ChartDataPoint[] = [];
 
     // Add current point (month 0)
     dataPoints.push({
       month: 0,
-      monthLabel: 'Now',
+      monthLabel: "Now",
       netWorth: currentNetWorth,
       fireNumber,
     });
@@ -162,7 +218,7 @@ export default function PathToFIChart() {
     }
 
     return dataPoints;
-  }, [fireData, preferences, regularFIRE, fatFIRE]);
+  }, [fireData, preferences, regularFIRE, fatFIRE, baristaFIRE]);
 
   const isLoading = isFireLoading || isPrefsLoading;
 
@@ -185,7 +241,7 @@ export default function PathToFIChart() {
   }) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
-      const netWorthPayload = payload.find((p) => p.dataKey === 'netWorth');
+      const netWorthPayload = payload.find((p) => p.dataKey === "netWorth");
       const netWorth = netWorthPayload?.value || 0;
       const month = dataPoint.month;
 
@@ -199,27 +255,33 @@ export default function PathToFIChart() {
 
       if (netWorth >= fatFIRE - tolerance) {
         reachedFIRE = {
-          type: 'Fat FIRE',
+          type: "Fat FIRE",
           months: calculateMonthsToFIRE.fatFIRE ?? null,
-          color: '#6366F1',
+          color: "#6366F1",
         };
       } else if (netWorth >= regularFIRE - tolerance) {
         reachedFIRE = {
-          type: 'FIRE',
+          type: "FIRE",
           months: calculateMonthsToFIRE.regularFIRE ?? null,
-          color: 'var(--secondary)',
+          color: "var(--secondary)",
         };
       } else if (netWorth >= leanFIRE - tolerance) {
         reachedFIRE = {
-          type: 'Lean FIRE',
+          type: "Lean FIRE",
           months: calculateMonthsToFIRE.leanFIRE ?? null,
-          color: '#10B981',
+          color: "#10B981",
+        };
+      } else if (netWorth >= baristaFIRE - tolerance) {
+        reachedFIRE = {
+          type: "Barista FIRE",
+          months: calculateMonthsToFIRE.baristaFIRE ?? null,
+          color: "#d97706",
         };
       } else if (netWorth >= coastFIRE - tolerance) {
         reachedFIRE = {
-          type: 'Coast FIRE',
+          type: "Coast FIRE",
           months: calculateMonthsToFIRE.coastFIRE ?? null,
-          color: '#F59E0B',
+          color: "#F59E0B",
         };
       }
 
@@ -227,21 +289,23 @@ export default function PathToFIChart() {
         <div
           className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-100 p-3"
           style={{
-            minWidth: '200px',
+            minWidth: "200px",
           }}
         >
           <p className="text-xs font-medium text-gray-600 mb-2">
             {month === 0
-              ? 'Current'
+              ? "Current"
               : (() => {
                   const years = Math.floor(month / 12);
                   const months = month % 12;
                   const parts = [];
-                  if (years > 0) parts.push(`${years} year${years !== 1 ? 's' : ''}`);
-                  if (months > 0) parts.push(`${months} month${months !== 1 ? 's' : ''}`);
+                  if (years > 0)
+                    parts.push(`${years} year${years !== 1 ? "s" : ""}`);
+                  if (months > 0)
+                    parts.push(`${months} month${months !== 1 ? "s" : ""}`);
                   return parts.length > 0
-                    ? `${month} month${month !== 1 ? 's' : ''} (${parts.join(' ')})`
-                    : `${month} month${month !== 1 ? 's' : ''}`;
+                    ? `${month} month${month !== 1 ? "s" : ""} (${parts.join(" ")})`
+                    : `${month} month${month !== 1 ? "s" : ""}`;
                 })()}
           </p>
           <div className="space-y-1">
@@ -249,11 +313,14 @@ export default function PathToFIChart() {
               <div className="flex items-center gap-1.5">
                 <div
                   className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: 'var(--secondary)' }}
+                  style={{ backgroundColor: "var(--secondary)" }}
                 />
                 <span className="text-xs text-gray-600">Net Worth</span>
               </div>
-              <span className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>
+              <span
+                className="text-xs font-semibold"
+                style={{ color: "var(--secondary)" }}
+              >
                 {formatCurrency(netWorth)}
               </span>
             </div>
@@ -266,7 +333,10 @@ export default function PathToFIChart() {
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: reachedFIRE.color }}
                       />
-                      <span className="text-xs font-medium" style={{ color: reachedFIRE.color }}>
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: reachedFIRE.color }}
+                      >
                         {reachedFIRE.type} Reached
                       </span>
                     </div>
@@ -275,17 +345,17 @@ export default function PathToFIChart() {
                     <div className="text-xs text-gray-600 pl-3.5">
                       {month === reachedFIRE.months ? (
                         <>
-                          Reached at {month} month{month !== 1 ? 's' : ''}
+                          Reached at {month} month{month !== 1 ? "s" : ""}
                           {month >= 12 && (
                             <>
-                              {' '}
+                              {" "}
                               ({Math.floor(month / 12)} year
-                              {Math.floor(month / 12) !== 1 ? 's' : ''}
+                              {Math.floor(month / 12) !== 1 ? "s" : ""}
                               {month % 12 > 0 && (
                                 <>
-                                  {' '}
+                                  {" "}
                                   {month % 12} month
-                                  {month % 12 !== 1 ? 's' : ''}
+                                  {month % 12 !== 1 ? "s" : ""}
                                 </>
                               )}
                               )
@@ -295,17 +365,19 @@ export default function PathToFIChart() {
                       ) : (
                         <>
                           Will reach in {reachedFIRE.months} month
-                          {reachedFIRE.months !== 1 ? 's' : ''}
+                          {reachedFIRE.months !== 1 ? "s" : ""}
                           {reachedFIRE.months >= 12 && (
                             <>
-                              {' '}
+                              {" "}
                               ({Math.floor(reachedFIRE.months / 12)} year
-                              {Math.floor(reachedFIRE.months / 12) !== 1 ? 's' : ''}
+                              {Math.floor(reachedFIRE.months / 12) !== 1
+                                ? "s"
+                                : ""}
                               {reachedFIRE.months % 12 > 0 && (
                                 <>
-                                  {' '}
+                                  {" "}
                                   {reachedFIRE.months % 12} month
-                                  {reachedFIRE.months % 12 !== 1 ? 's' : ''}
+                                  {reachedFIRE.months % 12 !== 1 ? "s" : ""}
                                 </>
                               )}
                               )
@@ -342,7 +414,7 @@ export default function PathToFIChart() {
     >
       <div
         className="bg-white rounded-xl p-6 border overflow-visible"
-        style={{ borderColor: '#e5e7eb' }}
+        style={{ borderColor: "#e5e7eb" }}
       >
         <div className="mb-6">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">
@@ -359,11 +431,16 @@ export default function PathToFIChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="h-80 flex items-center justify-center">
-            <p className="text-gray-500">Insufficient data to show projection</p>
+            <p className="text-gray-500">
+              Insufficient data to show projection
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="0" stroke="transparent" />
               <XAxis
                 dataKey="monthLabel"
@@ -381,18 +458,19 @@ export default function PathToFIChart() {
                 domain={[
                   0,
                   (dataMax: number) =>
-                    Math.ceil((Math.max(dataMax, fatFIRE) * 1.1) / 100000) * 100000,
+                    Math.ceil((Math.max(dataMax, fatFIRE) * 1.1) / 100000) *
+                    100000,
                 ]}
               />
               <Tooltip
                 content={<CustomTooltip />}
                 allowEscapeViewBox={{ x: false, y: false }}
                 cursor={{
-                  stroke: 'var(--secondary)',
+                  stroke: "var(--secondary)",
                   strokeWidth: 1,
-                  strokeDasharray: '3 3',
+                  strokeDasharray: "3 3",
                 }}
-                wrapperStyle={{ pointerEvents: 'none', zIndex: 1000 }}
+                wrapperStyle={{ pointerEvents: "none", zIndex: 1000 }}
               />
               {/* Coast FIRE Line */}
               <ReferenceLine
@@ -401,9 +479,23 @@ export default function PathToFIChart() {
                 strokeWidth={1.5}
                 strokeDasharray="3 3"
                 label={{
-                  value: 'Coast FIRE',
-                  position: 'right',
-                  fill: '#F59E0B',
+                  value: "Coast FIRE",
+                  position: "right",
+                  fill: "#F59E0B",
+                  fontSize: 11,
+                  offset: 45,
+                }}
+              />
+              {/* Barista FIRE Line */}
+              <ReferenceLine
+                y={baristaFIRE}
+                stroke="#d97706"
+                strokeWidth={1.5}
+                strokeDasharray="3 3"
+                label={{
+                  value: "Barista FIRE",
+                  position: "right",
+                  fill: "#d97706",
                   fontSize: 11,
                   offset: 35,
                 }}
@@ -415,9 +507,9 @@ export default function PathToFIChart() {
                 strokeWidth={1.5}
                 strokeDasharray="3 3"
                 label={{
-                  value: 'Lean FIRE',
-                  position: 'right',
-                  fill: '#10B981',
+                  value: "Lean FIRE",
+                  position: "right",
+                  fill: "#10B981",
                   fontSize: 11,
                   offset: 25,
                 }}
@@ -429,9 +521,9 @@ export default function PathToFIChart() {
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 label={{
-                  value: 'FIRE',
-                  position: 'right',
-                  fill: 'var(--secondary)',
+                  value: "FIRE",
+                  position: "right",
+                  fill: "var(--secondary)",
                   fontSize: 12,
                   offset: 5,
                 }}
@@ -443,9 +535,9 @@ export default function PathToFIChart() {
                 strokeWidth={1.5}
                 strokeDasharray="3 3"
                 label={{
-                  value: 'Fat FIRE',
-                  position: 'right',
-                  fill: '#6366F1',
+                  value: "Fat FIRE",
+                  position: "right",
+                  fill: "#6366F1",
                   fontSize: 11,
                   offset: 15,
                 }}
@@ -475,26 +567,52 @@ export default function PathToFIChart() {
             {/* FIRE Types Legend */}
             <div className="mt-4 flex flex-wrap gap-4 justify-center text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-0.5 bg-yellow-500" style={{ borderStyle: 'dashed' }} />
-                <span className="text-gray-600">Coast FIRE: {formatCurrency(coastFIRE)}</span>
+                <div
+                  className="w-3 h-0.5 bg-yellow-500"
+                  style={{ borderStyle: "dashed" }}
+                />
+                <span className="text-gray-600">
+                  Coast FIRE: {formatCurrency(coastFIRE)}
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-0.5 bg-green-500" style={{ borderStyle: 'dashed' }} />
-                <span className="text-gray-600">Lean FIRE: {formatCurrency(leanFIRE)}</span>
+                <div
+                  className="w-3 h-0.5 bg-amber-600"
+                  style={{ borderStyle: "dashed" }}
+                />
+                <span className="text-gray-600">
+                  Barista FIRE: {formatCurrency(baristaFIRE)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-0.5 bg-green-500"
+                  style={{ borderStyle: "dashed" }}
+                />
+                <span className="text-gray-600">
+                  Lean FIRE: {formatCurrency(leanFIRE)}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-0.5"
                   style={{
-                    backgroundColor: 'var(--secondary)',
-                    borderStyle: 'dashed',
+                    backgroundColor: "var(--secondary)",
+                    borderStyle: "dashed",
                   }}
                 />
-                <span className="text-gray-600">FIRE: {formatCurrency(regularFIRE)}</span>
+                <span className="text-gray-600">
+                  FIRE: {formatCurrency(regularFIRE)}
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-0.5 bg-indigo-500" style={{ borderStyle: 'dashed' }} />
-                <span className="text-gray-600">Fat FIRE: {formatCurrency(fatFIRE)}</span>
+                <div
+                  className="w-3 h-0.5 bg-indigo-500"
+                  style={{ borderStyle: "dashed" }}
+                />
+                <span className="text-gray-600">
+                  Fat FIRE: {formatCurrency(fatFIRE)}
+                </span>
               </div>
             </div>
             {/* Metrics */}
@@ -507,16 +625,22 @@ export default function PathToFIChart() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">FIRE Number</p>
-                <p className="text-lg font-semibold" style={{ color: 'var(--secondary)' }}>
+                <p
+                  className="text-lg font-semibold"
+                  style={{ color: "var(--secondary)" }}
+                >
                   {formatCurrency(fireData.fireNumber)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Time to FIRE</p>
-                <p className="text-lg font-semibold" style={{ color: 'var(--secondary)' }}>
+                <p
+                  className="text-lg font-semibold"
+                  style={{ color: "var(--secondary)" }}
+                >
                   {fireData.yearsToFIRE > 0
-                    ? `${fireData.yearsToFIRE} year${fireData.yearsToFIRE !== 1 ? 's' : ''}`
-                    : 'Already there!'}
+                    ? `${fireData.yearsToFIRE} year${fireData.yearsToFIRE !== 1 ? "s" : ""}`
+                    : "Already there!"}
                 </p>
               </div>
             </div>

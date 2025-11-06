@@ -1,32 +1,36 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { Button } from '@/components/ui/Button';
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { Button } from "@/components/ui/Button";
 
 const ALLOWED_ERROR_MESSAGES: Record<string, string> = {
-  email_confirmation_failed: 'An error occurred during email confirmation',
-  invalid_link: 'The link you followed is invalid or has expired',
-  session_expired: 'Your session has expired. Please log in again',
-  unauthorized: 'You do not have permission to access this resource',
-  server_error: 'An unexpected error occurred. Please try again later',
-  account_exists: 'An account with this email already exists',
-  verification_required: 'Please verify your email address to continue',
+  email_confirmation_failed: "An error occurred during email confirmation",
+  invalid_link: "The link you followed is invalid or has expired",
+  session_expired: "Your session has expired. Please log in again",
+  unauthorized: "You do not have permission to access this resource",
+  server_error: "An unexpected error occurred. Please try again later",
+  account_exists: "An account with this email already exists",
+  verification_required: "Please verify your email address to continue",
 };
 
 function ErrorContent() {
   const searchParams = useSearchParams();
-  const messageKey = searchParams.get('message') || 'email_confirmation_failed';
+  const messageKey = searchParams.get("message") || "email_confirmation_failed";
 
-  const message = ALLOWED_ERROR_MESSAGES[messageKey] || ALLOWED_ERROR_MESSAGES['server_error'];
+  const message =
+    ALLOWED_ERROR_MESSAGES[messageKey] ||
+    ALLOWED_ERROR_MESSAGES["server_error"];
   const sanitizedMessage = message.slice(0, 200);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Oops! Something went wrong
+          </h1>
           <p className="text-gray-600">{sanitizedMessage}</p>
         </div>
 

@@ -81,5 +81,6 @@ const rateLimiter = new RateLimiter();
 export const ratelimit = {
   auth: (ip: string) => rateLimiter.limit(`auth:${ip}`, 5, 15 * 60 * 1000),
   api: (ip: string) => rateLimiter.limit(`api:${ip}`, 100, 60 * 1000),
-  expensive: (ip: string) => rateLimiter.limit(`expensive:${ip}`, 10, 60 * 1000),
+  expensive: (ip: string) =>
+    rateLimiter.limit(`expensive:${ip}`, 10, 60 * 1000),
 };

@@ -1,13 +1,19 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Calendar, Wallet, TrendingUp } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { calculateAge } from '@/lib/fire-calculations';
-import { createClient } from '@/lib/supabase/client';
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Calendar,
+  Wallet,
+  TrendingUp,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { calculateAge } from "@/lib/fire-calculations";
+import { createClient } from "@/lib/supabase/client";
 
 interface OnboardingData {
   // Step 1: Date of Birth & Retirement
@@ -34,7 +40,7 @@ export default function OnboardingPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<OnboardingData>({
-    date_of_birth: '',
+    date_of_birth: "",
     target_retirement_age: 0,
     current_invested_assets: 0,
     monthly_expenses: 0,
@@ -48,22 +54,25 @@ export default function OnboardingPage() {
 
     if (step === 1) {
       if (!formData.date_of_birth) {
-        newErrors.date_of_birth = 'Please enter your date of birth';
+        newErrors.date_of_birth = "Please enter your date of birth";
       } else {
         const age = calculateAge(formData.date_of_birth);
         const birthDate = new Date(formData.date_of_birth);
         const today = new Date();
 
         if (birthDate > today) {
-          newErrors.date_of_birth = 'Date of birth cannot be in the future';
+          newErrors.date_of_birth = "Date of birth cannot be in the future";
         } else if (age < 18) {
-          newErrors.date_of_birth = 'You must be at least 18 years old';
+          newErrors.date_of_birth = "You must be at least 18 years old";
         } else if (age > 120) {
-          newErrors.date_of_birth = 'Please enter a valid date of birth';
+          newErrors.date_of_birth = "Please enter a valid date of birth";
         }
 
         if (!newErrors.date_of_birth && formData.target_retirement_age > 0) {
-          if (formData.target_retirement_age < age || formData.target_retirement_age > 120) {
+          if (
+            formData.target_retirement_age < age ||
+            formData.target_retirement_age > 120
+          ) {
             newErrors.target_retirement_age = `Retirement age must be between ${age} and 120`;
           }
         }
@@ -74,21 +83,25 @@ export default function OnboardingPage() {
         formData.target_retirement_age > 120
       ) {
         if (!newErrors.target_retirement_age) {
-          const age = formData.date_of_birth ? calculateAge(formData.date_of_birth) : 18;
+          const age = formData.date_of_birth
+            ? calculateAge(formData.date_of_birth)
+            : 18;
           if (formData.target_retirement_age < age) {
             newErrors.target_retirement_age = `Retirement age must be at least ${age}`;
           } else if (!formData.target_retirement_age) {
-            newErrors.target_retirement_age = 'Please enter your target retirement age';
+            newErrors.target_retirement_age =
+              "Please enter your target retirement age";
           }
         }
       }
     } else if (step === 2) {
       if (formData.current_invested_assets < 0) {
-        newErrors.current_invested_assets = 'Please enter a valid amount (0 or more)';
+        newErrors.current_invested_assets =
+          "Please enter a valid amount (0 or more)";
       }
     } else if (step === 3) {
       if (formData.monthly_expenses <= 0) {
-        newErrors.monthly_expenses = 'Please enter your monthly expenses';
+        newErrors.monthly_expenses = "Please enter your monthly expenses";
       }
     }
 
@@ -123,17 +136,17 @@ export default function OnboardingPage() {
         error: userError,
       } = await supabase.auth.getUser();
       if (userError || !user) {
-        throw new Error('Not authenticated');
+        throw new Error("Not authenticated");
       }
 
       // Create or update profile
-      const { error: profileError } = await supabase.from('profiles').upsert({
+      const { error: profileError } = await supabase.from("profiles").upsert({
         user_id: user.id,
         date_of_birth: formData.date_of_birth,
         target_retirement_age: formData.target_retirement_age,
         monthly_expenses: formData.monthly_expenses,
         monthly_savings: 0, // User will set this later
-        currency: 'EUR', // Default currency
+        currency: "EUR", // Default currency
         investment_return: formData.investment_return,
         inflation: formData.inflation,
         safe_withdrawal_rate: formData.safe_withdrawal_rate,
@@ -144,25 +157,25 @@ export default function OnboardingPage() {
 
       // If user has invested assets, create an asset entry
       if (formData.current_invested_assets > 0) {
-        const { error: assetError } = await supabase.from('assets').insert({
+        const { error: assetError } = await supabase.from("assets").insert({
           user_id: user.id,
-          name: 'Investment Portfolio',
-          category: 'Investments',
+          name: "Investment Portfolio",
+          category: "Investments",
           value: formData.current_invested_assets,
         });
 
         if (assetError) {
-          console.error('Error creating asset:', assetError);
+          console.error("Error creating asset:", assetError);
           // Don't throw, just log - onboarding can still complete
         }
       }
 
       // Redirect to dashboard
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      console.error("Error completing onboarding:", error);
       setErrors({
-        submit: 'Failed to save your information. Please try again.',
+        submit: "Failed to save your information. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -176,7 +189,9 @@ export default function OnboardingPage() {
         <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <Calendar className="w-8 h-8 text-secondary" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">When do you want to retire?</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          When do you want to retire?
+        </h2>
         <p className="text-gray-600">
           Let&apos;s start with your date of birth and retirement goals
         </p>
@@ -184,7 +199,10 @@ export default function OnboardingPage() {
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="date_of_birth" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="date_of_birth"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Date of Birth
           </label>
           <Input
@@ -193,7 +211,7 @@ export default function OnboardingPage() {
             max={
               new Date(new Date().setFullYear(new Date().getFullYear() - 18))
                 .toISOString()
-                .split('T')[0]
+                .split("T")[0]
             }
             value={formData.date_of_birth}
             onChange={(e) => {
@@ -215,7 +233,7 @@ export default function OnboardingPage() {
                 }
               }
             }}
-            className={errors.date_of_birth ? 'border-red-500' : ''}
+            className={errors.date_of_birth ? "border-red-500" : ""}
           />
           {errors.date_of_birth && (
             <p className="mt-1 text-sm text-red-600">{errors.date_of_birth}</p>
@@ -237,9 +255,11 @@ export default function OnboardingPage() {
           <Input
             id="target_retirement_age"
             type="number"
-            min={formData.date_of_birth ? calculateAge(formData.date_of_birth) : 18}
+            min={
+              formData.date_of_birth ? calculateAge(formData.date_of_birth) : 18
+            }
             max="120"
-            value={formData.target_retirement_age || ''}
+            value={formData.target_retirement_age || ""}
             onChange={(e) => {
               const age = parseInt(e.target.value) || 0;
               setFormData({ ...formData, target_retirement_age: age });
@@ -250,15 +270,19 @@ export default function OnboardingPage() {
               }
             }}
             placeholder="When do you want to retire?"
-            className={errors.target_retirement_age ? 'border-red-500' : ''}
+            className={errors.target_retirement_age ? "border-red-500" : ""}
           />
           {errors.target_retirement_age && (
-            <p className="mt-1 text-sm text-red-600">{errors.target_retirement_age}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.target_retirement_age}
+            </p>
           )}
           {formData.date_of_birth && formData.target_retirement_age > 0 && (
             <p className="mt-2 text-sm text-gray-500">
-              You have {formData.target_retirement_age - calculateAge(formData.date_of_birth)} years
-              to reach FIRE
+              You have{" "}
+              {formData.target_retirement_age -
+                calculateAge(formData.date_of_birth)}{" "}
+              years to reach FIRE
             </p>
           )}
         </div>
@@ -271,9 +295,12 @@ export default function OnboardingPage() {
         <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <Wallet className="w-8 h-8 text-secondary" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">What have you saved so far?</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          What have you saved so far?
+        </h2>
         <p className="text-gray-600">
-          Enter your total invested assets (retirement accounts, investments, etc.)
+          Enter your total invested assets (retirement accounts, investments,
+          etc.)
         </p>
       </div>
 
@@ -289,7 +316,7 @@ export default function OnboardingPage() {
           type="number"
           min="0"
           step="0.01"
-          value={formData.current_invested_assets || ''}
+          value={formData.current_invested_assets || ""}
           onChange={(e) => {
             const value = parseFloat(e.target.value) || 0;
             setFormData({ ...formData, current_invested_assets: value });
@@ -300,10 +327,12 @@ export default function OnboardingPage() {
             }
           }}
           placeholder="0.00"
-          className={errors.current_invested_assets ? 'border-red-500' : ''}
+          className={errors.current_invested_assets ? "border-red-500" : ""}
         />
         {errors.current_invested_assets && (
-          <p className="mt-1 text-sm text-red-600">{errors.current_invested_assets}</p>
+          <p className="mt-1 text-sm text-red-600">
+            {errors.current_invested_assets}
+          </p>
         )}
         <p className="mt-2 text-sm text-gray-500">
           Don&apos;t worry if it&apos;s 0—you can always add more assets later!
@@ -317,12 +346,19 @@ export default function OnboardingPage() {
         <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <TrendingUp className="w-8 h-8 text-secondary" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">How much do you spend monthly?</h2>
-        <p className="text-gray-600">This helps us calculate your FIRE number</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          How much do you spend monthly?
+        </h2>
+        <p className="text-gray-600">
+          This helps us calculate your FIRE number
+        </p>
       </div>
 
       <div>
-        <label htmlFor="monthly_expenses" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="monthly_expenses"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Monthly Expenses
         </label>
         <Input
@@ -330,7 +366,7 @@ export default function OnboardingPage() {
           type="number"
           min="0"
           step="0.01"
-          value={formData.monthly_expenses || ''}
+          value={formData.monthly_expenses || ""}
           onChange={(e) => {
             const value = parseFloat(e.target.value) || 0;
             setFormData({ ...formData, monthly_expenses: value });
@@ -341,20 +377,22 @@ export default function OnboardingPage() {
             }
           }}
           placeholder="0.00"
-          className={errors.monthly_expenses ? 'border-red-500' : ''}
+          className={errors.monthly_expenses ? "border-red-500" : ""}
         />
         {errors.monthly_expenses && (
           <p className="mt-1 text-sm text-red-600">{errors.monthly_expenses}</p>
         )}
         {formData.monthly_expenses > 0 && (
           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm font-medium text-blue-900 mb-1">Your FIRE Number (Preview)</p>
+            <p className="text-sm font-medium text-blue-900 mb-1">
+              Your FIRE Number (Preview)
+            </p>
             <p className="text-2xl font-bold text-blue-600">
               $
               {(
                 (formData.monthly_expenses * 12) /
                 (formData.safe_withdrawal_rate / 100)
-              ).toLocaleString('en-US', {
+              ).toLocaleString("en-US", {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               })}
@@ -384,7 +422,9 @@ export default function OnboardingPage() {
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Step {currentStep} of 3</span>
+            <span className="text-sm font-medium text-gray-600">
+              Step {currentStep} of 3
+            </span>
             <span className="text-sm font-medium text-gray-600">
               {Math.round((currentStep / 3) * 100)}%
             </span>
@@ -432,7 +472,7 @@ export default function OnboardingPage() {
             className="flex items-center gap-2 bg-secondary text-white hover:bg-[#8B5CF6] border-2 !border-secondary hover:!border-secondary focus:!border-secondary"
           >
             {currentStep === 3 ? (
-              <>{isSubmitting ? 'Saving...' : 'Complete Setup'}</>
+              <>{isSubmitting ? "Saving..." : "Complete Setup"}</>
             ) : (
               <>
                 Next

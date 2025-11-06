@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -21,8 +21,8 @@ export default function ConfirmationModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
   isDestructive = false,
 }: ConfirmationModalProps) {
   if (!isOpen) return null;
@@ -37,9 +37,9 @@ export default function ConfirmationModal({
           transition={{ duration: 0.2 }}
           className="bg-white rounded-lg p-6 w-full max-w-md"
           style={{
-            borderColor: '#e5e7eb',
-            borderWidth: '1px',
-            borderStyle: 'solid',
+            borderColor: "#e5e7eb",
+            borderWidth: "1px",
+            borderStyle: "solid",
           }}
         >
           <div className="flex items-start gap-4">
