@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import SearchableSelect from '@/components/ui/SearchableSelect';
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import SearchableSelect from "@/components/ui/SearchableSelect";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useFeatureFlags } from '@/hooks/use-feature-flags';
-import { FEATURE_FLAGS } from '@/types/feature-flags';
+} from "@/components/ui/dialog";
+import { useFeatureFlags } from "@/hooks/use-feature-flags";
+import { FEATURE_FLAGS } from "@/types/feature-flags";
 
 interface AccountConnectionModalProps {
   isOpen: boolean;
@@ -28,37 +28,42 @@ interface IntegrationOption {
 
 const integrations: IntegrationOption[] = [
   {
-    id: 'trading212',
-    name: 'Trading 212',
-    description: 'Connect your Trading 212 investment account',
-    icon: '📈',
+    id: "trading212",
+    name: "Trading 212",
+    description: "Connect your Trading 212 investment account",
+    icon: "📈",
     available: true,
   },
   {
-    id: 'bank_of_america',
-    name: 'Bank of America',
-    description: 'Connect your Bank of America accounts',
-    icon: '🏦',
+    id: "bank_of_america",
+    name: "Bank of America",
+    description: "Connect your Bank of America accounts",
+    icon: "🏦",
     available: false,
   },
   {
-    id: 'coinbase',
-    name: 'Coinbase',
-    description: 'Connect your Coinbase crypto portfolio',
-    icon: '🪙',
+    id: "coinbase",
+    name: "Coinbase",
+    description: "Connect your Coinbase crypto portfolio",
+    icon: "🪙",
     available: false,
   },
 ];
 
-export default function AccountConnectionModal({ isOpen, onClose }: AccountConnectionModalProps) {
-  const [selectedIntegration, setSelectedIntegration] = useState<string>('');
+export default function AccountConnectionModal({
+  isOpen,
+  onClose,
+}: AccountConnectionModalProps) {
+  const [selectedIntegration, setSelectedIntegration] = useState<string>("");
   const { isFeatureEnabled } = useFeatureFlags();
-  const isTrading212Enabled = isFeatureEnabled(FEATURE_FLAGS.TRADING_212_CONNECTION_ENABLED);
+  const isTrading212Enabled = isFeatureEnabled(
+    FEATURE_FLAGS.TRADING_212_CONNECTION_ENABLED,
+  );
 
   const handleConnect = () => {
-    if (selectedIntegration === 'trading212') {
+    if (selectedIntegration === "trading212") {
       // Store flag to open Trading 212 modal after this one closes
-      localStorage.setItem('openTrading212Modal', 'true');
+      localStorage.setItem("openTrading212Modal", "true");
       onClose();
     }
   };
@@ -67,7 +72,7 @@ export default function AccountConnectionModal({ isOpen, onClose }: AccountConne
   const integrationOptions = integrations
     .filter((i) => {
       // Filter out Trading 212 if feature flag is disabled
-      if (i.id === 'trading212' && !isTrading212Enabled) {
+      if (i.id === "trading212" && !isTrading212Enabled) {
         return false;
       }
       return i.available;
@@ -90,7 +95,9 @@ export default function AccountConnectionModal({ isOpen, onClose }: AccountConne
 
         <div className="mt-6 space-y-4">
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Select Account Type</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Select Account Type
+            </p>
             <SearchableSelect
               options={integrationOptions}
               value={selectedIntegration}

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import DashboardCard from '@/components/Dashboard/DashboardCard';
-import { useCurrencyFormat } from '@/hooks/use-currency-format';
-import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
+import { motion } from "framer-motion";
+import { ArrowUp, ArrowDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import DashboardCard from "@/components/Dashboard/DashboardCard";
+import { useCurrencyFormat } from "@/hooks/use-currency-format";
+import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
 
 interface MonthlyBudgetSummaryProps {
   monthlyIncome: number;
@@ -34,15 +34,16 @@ export default function MonthlyBudgetSummary({
 
   const expensesChange =
     previousMonthExpenses && previousMonthExpenses > 0
-      ? ((monthlyExpenses - previousMonthExpenses) / previousMonthExpenses) * 100
+      ? ((monthlyExpenses - previousMonthExpenses) / previousMonthExpenses) *
+        100
       : 0;
 
   const handleIncomeClick = () => {
-    router.push('/dashboard/budgets');
+    router.push("/dashboard/budgets");
   };
 
   const handleExpensesClick = () => {
-    router.push('/dashboard/budgets');
+    router.push("/dashboard/budgets");
   };
 
   return (
@@ -50,7 +51,9 @@ export default function MonthlyBudgetSummary({
       {/* Monthly Income Card */}
       <DashboardCard
         title="Monthly income"
-        icon={<ArrowUp className="w-5 h-5" style={{ color: 'var(--secondary)' }} />}
+        icon={
+          <ArrowUp className="w-5 h-5" style={{ color: "var(--secondary)" }} />
+        }
         isLoading={isLoading}
         onClick={handleIncomeClick}
         testId="monthly-income-card"
@@ -66,13 +69,15 @@ export default function MonthlyBudgetSummary({
             <span
               className="text-sm font-medium"
               style={{
-                color: incomeChange >= 0 ? 'var(--green)' : 'var(--red)',
+                color: incomeChange >= 0 ? "var(--green)" : "var(--red)",
               }}
             >
-              {incomeChange >= 0 ? '+' : ''}
+              {incomeChange >= 0 ? "+" : ""}
               {incomeChange.toFixed(1)}%
             </span>
-            <span className="text-sm text-gray-500">compared to last month</span>
+            <span className="text-sm text-gray-500">
+              compared to last month
+            </span>
           </div>
         )}
       </DashboardCard>
@@ -80,7 +85,12 @@ export default function MonthlyBudgetSummary({
       {/* Monthly Expenses Card */}
       <DashboardCard
         title="Monthly expenses"
-        icon={<ArrowDown className="w-5 h-5" style={{ color: 'var(--secondary)' }} />}
+        icon={
+          <ArrowDown
+            className="w-5 h-5"
+            style={{ color: "var(--secondary)" }}
+          />
+        }
         isLoading={isLoading}
         onClick={handleExpensesClick}
         testId="monthly-expenses-card"
@@ -96,13 +106,15 @@ export default function MonthlyBudgetSummary({
             <span
               className="text-sm font-medium"
               style={{
-                color: expensesChange <= 0 ? 'var(--green)' : 'var(--red)',
+                color: expensesChange <= 0 ? "var(--green)" : "var(--red)",
               }}
             >
-              {expensesChange >= 0 ? '+' : ''}
+              {expensesChange >= 0 ? "+" : ""}
               {expensesChange.toFixed(1)}%
             </span>
-            <span className="text-sm text-gray-500">compared to last month</span>
+            <span className="text-sm text-gray-500">
+              compared to last month
+            </span>
           </div>
         )}
       </DashboardCard>

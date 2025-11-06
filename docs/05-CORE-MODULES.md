@@ -50,13 +50,14 @@ const [queryClient] = useState(
           retry: 3,
 
           // Exponential backoff: 1s, 2s, 4s (max 30s)
-          retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+          retryDelay: (attemptIndex) =>
+            Math.min(1000 * 2 ** attemptIndex, 30000),
 
           // Refetch when user focuses window
           refetchOnWindowFocus: true,
 
           // Always refetch on reconnect
-          refetchOnReconnect: 'always',
+          refetchOnReconnect: "always",
         },
         mutations: {
           // Retry failed mutations once
@@ -73,10 +74,10 @@ const [queryClient] = useState(
 
 ```typescript
 export const queryKeys = {
-  assets: ['assets'] as const,
-  liabilities: ['liabilities'] as const,
-  networth: ['networth'] as const,
-  history: ['history'] as const,
+  assets: ["assets"] as const,
+  liabilities: ["liabilities"] as const,
+  networth: ["networth"] as const,
+  history: ["history"] as const,
 };
 ```
 
@@ -136,7 +137,7 @@ export function useCreateAsset() {
 
       // 3. Capture daily snapshot (async, don't wait)
       apiClient.history.captureSnapshot().catch((error) => {
-        console.error('Error capturing snapshot after asset update:', error);
+        console.error("Error capturing snapshot after asset update:", error);
       });
     },
   });
@@ -165,7 +166,9 @@ export function useDeleteAsset() {
       await queryClient.cancelQueries({ queryKey: queryKeys.assets });
 
       // Snapshot the previous value for rollback
-      const previousAssets = queryClient.getQueryData<Asset[]>(queryKeys.assets);
+      const previousAssets = queryClient.getQueryData<Asset[]>(
+        queryKeys.assets,
+      );
 
       // Optimistically update (remove asset from UI)
       queryClient.setQueryData<Asset[]>(queryKeys.assets, (old) => {
@@ -210,7 +213,10 @@ export function useNetWorth() {
   const calculatedNetWorth = useMemo(() => {
     if (!assets || !liabilities) return null;
 
-    const totalAssets = assets.reduce((sum, asset) => sum + Number(asset.value), 0);
+    const totalAssets = assets.reduce(
+      (sum, asset) => sum + Number(asset.value),
+      0,
+    );
     const totalLiabilities = liabilities.reduce(
       (sum, liability) => sum + Number(liability.amount_owed),
       0,
@@ -268,24 +274,32 @@ export class ApiError extends Error {
     message: string,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
 // Generic fetch wrapper with authentication
-async function fetchWithAuth<T>(url: string, options?: RequestInit): Promise<T> {
+async function fetchWithAuth<T>(
+  url: string,
+  options?: RequestInit,
+): Promise<T> {
   const response = await fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options?.headers,
     },
-    credentials: 'include', // Send cookies (session)
+    credentials: "include", // Send cookies (session)
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new ApiError(response.status, error.error || `HTTP ${response.status}`);
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new ApiError(
+      response.status,
+      error.error || `HTTP ${response.status}`,
+    );
   }
 
   return response.json();
@@ -300,30 +314,33 @@ async function fetchWithAuth<T>(url: string, options?: RequestInit): Promise<T> 
 export const apiClient = {
   // Asset operations
   assets: {
-    getAll: () => fetchWithAuth<Asset[]>('/api/assets'),
+    getAll: () => fetchWithAuth<Asset[]>("/api/assets"),
     create: (data: { name: string; category: string; value: number }) =>
-      fetchWithAuth<Asset>('/api/assets', {
-        method: 'POST',
+      fetchWithAuth<Asset>("/api/assets", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: Partial<{ name: string; category: string; value: number }>) =>
-      fetchWithAuth<Asset>('/api/assets', {
-        method: 'PUT',
+    update: (
+      id: string,
+      data: Partial<{ name: string; category: string; value: number }>,
+    ) =>
+      fetchWithAuth<Asset>("/api/assets", {
+        method: "PUT",
         body: JSON.stringify({ id, ...data }),
       }),
     delete: (id: string) =>
-      fetchWithAuth<{ success: boolean }>('/api/assets', {
-        method: 'DELETE',
+      fetchWithAuth<{ success: boolean }>("/api/assets", {
+        method: "DELETE",
         body: JSON.stringify({ id }),
       }),
   },
 
   // Liability operations
   liabilities: {
-    getAll: () => fetchWithAuth<Liability[]>('/api/liabilities'),
+    getAll: () => fetchWithAuth<Liability[]>("/api/liabilities"),
     create: (data: { name: string; category: string; amount_owed: number }) =>
-      fetchWithAuth<Liability>('/api/liabilities', {
-        method: 'POST',
+      fetchWithAuth<Liability>("/api/liabilities", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
     // ... similar to assets
@@ -337,7 +354,7 @@ export const apiClient = {
         totalLiabilities: number;
         netWorth: number;
         updatedAt: string;
-      }>('/api/networth'),
+      }>("/api/networth"),
   },
 
   // Historical snapshots
@@ -345,8 +362,8 @@ export const apiClient = {
     get: (params?: { startDate?: string; limit?: number }) => {
       // Build query string from params
       const searchParams = new URLSearchParams();
-      if (params?.startDate) searchParams.append('startDate', params.startDate);
-      if (params?.limit) searchParams.append('limit', params.limit.toString());
+      if (params?.startDate) searchParams.append("startDate", params.startDate);
+      if (params?.limit) searchParams.append("limit", params.limit.toString());
       const query = searchParams.toString();
 
       return fetchWithAuth<{
@@ -361,29 +378,31 @@ export const apiClient = {
           previous: number;
           change: number;
           changePercentage: number;
-          trend: 'up' | 'down' | 'stable';
+          trend: "up" | "down" | "stable";
         } | null;
-      }>(`/api/history${query ? `?${query}` : ''}`);
+      }>(`/api/history${query ? `?${query}` : ""}`);
     },
     captureSnapshot: () =>
-      fetchWithAuth<{ message: string; date: string }>('/api/history', {
-        method: 'POST',
+      fetchWithAuth<{ message: string; date: string }>("/api/history", {
+        method: "POST",
       }),
   },
 
   // User profile
   profiles: {
-    get: () => fetchWithAuth<Profile | null>('/api/profiles'),
-    update: (data: Partial<ProfileFormData> & { onboarding_completed?: boolean }) =>
-      fetchWithAuth<Profile>('/api/profiles', {
-        method: 'PUT',
+    get: () => fetchWithAuth<Profile | null>("/api/profiles"),
+    update: (
+      data: Partial<ProfileFormData> & { onboarding_completed?: boolean },
+    ) =>
+      fetchWithAuth<Profile>("/api/profiles", {
+        method: "PUT",
         body: JSON.stringify(data),
       }),
   },
 
   // FIRE calculation
   fire: {
-    getCalculation: () => fetchWithAuth<FIRECalculation>('/api/fire'),
+    getCalculation: () => fetchWithAuth<FIRECalculation>("/api/fire"),
   },
 };
 ```
@@ -401,8 +420,8 @@ const assets = await apiClient.assets.getAll();
 
 ```typescript
 const newAsset = await apiClient.assets.create({
-  name: 'Savings Account',
-  category: 'Banking',
+  name: "Savings Account",
+  category: "Banking",
   value: 5000,
 });
 // Returns: Asset
@@ -451,15 +470,17 @@ Handles user identity verification, session management, and route protection usi
 **File**: `src/middleware.ts`
 
 ```typescript
-import { type NextRequest } from 'next/server';
-import { updateSession } from './lib/supabase/middleware';
+import { type NextRequest } from "next/server";
+import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   return await updateSession(request);
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
 ```
 
@@ -476,15 +497,15 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Protected routes require authentication
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/api')) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/api")) {
     if (!user) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     }
   }
 
   // If logged in and trying to access auth pages, redirect to dashboard
-  if (user && pathname.startsWith('/auth')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if (user && pathname.startsWith("/auth")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return response;
@@ -503,7 +524,7 @@ export async function updateSession(request: NextRequest) {
 #### 1. Client-Side (`src/lib/supabase/client.ts`)
 
 ```typescript
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient } from "@supabase/ssr";
 
 export function createClient() {
   return createBrowserClient(
@@ -518,8 +539,8 @@ export function createClient() {
 #### 2. Server-Side (`src/lib/supabase/server.ts`)
 
 ```typescript
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -543,8 +564,8 @@ export async function createClient() {
 #### 3. Middleware (`src/lib/supabase/middleware.ts`)
 
 ```typescript
-import { createServerClient } from '@supabase/ssr';
-import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from "@supabase/ssr";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function createClient(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -600,7 +621,7 @@ WITH CHECK (auth.uid() = user_id);
 const supabase = await createClient();
 
 // This query ONLY returns assets where user_id = authenticated user
-const { data: assets } = await supabase.from('assets').select('*');
+const { data: assets } = await supabase.from("assets").select("*");
 
 // User cannot query other users' assets - database enforces this
 ```
@@ -718,8 +739,8 @@ export function useCurrency() {
 **File**: `src/hooks/use-currency-format.ts`
 
 ```typescript
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { formatCurrency as formatCurrencyUtil } from '@/lib/currency';
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatCurrency as formatCurrencyUtil } from "@/lib/currency";
 
 export function useCurrencyFormat() {
   const { currency } = useCurrency();
@@ -737,23 +758,26 @@ export function useCurrencyFormat() {
 **File**: `src/lib/currency.ts`
 
 ```typescript
-export function formatCurrency(value: number, currencyCode: string = 'EUR'): string {
+export function formatCurrency(
+  value: number,
+  currencyCode: string = "EUR",
+): string {
   // Locale mapping for proper formatting
   const localeMap: Record<string, string> = {
-    EUR: 'de-DE', // €1.234,56
-    USD: 'en-US', // $1,234.56
-    GBP: 'en-GB', // £1,234.56
-    JPY: 'ja-JP', // ¥1,235 (no decimals)
+    EUR: "de-DE", // €1.234,56
+    USD: "en-US", // $1,234.56
+    GBP: "en-GB", // £1,234.56
+    JPY: "ja-JP", // ¥1,235 (no decimals)
     // ... more currencies
   };
 
-  const locale = localeMap[currencyCode] || 'en-US';
+  const locale = localeMap[currencyCode] || "en-US";
 
   return new Intl.NumberFormat(locale, {
-    style: 'currency',
+    style: "currency",
     currency: currencyCode,
-    minimumFractionDigits: currencyCode === 'JPY' ? 0 : 2,
-    maximumFractionDigits: currencyCode === 'JPY' ? 0 : 2,
+    minimumFractionDigits: currencyCode === "JPY" ? 0 : 2,
+    maximumFractionDigits: currencyCode === "JPY" ? 0 : 2,
   }).format(value);
 }
 ```
@@ -808,7 +832,10 @@ Implements Financial Independence, Retire Early (FIRE) calculations using compou
 For 4% withdrawal rate (traditional FIRE): `FIRE Number = Annual Expenses × 25`
 
 ```typescript
-export function calculateFIRENumber(annualExpenses: number, withdrawalRate: number): number {
+export function calculateFIRENumber(
+  annualExpenses: number,
+  withdrawalRate: number,
+): number {
   return annualExpenses * (100 / withdrawalRate);
 }
 ```
@@ -826,7 +853,10 @@ export function calculateFIRENumber(annualExpenses: number, withdrawalRate: numb
 **Formula**: `FI % = (Current Net Worth / FIRE Number) × 100`
 
 ```typescript
-export function calculateFIPercentage(currentNetWorth: number, fireNumber: number): number {
+export function calculateFIPercentage(
+  currentNetWorth: number,
+  fireNumber: number,
+): number {
   if (fireNumber === 0) return 0;
   return Math.min((currentNetWorth / fireNumber) * 100, 100);
 }
@@ -875,7 +905,8 @@ export function calculateYearsToFIRE(
     if (annualReturn > 0 && currentNetWorth > 0) {
       // Current net worth grows to FIRE through returns only
       // FV = PV(1+r)^t → t = ln(FV/PV) / ln(1+r)
-      const years = Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
+      const years =
+        Math.log(fireNumber / currentNetWorth) / Math.log(1 + annualReturn);
       return Math.max(0, years);
     } else {
       // Impossible to reach FIRE
@@ -927,22 +958,25 @@ export async function GET(request: Request) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Fetch profile for FIRE assumptions
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user.id)
+    .from("profiles")
+    .select("*")
+    .eq("user_id", user.id)
     .single();
 
   // Calculate current net worth
-  const { data: assets } = await supabase.from('assets').select('value');
-  const { data: liabilities } = await supabase.from('liabilities').select('amount_owed');
+  const { data: assets } = await supabase.from("assets").select("value");
+  const { data: liabilities } = await supabase
+    .from("liabilities")
+    .select("amount_owed");
 
   const totalAssets = assets?.reduce((sum, a) => sum + Number(a.value), 0) || 0;
-  const totalLiabilities = liabilities?.reduce((sum, l) => sum + Number(l.amount_owed), 0) || 0;
+  const totalLiabilities =
+    liabilities?.reduce((sum, l) => sum + Number(l.amount_owed), 0) || 0;
   const currentNetWorth = totalAssets - totalLiabilities;
 
   // Extract profile values
@@ -988,12 +1022,12 @@ export async function GET(request: Request) {
 **File**: `src/hooks/use-fire-data.ts`
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
 
 export function useFIRECalculation() {
   return useQuery({
-    queryKey: ['fire-calculation'],
+    queryKey: ["fire-calculation"],
     queryFn: apiClient.fire.getCalculation,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -1045,9 +1079,11 @@ for (let month = 0; month <= months; month++) {
   const years = month / 12;
 
   // Future value calculation
-  const growthFromCurrent = currentNetWorth * Math.pow(1 + investmentReturn, years);
+  const growthFromCurrent =
+    currentNetWorth * Math.pow(1 + investmentReturn, years);
   const growthFromSavings =
-    annualSavings * ((Math.pow(1 + investmentReturn, years) - 1) / investmentReturn);
+    annualSavings *
+    ((Math.pow(1 + investmentReturn, years) - 1) / investmentReturn);
 
   const projectedNetWorth = growthFromCurrent + growthFromSavings;
 

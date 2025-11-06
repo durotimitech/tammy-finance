@@ -516,7 +516,7 @@ Every asset/liability mutation automatically captures a daily snapshot:
 ```typescript
 // After successful mutation
 apiClient.history.captureSnapshot().catch((error) => {
-  console.error('Error capturing snapshot:', error);
+  console.error("Error capturing snapshot:", error);
 });
 // → Upserts today's snapshot in networth_history
 // → Enables historical tracking without manual intervention

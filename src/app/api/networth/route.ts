@@ -1,8 +1,8 @@
-import Decimal from 'decimal.js';
-import { NextResponse } from 'next/server';
+import Decimal from "decimal.js";
+import { NextResponse } from "next/server";
 
-import { ErrorResponses } from '@/lib/api-errors';
-import { createClient } from '@/lib/supabase/server';
+import { ErrorResponses } from "@/lib/api-errors";
+import { createClient } from "@/lib/supabase/server";
 
 // Helper function to calculate net worth
 async function calculateNetWorth(userId: string) {
@@ -10,9 +10,9 @@ async function calculateNetWorth(userId: string) {
 
   // Fetch assets
   const { data: assets, error: assetsError } = await supabase
-    .from('assets')
-    .select('*')
-    .eq('user_id', userId);
+    .from("assets")
+    .select("*")
+    .eq("user_id", userId);
 
   if (assetsError) {
     throw assetsError;
@@ -20,9 +20,9 @@ async function calculateNetWorth(userId: string) {
 
   // Fetch liabilities
   const { data: liabilities, error: liabilitiesError } = await supabase
-    .from('liabilities')
-    .select('*')
-    .eq('user_id', userId);
+    .from("liabilities")
+    .select("*")
+    .eq("user_id", userId);
 
   if (liabilitiesError) {
     throw liabilitiesError;
@@ -70,13 +70,13 @@ export async function GET() {
     try {
       networthData = await calculateNetWorth(user.id);
     } catch (error) {
-      console.error('Error calculating net worth:', error);
-      return ErrorResponses.internalError('Failed to calculate net worth');
+      console.error("Error calculating net worth:", error);
+      return ErrorResponses.internalError("Failed to calculate net worth");
     }
 
     return NextResponse.json(networthData);
   } catch (error) {
-    console.error('Error calculating net worth:', error);
+    console.error("Error calculating net worth:", error);
     return ErrorResponses.internalError();
   }
 }

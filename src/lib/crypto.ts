@@ -1,7 +1,7 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
 // Encryption configuration
-const ALGORITHM = 'aes-256-gcm';
+const ALGORITHM = "aes-256-gcm";
 const SALT_LENGTH = 32; // 256 bits
 const IV_LENGTH = 12; // 96 bits for GCM
 const KEY_LENGTH = 32; // 256 bits
@@ -11,7 +11,7 @@ const ITERATIONS = 100000; // PBKDF2 iterations
  * Derives an encryption key from a user secret and salt
  */
 function deriveKey(userSecret: string, salt: Buffer): Buffer {
-  return crypto.pbkdf2Sync(userSecret, salt, ITERATIONS, KEY_LENGTH, 'sha256');
+  return crypto.pbkdf2Sync(userSecret, salt, ITERATIONS, KEY_LENGTH, "sha256");
 }
 
 /**
@@ -40,16 +40,19 @@ export function encryptApiKey(
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
   // Encrypt the API key
-  const encrypted = Buffer.concat([cipher.update(apiKey, 'utf8'), cipher.final()]);
+  const encrypted = Buffer.concat([
+    cipher.update(apiKey, "utf8"),
+    cipher.final(),
+  ]);
 
   // Get the authentication tag
   const authTag = cipher.getAuthTag();
 
   return {
-    encryptedValue: encrypted.toString('base64'),
-    salt: salt.toString('base64'),
-    iv: iv.toString('base64'),
-    authTag: authTag.toString('base64'),
+    encryptedValue: encrypted.toString("base64"),
+    salt: salt.toString("base64"),
+    iv: iv.toString("base64"),
+    authTag: authTag.toString("base64"),
   };
 }
 
@@ -69,10 +72,10 @@ export function decryptApiKey(
   userSecret: string,
 ): string {
   // Convert from base64
-  const salt = Buffer.from(encryptedData.salt, 'base64');
-  const iv = Buffer.from(encryptedData.iv, 'base64');
-  const authTag = Buffer.from(encryptedData.authTag, 'base64');
-  const encrypted = Buffer.from(encryptedData.encryptedValue, 'base64');
+  const salt = Buffer.from(encryptedData.salt, "base64");
+  const iv = Buffer.from(encryptedData.iv, "base64");
+  const authTag = Buffer.from(encryptedData.authTag, "base64");
+  const encrypted = Buffer.from(encryptedData.encryptedValue, "base64");
 
   // Derive key from user secret and salt
   const key = deriveKey(userSecret, salt);
@@ -82,9 +85,12 @@ export function decryptApiKey(
   decipher.setAuthTag(authTag);
 
   // Decrypt
-  const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+  const decrypted = Buffer.concat([
+    decipher.update(encrypted),
+    decipher.final(),
+  ]);
 
-  return decrypted.toString('utf8');
+  return decrypted.toString("utf8");
 }
 
 /**
@@ -104,5 +110,5 @@ export function generateUserSecret(
   // This ensures the same user can decrypt their data across requests
   // but different users cannot decrypt each other's data
   const combined = `${userId}:${sessionId}:${encryptionSecret}`;
-  return crypto.createHash('sha256').update(combined).digest('base64');
+  return crypto.createHash("sha256").update(combined).digest("base64");
 }

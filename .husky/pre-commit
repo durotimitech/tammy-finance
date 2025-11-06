@@ -13,4 +13,7 @@ npm run build
 echo "🔍 Running tests"
 npm run test
 
+echo "Adding to git"
+git add .
+
 echo "🎉 pre-commit hooks completed 🎉"

@@ -3,7 +3,7 @@
  * These functions handle all FIRE-related calculations
  */
 
-import Decimal from 'decimal.js';
+import Decimal from "decimal.js";
 
 /**
  * Calculate age from date of birth
@@ -13,7 +13,10 @@ export function calculateAge(dateOfBirth: string): number {
   const birthDate = new Date(dateOfBirth);
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
     age--;
   }
   return age;
@@ -23,7 +26,10 @@ export function calculateAge(dateOfBirth: string): number {
  * Calculate FIRE Number: Annual Expenses * (100 / Withdrawal Rate)
  * For 4% withdrawal rate, this equals Annual Expenses * 25
  */
-export function calculateFIRENumber(annualExpenses: number, withdrawalRate: number): number {
+export function calculateFIRENumber(
+  annualExpenses: number,
+  withdrawalRate: number,
+): number {
   const expenses = new Decimal(annualExpenses);
   const rate = new Decimal(withdrawalRate);
   return expenses.times(new Decimal(100).dividedBy(rate)).toNumber();
@@ -32,7 +38,10 @@ export function calculateFIRENumber(annualExpenses: number, withdrawalRate: numb
 /**
  * Calculate FI Percentage: (Current Net Worth / FIRE Number) * 100
  */
-export function calculateFIPercentage(currentNetWorth: number, fireNumber: number): number {
+export function calculateFIPercentage(
+  currentNetWorth: number,
+  fireNumber: number,
+): number {
   if (fireNumber === 0) return 0;
   const netWorth = new Decimal(currentNetWorth);
   const fire = new Decimal(fireNumber);
@@ -43,7 +52,10 @@ export function calculateFIPercentage(currentNetWorth: number, fireNumber: numbe
 /**
  * Calculate Savings Rate: (Monthly Savings / Monthly Income) * 100
  */
-export function calculateSavingsRate(monthlySavings: number, monthlyIncome: number): number {
+export function calculateSavingsRate(
+  monthlySavings: number,
+  monthlyIncome: number,
+): number {
   if (monthlyIncome === 0) return 0;
   const savings = new Decimal(monthlySavings);
   const income = new Decimal(monthlyIncome);
@@ -79,7 +91,10 @@ export function calculateYearsToFIRE(
       const fire = new Decimal(fireNumber);
       const netWorth = new Decimal(currentNetWorth);
       const returnRate = new Decimal(annualReturn);
-      const years = fire.dividedBy(netWorth).ln().dividedBy(returnRate.plus(1).ln());
+      const years = fire
+        .dividedBy(netWorth)
+        .ln()
+        .dividedBy(returnRate.plus(1).ln());
       return Math.max(0, years.toNumber()); // Ensure non-negative
     } else {
       // No savings and no returns (or zero net worth) - impossible to reach FIRE
@@ -97,7 +112,10 @@ export function calculateYearsToFIRE(
     const returnRate = new Decimal(annualReturn);
 
     const savingsOverRate = savings.dividedBy(returnRate);
-    const numerator = fire.plus(savingsOverRate).dividedBy(netWorth.plus(savingsOverRate)).ln();
+    const numerator = fire
+      .plus(savingsOverRate)
+      .dividedBy(netWorth.plus(savingsOverRate))
+      .ln();
     const denominator = returnRate.plus(1).ln();
     return numerator.dividedBy(denominator).toNumber();
   } else {

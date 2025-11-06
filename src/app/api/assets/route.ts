@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { parseJsonBody } from '@/lib/api-validation';
-import { decryptApiKey, generateUserSecret } from '@/lib/crypto';
-import { isSameDay } from '@/lib/date-utils';
-import { createClient } from '@/lib/supabase/server';
-import { fetchPortfolio, formatPortfolioData } from '@/lib/trading212';
-import { AssetFormData } from '@/types/financial';
+import { NextRequest, NextResponse } from "next/server";
+import { parseJsonBody } from "@/lib/api-validation";
+import { decryptApiKey, generateUserSecret } from "@/lib/crypto";
+import { isSameDay } from "@/lib/date-utils";
+import { createClient } from "@/lib/supabase/server";
+import { fetchPortfolio, formatPortfolioData } from "@/lib/trading212";
+import { AssetFormData } from "@/types/financial";
 
 // Helper function to fetch assets - no caching at this level
 async function fetchUserAssets(userId: string) {
   const supabase = await createClient();
   const { data: assets, error } = await supabase
-    .from('assets')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+    .from("assets")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw error;
@@ -32,7 +32,7 @@ export async function GET() {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Fetch user's assets
@@ -40,16 +40,19 @@ export async function GET() {
     try {
       assets = await fetchUserAssets(user.id);
     } catch (error) {
-      console.error('Error fetching assets:', error);
-      return NextResponse.json({ error: 'Failed to fetch assets' }, { status: 500 });
+      console.error("Error fetching assets:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch assets" },
+        { status: 500 },
+      );
     }
 
     // Check if Trading 212 is connected
     const { data: credential, error: credentialError } = await supabase
-      .from('encrypted_credentials')
-      .select('encrypted_value, salt, iv, auth_tag')
-      .eq('user_id', user.id)
-      .eq('name', 'trading212')
+      .from("encrypted_credentials")
+      .select("encrypted_value, salt, iv, auth_tag")
+      .eq("user_id", user.id)
+      .eq("name", "trading212")
       .single();
 
     let trading212Portfolio = null;
@@ -58,27 +61,32 @@ export async function GET() {
       try {
         // Check if we already have Trading 212 data from today in the assets table
         const { data: existingAsset } = await supabase
-          .from('assets')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('name', 'Trading 212')
-          .eq('category', 'External Connections')
+          .from("assets")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("name", "Trading 212")
+          .eq("category", "External Connections")
           .single();
 
         // Check if we need to fetch new data
         const shouldFetchNewData =
-          !existingAsset || !isSameDay(new Date(existingAsset.updated_at), new Date());
+          !existingAsset ||
+          !isSameDay(new Date(existingAsset.updated_at), new Date());
 
         if (shouldFetchNewData) {
           // Generate user-specific secret
           const encryptionSecret = process.env.ENCRYPTION_SECRET;
           if (!encryptionSecret) {
             console.error(
-              '[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.',
+              "[SECURITY] ENCRYPTION_SECRET not configured. Check environment variables.",
             );
-            throw new Error('Encryption configuration unavailable');
+            throw new Error("Encryption configuration unavailable");
           }
-          const userSecret = generateUserSecret(user.id, user.id, encryptionSecret);
+          const userSecret = generateUserSecret(
+            user.id,
+            user.id,
+            encryptionSecret,
+          );
 
           // Validate credential data
           if (
@@ -87,14 +95,18 @@ export async function GET() {
             !credential.iv ||
             !credential.auth_tag
           ) {
-            console.error('[SECURITY] Invalid credential structure for user:', user.id, {
-              credentialName: 'trading212',
-              hasEncryptedValue: !!credential.encrypted_value,
-              hasSalt: !!credential.salt,
-              hasIv: !!credential.iv,
-              hasAuthTag: !!credential.auth_tag,
-            });
-            throw new Error('Credential data corrupted');
+            console.error(
+              "[SECURITY] Invalid credential structure for user:",
+              user.id,
+              {
+                credentialName: "trading212",
+                hasEncryptedValue: !!credential.encrypted_value,
+                hasSalt: !!credential.salt,
+                hasIv: !!credential.iv,
+                hasAuthTag: !!credential.auth_tag,
+              },
+            );
+            throw new Error("Credential data corrupted");
           }
 
           // Decrypt API key
@@ -112,7 +124,7 @@ export async function GET() {
           } catch (decryptError) {
             // Log error but continue - the Trading 212 integration is optional
             console.error(
-              '[SECURITY] Failed to decrypt Trading 212 API key for user:',
+              "[SECURITY] Failed to decrypt Trading 212 API key for user:",
               user.id,
               decryptError,
             );
@@ -120,7 +132,8 @@ export async function GET() {
 
           if (apiKey) {
             // Fetch portfolio from Trading 212
-            const { data: portfolio, error: portfolioError } = await fetchPortfolio(apiKey);
+            const { data: portfolio, error: portfolioError } =
+              await fetchPortfolio(apiKey);
 
             if (!portfolioError && portfolio) {
               // Format portfolio data
@@ -131,19 +144,19 @@ export async function GET() {
                 if (existingAsset) {
                   // Update existing asset
                   await supabase
-                    .from('assets')
+                    .from("assets")
                     .update({
                       value: trading212Portfolio.totalValue,
                       updated_at: new Date().toISOString(),
                     })
-                    .eq('id', existingAsset.id)
-                    .eq('user_id', user.id);
+                    .eq("id", existingAsset.id)
+                    .eq("user_id", user.id);
                 } else {
                   // Create new asset entry
-                  await supabase.from('assets').insert({
+                  await supabase.from("assets").insert({
                     user_id: user.id,
-                    name: 'Trading 212',
-                    category: 'External Connections',
+                    name: "Trading 212",
+                    category: "External Connections",
                     value: trading212Portfolio.totalValue,
                   });
                 }
@@ -158,14 +171,17 @@ export async function GET() {
         }
       } catch (error) {
         // Log but don't fail the entire request if Trading 212 fetch fails
-        console.error('Error fetching Trading 212 portfolio:', error);
+        console.error("Error fetching Trading 212 portfolio:", error);
       }
     }
 
     return NextResponse.json(assets);
   } catch (error) {
-    console.error('Error in GET /api/assets:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/assets:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -179,7 +195,7 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Parse request body with Content-Type validation
@@ -191,12 +207,15 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     if (!name || !category || value === undefined || value < 0) {
-      return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid input data" },
+        { status: 400 },
+      );
     }
 
     // Insert new asset
     const { data: asset, error } = await supabase
-      .from('assets')
+      .from("assets")
       .insert({
         user_id: user.id,
         name,
@@ -207,16 +226,22 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating asset:', error);
-      return NextResponse.json({ error: 'Failed to create asset' }, { status: 500 });
+      console.error("Error creating asset:", error);
+      return NextResponse.json(
+        { error: "Failed to create asset" },
+        { status: 500 },
+      );
     }
 
     // No server-side cache invalidation needed
 
     return NextResponse.json({ asset }, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/assets:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in POST /api/assets:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -230,7 +255,7 @@ export async function PUT(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Parse request body with Content-Type validation
@@ -242,34 +267,43 @@ export async function PUT(request: NextRequest) {
 
     // Validate input
     if (!id || !name || !category || value === undefined || value < 0) {
-      return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid input data" },
+        { status: 400 },
+      );
     }
 
     // Update asset
     const { data: asset, error } = await supabase
-      .from('assets')
+      .from("assets")
       .update({
         name,
         category,
         value,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .eq('user_id', user.id)
+      .eq("id", id)
+      .eq("user_id", user.id)
       .select()
       .single();
 
     if (error) {
-      console.error('Error updating asset:', error);
-      return NextResponse.json({ error: 'Failed to update asset' }, { status: 500 });
+      console.error("Error updating asset:", error);
+      return NextResponse.json(
+        { error: "Failed to update asset" },
+        { status: 500 },
+      );
     }
 
     // No server-side cache invalidation needed
 
     return NextResponse.json({ asset });
   } catch (error) {
-    console.error('Error in PUT /api/assets:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in PUT /api/assets:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -283,7 +317,7 @@ export async function DELETE(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Parse request body with Content-Type validation
@@ -294,22 +328,35 @@ export async function DELETE(request: NextRequest) {
     const { id } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'Asset ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Asset ID is required" },
+        { status: 400 },
+      );
     }
 
     // Delete asset (RLS will ensure user owns this asset)
-    const { error } = await supabase.from('assets').delete().eq('id', id).eq('user_id', user.id);
+    const { error } = await supabase
+      .from("assets")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
 
     if (error) {
-      console.error('Error deleting asset:', error);
-      return NextResponse.json({ error: 'Failed to delete asset' }, { status: 500 });
+      console.error("Error deleting asset:", error);
+      return NextResponse.json(
+        { error: "Failed to delete asset" },
+        { status: 500 },
+      );
     }
 
     // No server-side cache invalidation needed
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error in DELETE /api/assets:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in DELETE /api/assets:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

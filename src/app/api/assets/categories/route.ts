@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
@@ -11,24 +11,30 @@ export async function GET() {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Fetch user's categories
     const { data: categories, error } = await supabase
-      .from('user_asset_categories')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('category_name', { ascending: true });
+      .from("user_asset_categories")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("category_name", { ascending: true });
 
     if (error) {
-      console.error('Error fetching categories:', error);
-      return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
+      console.error("Error fetching categories:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch categories" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json({ categories });
   } catch (error) {
-    console.error('Error in GET /api/assets/categories:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error in GET /api/assets/categories:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
